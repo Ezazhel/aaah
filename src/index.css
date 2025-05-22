@@ -3,3 +3,11 @@
 :root {
     font-family: Arial, sans-serif;
 }
+
+a {
+    padding: 0.5rem;
+    cursor: pointer;
+    &:hover {
+        text-decoration: underline;
+    }
+}
