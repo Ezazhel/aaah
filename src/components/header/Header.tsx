@@ -1,4 +1,5 @@
 import logo from '../../assets/logo.svg';
+import { Link } from 'wouter';
 
 const Header = () => {
   return (
@@ -11,13 +12,13 @@ const Header = () => {
         <img src={logo} alt={'aaah logo'} width={'128px'} />
         <ul className={'flex gap-4 text-xl/12'}>
           <li>
-            <a>Accueil</a>
+            <Link href="/">Accueil</Link>
           </li>
           <li>
-            <a>Auteurs</a>
+            <Link href="/authors">Auteurs</Link>
           </li>
           <li>
-            <a>Blog</a>
+            <Link href="blog">Blog</Link>
           </li>
         </ul>
       </nav>
