@@ -1,3 +1,5 @@
+import avatar from './avatar.svg';
+
 interface AuthorsCarProp {
   name: string;
   description: string;
@@ -6,11 +8,17 @@ interface AuthorsCarProp {
 
 const AuthorsCard = (props: AuthorsCarProp) => {
   return (
-    <li className={'w-96 max-w-96 grid grid-cols-[auto_1fr] list-none shadow-xl p-4 rounded-2xl'}>
-      <div className={'w-24 h-24 border rounded-full'}></div>
-      <div className={'ml-8'}>
-        <div className={'text-left font-bold'}>{props.name}</div>
-        <div className={'text-justify font-light italic w-full'}>{props.description}</div>
+    <li
+      className={
+        'max-w-92 grid grid-rows-2 place-items-center list-none p-8 py-2 border rounded-2xl'
+      }
+    >
+      <div className={'w-32 h-32 overflow-hidden p-4 border rounded-full'}>
+        <img alt={'avatar'} src={avatar}></img>
+      </div>
+      <div>
+        <div className={'first-letter:uppercase text-xl font-bold'}>{props.name}</div>
+        <div className={'text-lg font-light italic w-full'}>{props.description}</div>
       </div>
     </li>
   );
