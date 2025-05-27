@@ -1,0 +1,11 @@
+.section {
+    padding: 50px 0;
+    &:not(:last-child)::after {
+        content:"";
+        display:block;
+        margin-bottom: -1.5rem;
+        margin-top: 4.5rem;
+        height: 1px;
+        background: linear-gradient(to left, transparent, #545E71, transparent);
+    }
+}

@@ -3,10 +3,10 @@ import { Link } from 'wouter';
 
 const Header = () => {
   return (
-    <header className={'grid place-content-center'}>
+    <header className={'sticky top-0 grid place-content-center'}>
       <nav
         className={
-          'grid grid-cols-[auto_1fr] place-items-center shadow-md rounded-2xl px-2.5 py-1.5'
+          'grid grid-cols-[auto_1fr] bg-white place-items-center shadow-md rounded-4xl px-8 py-1.5'
         }
       >
         <img src={logo} alt={'aaah logo'} width={'128px'} />

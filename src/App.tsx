@@ -12,11 +12,13 @@ function App() {
   return (
     <>
       <Header />
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="authors" component={Authors} />
-        <Route path="blog" component={Blog} />
-      </Switch>
+      <div className={'mt-8'}>
+        <Switch>
+          <Route path="/" component={Home} />
+          <Route path="authors" component={Authors} />
+          <Route path="blog" component={Blog} />
+        </Switch>
+      </div>
       <Footer />
     </>
   );
