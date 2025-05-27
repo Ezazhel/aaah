@@ -1,11 +1,13 @@
 @import "tailwindcss";
 
 :root {
+    --primary: hsl(357, 85%, 15%);
     font-family: Roboto, Arial, sans-serif;
+    color: var(--primary);
 }
 
 body {
-    background-color: #FAFAFA;
+    background-color: hsl(317, 35%, 99%);
 }
 
 a {
@@ -13,5 +15,18 @@ a {
     cursor: pointer;
     &:hover {
         text-decoration: underline;
+    }
+}
+
+
+
+.badge {
+    padding: 0 0.75rem;
+    border-radius: 0.5rem;
+    line-height: 1.75;
+
+    &.badge--member {
+        background-color: hsl(11, 100%,87%);
+        color: var(--primary);
     }
 }

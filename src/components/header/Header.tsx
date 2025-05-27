@@ -1,4 +1,4 @@
-import logo from '../../assets/logo.svg';
+import logo from '../../assets/logo.png';
 import { Link } from 'wouter';
 
 const Header = () => {
@@ -6,7 +6,7 @@ const Header = () => {
     <header className={'sticky top-0 grid place-content-center'}>
       <nav
         className={
-          'grid grid-cols-[auto_1fr] bg-white place-items-center shadow-md rounded-4xl px-8 py-1.5'
+          'grid grid-cols-[auto_1fr] bg-white place-items-end shadow-md rounded-4xl px-8 py-1.5'
         }
       >
         <img src={logo} alt={'aaah logo'} width={'128px'} />

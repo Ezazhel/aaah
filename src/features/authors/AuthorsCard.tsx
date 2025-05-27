@@ -18,6 +18,7 @@ const AuthorsCard = (props: AuthorsCarProp) => {
       </div>
       <div>
         <div className={'first-letter:uppercase text-xl font-bold'}>{props.name}</div>
+        <span className={'inline-block my-1.5 badge badge--member'}>Membre</span>
         <div className={'text-lg font-light italic w-full'}>{props.description}</div>
       </div>
     </li>
