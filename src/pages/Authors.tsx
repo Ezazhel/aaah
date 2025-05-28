@@ -45,7 +45,7 @@ const authors = [
 ];
 const Authors = () => {
   return (
-    <ul className={'grid grid-cols-2 md:grid-cols-3 gap-12'}>
+    <ul className={'max-w-7xl flex flex-wrap gap-16 justify-center'}>
       {authors.map((fullName) => (
         <AuthorsCard
           name={fullName.split(' ')[1]}

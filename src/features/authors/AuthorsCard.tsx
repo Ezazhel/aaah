@@ -8,18 +8,18 @@ interface AuthorsCarProp {
 
 const AuthorsCard = (props: AuthorsCarProp) => {
   return (
-    <li
-      className={
-        'max-w-92 grid grid-rows-2 place-items-center list-none p-8 py-2 shadow-inner outline-gray-500 bg-gray-100 rounded-lg'
-      }
-    >
-      <div className={'w-32 h-32 overflow-hidden p-4 bg-gray-50 shadow rounded-full'}>
+    <li className={'list-none'}>
+      <div
+        className={'w-50 h-50 overflow-hidden p-12 bg-gray-50 shadow drop-shadow-sm rounded-full'}
+      >
         <img alt={'avatar'} src={avatar}></img>
       </div>
       <div>
-        <div className={'first-letter:uppercase text-xl font-bold'}>{props.name}</div>
-        <span className={'inline-block my-1.5 badge badge--member'}>Membre</span>
-        <div className={'text-lg font-light italic w-full'}>{props.description}</div>
+        <div className={'first-letter:uppercase text-xl font-bold pt-4'}>{props.name}</div>
+        <p className={'inline-block my-1.5 badge badge--member uppercase font-light text-sm'}>
+          Membre
+        </p>
+        <div className={'text-sm font-light italic max-w-[25ch]'}>{props.description}</div>
       </div>
     </li>
   );
