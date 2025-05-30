@@ -3,7 +3,7 @@ import { Link } from 'wouter';
 
 const Header = () => {
   return (
-    <header className={'sticky top-0 grid place-content-center'}>
+    <header className={'sticky z-40 top-0 grid place-content-center'}>
       <nav
         className={
           'grid grid-cols-[auto_1fr] bg-white place-items-end shadow-md rounded-4xl px-8 py-1.5'
@@ -15,10 +15,10 @@ const Header = () => {
             <Link href="/">Accueil</Link>
           </li>
           <li>
-            <Link href="/authors">Auteurs</Link>
+            <Link href="/members">Membres</Link>
           </li>
           <li>
-            <Link href="blog">Blog</Link>
+            <Link href="actus">Actualités</Link>
           </li>
         </ul>
       </nav>

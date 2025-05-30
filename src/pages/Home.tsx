@@ -4,7 +4,7 @@ const sections = [
   {
     title: "Un groupement d'auteur.ices",
     content: `
-  L'AAAH! (Association des Auteur·rice·s Autour et en Hérault) regroupe des créateurs de jeux de société. 
+  L'AAAH! (Association des Auteur·ice·s Autour et en Hérault) regroupe des créateurs de jeux de société. 
   Nous favorisons l'entraide, la diffusion des prototypes, et l'organisation d'événements pour promouvoir le jeu sous toutes ses formes.`,
   },
   {
