@@ -4,10 +4,17 @@
     --primary: hsl(357, 85%, 15%);
     font-family: Roboto, Arial, sans-serif;
     color: var(--primary);
+    text-align: unset;
 }
 
 body {
     background-color: hsl(317, 35%, 99%);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
 }
 
 a {
@@ -17,8 +24,6 @@ a {
         text-decoration: underline;
     }
 }
-
-
 
 .badge {
     padding: 0 0.75rem;
