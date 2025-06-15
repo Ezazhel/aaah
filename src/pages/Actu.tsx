@@ -18,13 +18,13 @@ const Actu = () => {
   }, []);
 
   return (
-    <ul className={'flex flex-col'}>
+    <ul className={'md:max-w-2/3 mx-auto'}>
       {posts.map((post, index) => (
-        <Link to={'/' + post.slug.current} key={index}>
-          <li className={'post'}>
+        <li key={index}>
+          <Link className={'post'} to={'/' + post.slug.current}>
             <PostCard post={post} />
-          </li>
-        </Link>
+          </Link>
+        </li>
       ))}
     </ul>
   );

@@ -8,7 +8,7 @@ interface AuthorsCarProp {
 
 const AuthorsCard = (props: AuthorsCarProp) => {
   return (
-    <li className={'list-none'}>
+    <li className={'list-none text-center'}>
       <div
         className={'w-50 h-50 overflow-hidden p-12 bg-gray-50 shadow drop-shadow-sm rounded-full'}
       >

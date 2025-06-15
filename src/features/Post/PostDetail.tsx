@@ -7,7 +7,6 @@ import { PortableText } from '@portabletext/react';
 const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]`;
 
 const PostDetail = ({ slug }: { slug: string }) => {
-  console.log('post details');
   const [post, setPost] = useState<Post>();
   useEffect(() => {
     sanityClient
@@ -16,9 +15,11 @@ const PostDetail = ({ slug }: { slug: string }) => {
   }, []);
 
   return (
-    <div className={'mx-auto'}>
-      <PortableText value={post?.body} />
-    </div>
+    <>
+      <div className={'text-left mx-auto max-w-prose'}>
+        <PortableText value={post?.body} />
+      </div>
+    </>
   );
 };
 export default PostDetail;

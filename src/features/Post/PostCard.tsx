@@ -9,7 +9,7 @@ const PostCard = ({ post }: PostCardProps) => {
   return (
     <>
       <img alt={'post image'} />
-      <div className={'text-left space-y-0.5'}>
+      <div className={'text-left space-y-2'}>
         <h2>{post.title}</h2>
         <div>{post.publishedAt}</div>
         <p>
