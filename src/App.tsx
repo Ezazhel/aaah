@@ -11,7 +11,7 @@ function App() {
     <>
       <Router base="/aaah">
         <Header />
-        <div className={'mt-8'}>
+        <div className={'max-w-7xl mt-8 mx-auto'}>
           <Switch>
             <Route path="/" component={Home} />
             <Route path="/members" component={Authors} />

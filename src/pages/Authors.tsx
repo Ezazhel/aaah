@@ -45,7 +45,7 @@ const authors = [
 ];
 const Authors = () => {
   return (
-    <ul className={'max-w-6xl mx-auto flex flex-wrap gap-16 justify-start px-4'}>
+    <ul className={'flex flex-wrap'}>
       {authors.map((fullName, index) => (
         <AuthorsCard
           key={index}
