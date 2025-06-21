@@ -11,6 +11,12 @@ body {
     background-color: hsl(317, 35%, 99%);
 }
 
+@media screen and (max-width: 480px){
+    html {
+        font-size: 0.85rem;
+    }
+}
+
 h1, h2, h3, h4, h5, h6 {
     font-size: 1.5rem;
     font-weight: 700;

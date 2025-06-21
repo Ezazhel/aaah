@@ -10,9 +10,11 @@ const AuthorsCard = (props: AuthorsCarProp) => {
   return (
     <li className={'list-none text-center'}>
       <div
-        className={'w-50 h-50 overflow-hidden p-12 bg-gray-50 shadow drop-shadow-sm rounded-full'}
+        className={
+          'max-w-24 max-h-24 md:max-w-50 md:max-h-50 md:p-8 mx-auto overflow-hidden bg-gray-50 shadow drop-shadow-sm rounded-full'
+        }
       >
-        <img alt={'avatar'} src={avatar}></img>
+        <img className={'scale-75 md:scale-100'} alt={'avatar'} src={avatar}></img>
       </div>
       <div>
         <div className={'first-letter:uppercase text-xl font-bold pt-4'}>{props.name}</div>
