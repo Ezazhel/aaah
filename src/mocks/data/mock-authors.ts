@@ -1,0 +1,68 @@
+import type { Author } from '@/types';
+
+export const AUTHORS: Author[] = [
+  {
+    id: "jean-dupont",
+    name: "Jean Dupont",
+    region: "Île-de-France",
+    avatarUrl: "",
+    bio: "Passionné de jeux de société depuis son enfance, Jean développe des jeux familiaux qui rassemblent les générations.",
+    role: "member",
+  },
+  {
+    id: "marie-martin",
+    name: "Marie Martin",
+    region: "Nouvelle-Aquitaine",
+    avatarUrl: "",
+    bio: "Designer graphique de formation, Marie apporte une approche artistique unique à ses créations ludiques.",
+    role: "desk",
+  },
+  {
+    id: "pierre-durand",
+    name: "Pierre Durand",
+    region: "Auvergne-Rhône-Alpes",
+    avatarUrl: "",
+    bio: "Ancien professeur de mathématiques, Pierre conçoit des jeux stratégiques qui stimulent la réflexion.",
+    role: "member",
+  },
+  {
+    id: "sophie-leblanc",
+    name: "Sophie Leblanc",
+    region: "Occitanie",
+    avatarUrl: "",
+    bio: "Psychologue spécialisée en développement de l'enfant, Sophie crée des jeux éducatifs innovants.",
+    role: "honorific member",
+  },
+  {
+    id: "luc-moreau",
+    name: "Luc Moreau",
+    region: "Provence-Alpes-Côte d'Azur",
+    avatarUrl: "",
+    bio: "Ingénieur et maker, Luc explore les nouvelles technologies dans le monde du jeu de société.",
+    role: "member",
+  },
+  {
+    id: "claire-petit",
+    name: "Claire Petit",
+    region: "Bretagne",
+    avatarUrl: "",
+    bio: "Écrivaine et conteuse, Claire insuffle des narrations captivantes dans ses créations ludiques.",
+    role: "desk",
+  },
+  {
+    id: "antoine-girard",
+    name: "Antoine Girard",
+    region: "Grand Est",
+    avatarUrl: "",
+    bio: "Historien passionné, Antoine développe des jeux à thématique historique riches en détails.",
+    role: "member",
+  },
+  {
+    id: "julie-bernard",
+    name: "Julie Bernard",
+    region: "Île-de-France",
+    avatarUrl: "",
+    bio: "Game designer professionnelle, Julie partage son expertise pour améliorer les prototypes de l'association.",
+    role: "honorific member",
+  },
+];
