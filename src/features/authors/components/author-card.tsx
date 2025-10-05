@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import type { Author } from "../types";
+import type { Author } from "@/types";
 import { MEMBER_ROLES } from "@/constants/labels";
 import { getLabel } from "@/lib/getLabel";
 

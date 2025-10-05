@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AuthorCard } from "@/components/AuthorCard";
+import { AuthorCard } from "../components/author-card";
 import { mockAuthors } from "@/mocks/data/mock-authors";
 import { MEMBER_ROLES } from "@/constants/labels";
 import { getLabel } from "@/lib/getLabel";

@@ -1,43 +1,11 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import type { Game, Author } from "../types";
-import { CATEGORY_LABELS } from "../types/filters";
-
-// Dummy data for demonstration
-const DUMMY_GAME: Game = {
-  id: "1",
-  name: "Château Mystère",
-  authorIds: ["author1"],
-  authorNames: ["Marie Dubois"],
-  description:
-    "Enquêtez dans un château hanté pour découvrir le secret du fantôme avant les autres joueurs.",
-  minPlayers: 2,
-  maxPlayers: 5,
-  duration: 45,
-  imageUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
-  category: "familial",
-  mechanics: ["Déduction", "Bluff"],
-  categories: ["Mystery", "Familial"],
-  images: [
-    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
-    "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80",
-    "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80",
-  ],
-  rulesUrl: "https://example.com/regles-chateau-mystere.pdf",
-  videoRulesUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-  contactEmail: "marie.dubois@email.com",
-  fullDescription: `Bienvenue dans "Château Mystère", un jeu d'enquête et de bluff pour toute la famille !\n\nExplorez les différentes pièces du château, interrogez les suspects et rassemblez des indices pour résoudre le mystère du fantôme. Mais attention, tous les joueurs ne sont pas ce qu'ils semblent être...\n\nUn jeu rapide à prendre en main, parfait pour les soirées entre amis ou en famille.`,
-  publishedDate: "2023-10-15",
-  status: "prototype",
-};
-
-const DUMMY_AUTHOR: Author = {
-  id: "author1",
-  name: "Marie Dubois",
-  avatarUrl: "https://randomuser.me/api/portraits/women/44.jpg",
-  region: "Île-de-France",
-  bio: "Passionnée de jeux de société et créatrice de mondes ludiques, Marie aime inventer des expériences immersives pour petits et grands.",
-};
+import type { Game, Author } from "@/types";
+import { GAME_CATEGORIES } from "@/constants/labels";
+import { GAMES } from "@/mocks/data/mock-games";
+import { mockAuthors } from "@/mocks/data/mock-authors";
+import { CategoryBadge } from "@/components/category-badge";
+import { getLabel } from "@/lib/getLabel";
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   prototype: { label: "Prototype", color: "bg-gray-300 text-gray-700" },
@@ -69,18 +37,7 @@ function getStatusBadge(status?: string) {
   );
 }
 
-function getCategoryBadge(category: string) {
-  const label = CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS] || category;
-  let color = "bg-blue-100 text-blue-800";
-  if (category === "familial") color = "bg-blue-100 text-blue-800";
-  if (category === "initie") color = "bg-purple-100 text-purple-800";
-  if (category === "expert") color = "bg-red-100 text-red-800";
-  return (
-    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${color}`}>
-      {label}
-    </span>
-  );
-}
+// Removed getCategoryBadge, use CategoryBadge component instead
 
 const PLACEHOLDER_IMAGE =
   "https://placehold.co/600x400/cccccc/222222?text=Image+indisponible";
@@ -99,13 +56,18 @@ export default function GameDetails() {
     setLoading(true);
     // Simulate async fetch
     setTimeout(() => {
-      if (id === DUMMY_GAME.id) {
-        setGame(DUMMY_GAME);
-        setAuthor(DUMMY_AUTHOR);
-      } else {
-        setGame(null);
-        setAuthor(null);
+      // Find the game by id from mockGames
+      const foundGame = GAMES.find((g: Game) => g.id === id) || null;
+      setGame(foundGame);
+
+      // Find the author by id from mockAuthors
+      let foundAuthor: Author | null = null;
+      if (foundGame && foundGame.authorIds && foundGame.authorIds.length > 0) {
+        foundAuthor =
+          mockAuthors.find((a: Author) => a.id === foundGame.authorIds[0]) || null;
       }
+      setAuthor(foundAuthor);
+
       setLoading(false);
     }, 600);
   }, [id]);
@@ -208,7 +170,7 @@ export default function GameDetails() {
                 <div className="grid grid-cols-1 mt-3">
                   <button
                     className="focus:outline-none"
-                    onClick={() => setLightboxImg(game.images[2])}
+                    onClick={() => setLightboxImg(game.images?.[2] || null)}
                   >
                     <img
                       src={game.images[2] || PLACEHOLDER_IMAGE}
@@ -243,7 +205,7 @@ export default function GameDetails() {
               </Link>
             </div>
             <div className="flex items-center gap-2 mb-3">
-              {getCategoryBadge(game.category)}
+              <CategoryBadge category={game.category} />
               {getStatusBadge(game.status)}
             </div>
             <div className="flex flex-wrap gap-4 text-sm text-gray-700 mb-3">
@@ -313,7 +275,7 @@ export default function GameDetails() {
               <span className="mr-3 text-2xl">🎯</span>
               <span>
                 <span className="font-semibold">Catégorie :</span>{" "}
-                {CATEGORY_LABELS[game.category as keyof typeof CATEGORY_LABELS] || game.category}
+                {getLabel(GAME_CATEGORIES, game.category) || game.category}
               </span>
             </div>
           </div>
@@ -457,7 +419,7 @@ export default function GameDetails() {
         <div className="bg-white/90 rounded-xl shadow p-6 flex flex-col md:flex-row items-center gap-6">
           <div className="flex-shrink-0">
             <img
-              src={author?.avatarUrl || "https://placehold.co/96x96/cccccc/222222?text=?"}
+              src={author?.photoUrl || "https://placehold.co/96x96/cccccc/222222?text=?"}
               alt={author?.name}
               className="w-24 h-24 rounded-full object-cover border-4 border-[oklch(69%_0.19_41)] shadow"
             />

@@ -2,7 +2,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { Link } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import type { Game } from "@/types"
-import { CategoryBadge } from "./CategoryBadge"
+import { CategoryBadge } from "@/components/category-badge"
 
 const gameCardVariants = cva(
   "block bg-white rounded-xl border shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary",

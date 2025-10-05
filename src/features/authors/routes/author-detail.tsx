@@ -7,7 +7,7 @@ import { MEMBER_ROLES } from "@/constants/labels";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { getLabel } from "@/lib/getLabel";
-import { GameCard } from "@/components/GameCard";
+import { GameCard } from "@/features/games/components/GameCard";
 
 // If Breadcrumb component exists, import it. Otherwise, fallback to inline.
 let Breadcrumb: React.FC<{ items: { label: string; to?: string }[] }> | null = null;

@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { EventCard } from "../components/EventCard";
-import type { Event } from "../types";
-import { mockEvents } from "../mocks/data/mock-events";
+import { EventCard } from "../components/event-card";
+import type { Event } from "@/types";
+import { mockEvents } from "../api/mock-data";
 
 // --- Dummy Data ---
 

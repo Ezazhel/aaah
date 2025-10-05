@@ -1,9 +1,9 @@
-import { Hero } from "../components/Hero";
-import { Stats } from "../components/Stats";
-import { GameCard } from "../components/GameCard";
-import { EventCard } from "../components/EventCard";
+import { Hero } from "../components/hero";
+import { Stats } from "../components/stats";
+import { GameCard } from "@/features/games/components/game-card";
+import { EventCard } from "@/features/events/components/event-card";
 import { Link } from "react-router-dom";
-import { mockEvents } from "../mocks/data/mock-events";
+import { mockEvents } from "@/features/events/api/mock-data";
 
 export default function Home() {
   // Dummy data for Stats

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { GameCard } from "@/components/GameCard";
-import { FilterDrawer } from "@/components/FilterDrawer";
-import { ActiveFilters } from "@/components/ActiveFilters";
+import { GameCard } from "../components/game-card";
+import { FilterDrawer } from "@/components/filter-drawer";
+import { ActiveFilters } from "@/components/active-filters";
 import type { GameFilters } from "@/types/filters";
 import { DEFAULT_GAME_FILTERS } from "@/types/filters";
 import { GAMES } from "@/mocks/data/mock-games";

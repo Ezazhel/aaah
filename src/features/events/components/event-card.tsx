@@ -1,5 +1,5 @@
 import React from "react";
-import type { Event } from "../types";
+import type { Event } from "@/types";
 import { EVENT_TYPES, EVENT_STATUS } from "@/constants/labels";
 
 type EventCardProps = {
