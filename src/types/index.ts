@@ -30,10 +30,22 @@ export type Game = {
 export type Author = {
   id: string;
   name: string;
-  avatarUrl: string;
-  region: string;
-  bio: string;
+  region: string; // required
   role: MemberRole;
+  // --- Additional optional fields for detail page ---
+  bio?: string; // short bio, 1-2 sentences (optional, for compatibility)
+  fullBio?: string; // longer biography for detail page
+  photoUrl?: string; // profile photo URL
+  joinedDate?: string; // ISO date string when joined association
+  specialties?: string[]; // array of game types/mechanics they specialize in
+  website?: string; // personal website URL
+  socialLinks?: {
+    twitter?: string;
+    instagram?: string;
+    bgg?: string; // BoardGameGeek profile
+  };
+  achievements?: string[]; // awards, published games, etc.
+  contactEmail?: string; // email for contact
 };
 
 export type Article = {

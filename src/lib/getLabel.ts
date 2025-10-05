@@ -10,8 +10,5 @@ export function getLabel<T extends Record<string, any>>(
   key: keyof T | string,
   fallback: string = 'N/A'
 ): any {
-  if (Object.prototype.hasOwnProperty.call(mapping, key)) {
-    return mapping[key];
-  }
-  return fallback;
+  return mapping[key] ?? fallback;
 }

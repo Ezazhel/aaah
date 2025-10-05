@@ -1,98 +1,11 @@
 import { useState } from "react";
-import { GameCard } from "../components/GameCard";
-import type { Game } from "../types";
-import { FilterDrawer } from "../components/FilterDrawer";
-import { ActiveFilters } from "../components/ActiveFilters";
-import type { GameFilters } from "../types/filters";
-import { DEFAULT_GAME_FILTERS } from "../types/filters";
+import { GameCard } from "@/components/GameCard";
+import { FilterDrawer } from "@/components/FilterDrawer";
+import { ActiveFilters } from "@/components/ActiveFilters";
+import type { GameFilters } from "@/types/filters";
+import { DEFAULT_GAME_FILTERS } from "@/types/filters";
+import { GAMES } from "@/mocks/data/mock-games";
 
-
-const DUMMY_GAMES: Game[] = [
-  {
-    id: "1",
-    name: "Château Mystère",
-    authorIds: ["author1"],
-    authorNames: ["Marie Dubois"],
-    description: "Enquêtez dans un château hanté pour découvrir le secret du fantôme avant les autres joueurs.",
-    minPlayers: 2,
-    maxPlayers: 5,
-    duration: 45,
-    category: "familial",
-    mechanics: ["Déduction", "Bluff"],
-    categories: ["Mystery", "Familial"],
-    imageUrl: "",
-  },
-  {
-    id: "2",
-    name: "Marchands de l'Ouest",
-    authorIds: ["author2"],
-    authorNames: ["Pierre Martin"],
-    description: "Devenez le marchand le plus prospère en gérant vos ressources et en négociant habilement.",
-    minPlayers: 3,
-    maxPlayers: 6,
-    duration: 60,
-    category: "initie",
-    mechanics: ["Gestion de main", "Collection"],
-    categories: ["Trading", "Strategy"],
-    imageUrl: "",
-  },
-  {
-    id: "3",
-    name: "Expédition Arctique",
-    authorIds: ["author3"],
-    authorNames: ["Sophie Laurent"],
-    description: "Collaborez pour survivre à une expédition périlleuse dans le Grand Nord.",
-    minPlayers: 1,
-    maxPlayers: 4,
-    duration: 90,
-    category: "expert",
-    mechanics: ["Coopératif", "Placement d'ouvriers"],
-    categories: ["Adventure", "Cooperative"],
-    imageUrl: "",
-  },
-  {
-    id: "4",
-    name: "Potion Express",
-    authorIds: ["author4"],
-    authorNames: ["Lucas Bernard"],
-    description: "Préparez des potions magiques plus vite que vos adversaires dans ce jeu effréné.",
-    minPlayers: 2,
-    maxPlayers: 6,
-    duration: 30,
-    category: "familial",
-    mechanics: ["Draft", "Gestion de main"],
-    categories: ["Fantasy", "Racing"],
-    imageUrl: "",
-  },
-  {
-    id: "5",
-    name: "Dynastie",
-    authorIds: ["author5"],
-    authorNames: ["Camille Rousseau"],
-    description: "Bâtissez votre empire et dominez vos rivaux grâce à la stratégie et la majorité.",
-    minPlayers: 3,
-    maxPlayers: 5,
-    duration: 75,
-    category: "initie",
-    mechanics: ["Majorité", "Placement d'ouvriers"],
-    categories: ["Strategy", "Empire Building"],
-    imageUrl: "",
-  },
-  {
-    id: "6",
-    name: "Les Arcanes Perdus",
-    authorIds: ["author6"],
-    authorNames: ["Alex Chen"],
-    description: "Maîtrisez les arcanes anciens pour triompher dans ce jeu de stratégie exigeant.",
-    minPlayers: 2,
-    maxPlayers: 4,
-    duration: 120,
-    category: "expert",
-    mechanics: ["Gestion de main", "Collection", "Bluff"],
-    categories: ["Fantasy", "Strategy"],
-    imageUrl: "",
-  },
-];
 
 export default function Games() {
   // Filter state
@@ -102,7 +15,7 @@ export default function Games() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Filtering logic
-  const filteredGames = DUMMY_GAMES.filter((game) => {
+  const filteredGames = GAMES.filter((game) => {
     // Search filter
     const matchesSearch = filters.search
       ? game.name.toLowerCase().includes(filters.search.toLowerCase())

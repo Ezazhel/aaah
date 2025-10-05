@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { AuthorCard } from "@/components/AuthorCard";
-import { AUTHORS } from "@/mocks/data/mock-authors";
+import { mockAuthors } from "@/mocks/data/mock-authors";
 import { MEMBER_ROLES } from "@/constants/labels";
-import { getLabel } from "@/utils/getLabel";
+import { getLabel } from "@/lib/getLabel";
 
 const ROLES = [
   { value: "Tous rôles", label: "Tous rôles" },
@@ -16,7 +16,7 @@ export default function Authors() {
   const [search, setSearch] = useState("");
   const [role, setRole] = useState("Tous rôles");
 
-  const filteredAuthors = AUTHORS.filter((author) => {
+  const filteredAuthors = mockAuthors.filter((author) => {
     const matchesRole =
       role === "Tous rôles" || author.role === role;
     const matchesSearch =
@@ -72,9 +72,10 @@ export default function Authors() {
               <AuthorCard
                 key={author.name}
                 author={{
+                  id: author.id,
                   name: author.name,
-                  avatarUrl: author.avatarUrl,
-                  role: getLabel(MEMBER_ROLES, author.role, author.role),
+                  photoUrl: author.photoUrl,
+                  role: author.role,
                 }}
               />
             ))

@@ -76,6 +76,7 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <GameCard
+            variant="featured"
             game={{
               id: "1",
               name: "Le Royaume Oublié",
@@ -92,6 +93,7 @@ export default function Home() {
             }}
             />
             <GameCard
+              variant="featured"
               game={{
                 id: "2",
                 name: "Mystère à Minuit",
@@ -108,6 +110,7 @@ export default function Home() {
               }}
             />
             <GameCard
+              variant="featured"
               game={{
                 id: "3",
                 name: "Les Sentiers Perdus",

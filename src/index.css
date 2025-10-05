@@ -1,5 +1,40 @@
 @import "tailwindcss";
 
+/* Définition des couleurs et tokens custom */
+@theme {
+  /* Brand colors */
+  --color-brand-primary: oklch(69% 0.19 41);
+  --color-brand-secondary: oklch(54% 0.12 225);
+  --color-brand-dark: oklch(36% 0.13 250);
+  --color-brand-light: oklch(78% 0.13 55);
+  
+  /* Primary colors (aliases) */
+  --color-primary-orange: oklch(69% 0.19 41);
+  --color-primary-blue: oklch(36% 0.13 250);
+  --color-primary-blue-secondary: oklch(54% 0.12 225);
+  --color-primary-orange-light: oklch(78% 0.13 55);
+  
+  /* Category badges - Familial (green) */
+  --color-category-familial-bg: oklch(88% 0.12 145);
+  --color-category-familial-text: oklch(42% 0.15 145);
+  --color-category-familial-border: oklch(55% 0.14 145);
+  
+  /* Category badges - Initié (orange) */
+  --color-category-initie-bg: oklch(88% 0.11 75);
+  --color-category-initie-text: oklch(48% 0.15 65);
+  --color-category-initie-border: oklch(58% 0.14 70);
+  
+  /* Category badges - Expert (purple) */
+  --color-category-expert-bg: oklch(88% 0.11 320);
+  --color-category-expert-text: oklch(42% 0.16 320);
+  --color-category-expert-border: oklch(52% 0.15 320);
+  
+  /* Surface/Background colors */
+  --color-surface-light: oklch(98% 0.01 250);
+  --color-surface-card: oklch(99% 0 0);
+  --color-surface-muted: oklch(96% 0.01 250);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;

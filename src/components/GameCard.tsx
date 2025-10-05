@@ -1,13 +1,61 @@
-import React from "react";
-import type { Game } from "../types";
-import { CategoryBadge } from "./CategoryBadge";
-import { Link } from "react-router-dom";
+import { cva, type VariantProps } from "class-variance-authority"
+import { Link } from "react-router-dom"
+import { cn } from "@/lib/utils"
+import type { Game } from "@/types"
+import { CategoryBadge } from "./CategoryBadge"
 
-type GameCardProps = {
-  game: Game;
-};
+const gameCardVariants = cva(
+  "block bg-white rounded-xl border shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary",
+  {
+    variants: {
+      variant: {
+        // Card verticale (grille de jeux)
+        default: [
+          "flex flex-col w-full max-w-sm mx-auto",
+          "hover:shadow-2xl hover:-translate-y-2",
+          "border-gray-200",
+        ],
+        // Card avec mise en avant
+        featured: [
+          "flex flex-col w-full",
+          "border-2 border-brand-primary",
+          "shadow-lg hover:shadow-2xl hover:-translate-y-2",
+        ],
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
 
-export const GameCard: React.FC<GameCardProps> = ({ game }) => {
+const gameCardImageVariants = cva(
+  "rounded-t-xl overflow-hidden flex items-center justify-center",
+  {
+    variants: {
+      variant: {
+        default: "w-full h-[200px] bg-gradient-to-br from-primary-orange-light to-primary-blue-secondary",
+        featured: "w-full h-[250px] bg-gradient-to-br from-primary-orange-light to-primary-blue-secondary",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+interface GameCardProps extends VariantProps<typeof gameCardVariants> {
+  game: Game
+  hideAuthor?: boolean
+  className?: string
+}
+
+export function GameCard({ 
+  game, 
+  variant = "default", 
+  hideAuthor = false,
+  className 
+}: GameCardProps) {
   const {
     id,
     name,
@@ -18,76 +66,84 @@ export const GameCard: React.FC<GameCardProps> = ({ game }) => {
     duration,
     category,
     imageUrl,
-  } = game;
+  } = game
 
-  // Get the first author name or join multiple authors
-  const authorName =
-    authorNames && authorNames.length > 0
-      ? authorNames.join(", ")
-      : "Unknown Author";
+  const authorName = authorNames?.length 
+    ? authorNames.join(", ") 
+    : "Auteur inconnu"
 
   return (
     <Link
       to={`/prototypes/${id}`}
-      className="
-        bg-white rounded-xl border border-gray-200 shadow
-        hover:shadow-2xl hover:-translate-y-2 transition
-        duration-200 ease-in-out
-        flex flex-col
-        w-full
-        max-w-sm
-        mx-auto
-        cursor-pointer
-        no-underline
-        focus:outline-none
-      "
-      style={{ textDecoration: "none", color: "inherit" }}
-      tabIndex={0}
+      className={cn(gameCardVariants({ variant }), className)}
       aria-label={`Voir la fiche du jeu ${name}`}
     >
-      <div className="w-full h-[200px] rounded-t-xl overflow-hidden flex items-center justify-center bg-gradient-to-br from-[oklch(78%_0.13_55)] to-[oklch(54%_0.12_225)]">
+      {/* Image */}
+      <div className={cn(gameCardImageVariants({ variant }), "relative")}>
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={name}
-            className="object-cover w-full h-full"
+            className="object-cover w-full h-full rounded-t-xl"
+            loading="lazy"
           />
         ) : (
-          <div className="flex items-center justify-center w-full h-full text-5xl text-white font-bold opacity-60 select-none">
-            🎲
+          <div className="flex items-center justify-center w-full h-full font-bold select-none text-5xl text-white opacity-60 rounded-t-xl">
+            {"🎲"}
           </div>
         )}
       </div>
-      <div className="flex flex-col flex-1 p-4">
-        <h2 className="font-bold text-lg md:text-xl text-[oklch(36%_0.13_250)] mb-1 truncate">
+
+      {/* Content */}
+      <div className={cn(
+        "flex flex-col flex-1",
+        "p-4"
+      )}>
+        {/* Title */}
+        <h2 className="font-bold text-brand-dark mb-1 text-lg md:text-xl truncate">
           {name}
         </h2>
-        <div className="text-sm text-[oklch(69%_0.19_41)] mb-2 truncate">
-          {authorName}
-        </div>
-        <p className="text-gray-700 text-sm mb-3 line-clamp-2">{description}</p>
+
+        {/* Author */}
+        {!hideAuthor && (
+          <div className="text-brand-primary mb-2 text-sm truncate">
+            {authorName}
+          </div>
+        )}
+
+        {/* Description */}
+        {description && (
+          <p className="text-gray-700 text-sm mb-3 line-clamp-2">
+            {description}
+          </p>
+        )}
+
+        {/* Tags/Info */}
         <div className="flex flex-wrap items-center gap-2 mt-auto">
-          <span className="flex items-center text-xs text-gray-600 bg-gray-100 rounded px-2 py-0.5">
-            <span
-              className="mr-1"
-              aria-label="Nombre de joueurs"
-              title="Nombre de joueurs"
-            >
-              🎲
+          {/* Players */}
+          <span className="flex items-center rounded text-xs text-gray-600 bg-gray-100 px-2 py-0.5">
+            <span role="img" aria-label="Joueurs">
+              {"🎲"}
             </span>
-            {minPlayers === maxPlayers
-              ? `${minPlayers} joueur${minPlayers > 1 ? "s" : ""}`
-              : `${minPlayers}-${maxPlayers} joueurs`}
-          </span>
-          <span className="flex items-center text-xs text-gray-600 bg-gray-100 rounded px-2 py-0.5">
-            <span className="mr-1" aria-label="Durée" title="Durée">
-              ⏱️
+            <span>
+              {minPlayers === maxPlayers
+                ? `${minPlayers} joueur${minPlayers > 1 ? "s" : ""}`
+                : `${minPlayers}-${maxPlayers} joueurs`}
             </span>
-            {duration} min
           </span>
+
+          {/* Duration */}
+          <span className="flex items-center rounded text-xs text-gray-600 bg-gray-100 px-2 py-0.5">
+            <span role="img" aria-label="Durée">⏱️</span>
+            <span>
+              {duration} min
+            </span>
+          </span>
+
+          {/* Category badge */}
           <CategoryBadge category={category} />
         </div>
       </div>
     </Link>
-  );
-};
+  )
+}
