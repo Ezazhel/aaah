@@ -8,8 +8,7 @@ import type {
 export type Game = {
   id: string;
   name: string;
-  authorIds: string[];
-  authorNames: string[];
+  authors: Author[];
   description: string;
   minPlayers: number;
   maxPlayers: number;
@@ -17,7 +16,6 @@ export type Game = {
   imageUrl: string;
   category: GameCategory;
   mechanics: string[];
-  categories: string[];
   images?: string[]; // array of image URLs for gallery
   rulesUrl?: string; // link to PDF rules
   videoRulesUrl?: string; // link to video rules, e.g., YouTube

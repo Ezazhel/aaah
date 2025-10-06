@@ -2,12 +2,18 @@ import { useState } from "react";
 import { GameCard } from "../components/game-card";
 import { FilterDrawer } from "@/components/filter-drawer";
 import { ActiveFilters } from "@/components/active-filters";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { ErrorMessage } from "@/components/ui/error-message";
 import type { GameFilters } from "@/types/filters";
 import { DEFAULT_GAME_FILTERS } from "@/types/filters";
-import { GAMES } from "@/mocks/data/mock-games";
+import { useGames } from "../api/get-games";
 
 
 export default function Games() {
+  // Data fetching
+  const { data: gamesResponse, isLoading, error } = useGames();
+  const games = gamesResponse?.data || [];
+
   // Filter state
   const [filters, setFilters] = useState<GameFilters>(DEFAULT_GAME_FILTERS);
 
@@ -15,7 +21,7 @@ export default function Games() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Filtering logic
-  const filteredGames = GAMES.filter((game) => {
+  const filteredGames = games.filter((game) => {
     // Search filter
     const matchesSearch = filters.search
       ? game.name.toLowerCase().includes(filters.search.toLowerCase())
@@ -59,6 +65,30 @@ export default function Games() {
   // Clear all filters
   function handleClearAll() {
     setFilters(DEFAULT_GAME_FILTERS);
+  }
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <LoadingSpinner 
+        fullScreen 
+        message="Chargement des prototypes…" 
+        size="lg"
+      />
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <ErrorMessage 
+        fullScreen
+        title="Erreur de chargement"
+        message="Impossible de charger les prototypes. Veuillez réessayer."
+        onRetry={() => window.location.reload()}
+        retryLabel="Recharger la page"
+      />
+    );
   }
 
   return (

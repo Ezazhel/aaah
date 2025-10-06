@@ -16,8 +16,14 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-6">
           <div className="flex items-center">
-            <Link to="/" className="text-2xl font-bold text-primary-600">
-              🎲 Board Game Authors Association
+            <Link to="/" className="flex items-center gap-3 text-2xl font-bold text-primary-600">
+              <img
+                src="/aaah_logo.png"
+                alt="AAAH Logo"
+                className="h-10 w-10 object-contain"
+                style={{ minWidth: 40, minHeight: 40 }}
+              />
+              Board Game Authors Association
             </Link>
           </div>
           

@@ -38,9 +38,9 @@ export const AppRoutes = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/auteurs" element={<Authors />} />
-            <Route path="/auteurs/:id" element={<AuthorDetail />} />
+            <Route path="/auteurs/:id/:slug?" element={<AuthorDetail />} />
             <Route path="/prototypes" element={<Games />} />
-            <Route path="/prototypes/:id" element={<GameDetails />} />
+            <Route path="/prototypes/:id/:slug?" element={<GameDetails />} />
             <Route path="/evenements" element={<Events />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

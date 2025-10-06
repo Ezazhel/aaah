@@ -1,13 +1,15 @@
 import React from "react";
 import { useParams, Link } from "react-router-dom";
-import type { Author, Game } from "@/types";
-import { mockAuthors } from "@/mocks/data/mock-authors";
-import { GAMES } from "@/mocks/data/mock-games";
+import type { Game } from "@/types";
+import { useAuthor } from "../api/get-author";
+import { useAuthorGames } from "../api/get-author-games";
 import { MEMBER_ROLES } from "@/constants/labels";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { getLabel } from "@/lib/getLabel";
-import { GameCard } from "@/features/games/components/GameCard";
+import { GameCard } from "@/features/games/components/game-card";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { ErrorMessage } from "@/components/ui/error-message";
 
 // If Breadcrumb component exists, import it. Otherwise, fallback to inline.
 let Breadcrumb: React.FC<{ items: { label: string; to?: string }[] }> | null = null;
@@ -83,56 +85,65 @@ const SocialIcon: React.FC<{ type: "twitter" | "instagram" | "bgg"; url: string 
 const AuthorDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
-  // Simulate loading state for future API
-  const [loading] = React.useState(false);
+  // Get author data
+  const { 
+    data: authorData, 
+    isLoading: authorLoading, 
+    error: authorError 
+  } = useAuthor({ 
+    authorId: id || "",
+    queryConfig: { enabled: !!id } 
+  });
+  
+  // Get author's games
+  const { 
+    data: gamesData, 
+    isLoading: gamesLoading, 
+    error: gamesError 
+  } = useAuthorGames({ 
+    authorId: id || "",
+    queryConfig: { enabled: !!id } 
+  });
+console.log(authorData);
+console.log(gamesData);
+  const author = authorData;
+  const games = gamesData || [];
 
-  // Find author
-  const author: Author | undefined = React.useMemo(
-    () => mockAuthors.find((a) => a.id === id),
-    [id]
-  );
-
-  // Filter games by author
-  const games: Game[] = React.useMemo(
-    () =>
-      GAMES
-        .filter((g) => g.authorIds.includes(id || ""))
-        .sort((a, b) =>
-          (b.publishedDate || "").localeCompare(a.publishedDate || "")
-        ),
-    [id]
-  );
+  // Combined loading state
+  const loading = authorLoading || gamesLoading;
+  const error = authorError || gamesError;
 
   // Stats
   const totalPlaytime = games.reduce((sum, g) => sum + (g.duration || 0), 0);
   const mostUsedMechanics = getMostUsedMechanics(games);
 
-  // Handle not found
+  // Handle error or not found
+  if (error) {
+    return (
+      <ErrorMessage
+        title="Erreur de chargement"
+        message="Impossible de charger les informations de l'auteur."
+        onRetry={() => window.location.reload()}
+        backLink={{ to: "/auteurs", label: "← Retour aux auteurs" }}
+      />
+    );
+  }
+
+  // Handle not found (only after loading is complete)
   if (!loading && !author) {
     return (
-      <div className="max-w-2xl mx-auto py-20 text-center">
-        <h1 className="text-3xl font-bold text-brand-dark mb-4">Auteur introuvable</h1>
-        <p className="mb-6 text-gray-600">
-          L'auteur demandé n'existe pas ou a été supprimé.
-        </p>
-        <Link
-          to="/auteurs"
-          className="inline-block px-5 py-2 rounded bg-brand-primary text-white font-semibold hover:bg-brand-primary/90 transition"
-        >
-          ← Retour aux auteurs
-        </Link>
-      </div>
+      <ErrorMessage
+        title="Auteur introuvable"
+        message="L'auteur demandé n'existe pas ou a été supprimé."
+        backLink={{ to: "/auteurs", label: "← Retour aux auteurs" }}
+      />
     );
   }
 
   // Loading state
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[40vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-brand-primary border-opacity-30"></div>
-        <span className="ml-4 text-brand-primary font-medium">Chargement…</span>
-      </div>
-    );
+    const message = authorLoading ? "Chargement de l'auteur…" : "Chargement des jeux…";
+    return <LoadingSpinner message={message} />;
   }
 
   // Breadcrumb items

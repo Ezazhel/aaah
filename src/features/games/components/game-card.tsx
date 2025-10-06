@@ -1,5 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority"
 import { Link } from "react-router-dom"
+import slugify from "slugify"
 import { cn } from "@/lib/utils"
 import type { Game } from "@/types"
 import { CategoryBadge } from "@/components/category-badge"
@@ -72,9 +73,11 @@ export function GameCard({
     ? authorNames.join(", ") 
     : "Auteur inconnu"
 
+  const slug = slugify(name, { lower: true, strict: true });
+
   return (
     <Link
-      to={`/prototypes/${id}`}
+      to={`/prototypes/${id}/${slug}`}
       className={cn(gameCardVariants({ variant }), className)}
       aria-label={`Voir la fiche du jeu ${name}`}
     >

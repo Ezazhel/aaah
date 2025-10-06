@@ -20,11 +20,16 @@ export const Navigation: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex-shrink-0 flex items-center text-lg font-bold gap-2">
-            <span className="text-2xl">🎲</span>
-            <span className="hidden sm:inline">Association Auteurs de Jeux</span>
-            <span className="sm:hidden">AAJ</span>
-          </div>
+          <Link to="/" className="flex-shrink-0 flex items-center text-lg font-bold gap-2">
+            <img
+              src="/aaah_logo.png"
+              alt="AAAH Logo"
+              className="h-10 w-10 object-contain"
+              style={{ minWidth: 96, minHeight: 96 }}
+            />
+            <span className="hidden sm:inline">Association Auteurs Autrices de Jeux</span>
+            <span className="sm:hidden">AAAH</span>
+          </Link>
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-6">
             {navLinks.map((link) => (

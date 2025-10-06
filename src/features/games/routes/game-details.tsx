@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import type { Game, Author } from "@/types";
+import slugify from "slugify";
 import { GAME_CATEGORIES } from "@/constants/labels";
-import { GAMES } from "@/mocks/data/mock-games";
-import { mockAuthors } from "@/mocks/data/mock-authors";
 import { CategoryBadge } from "@/components/category-badge";
 import { getLabel } from "@/lib/getLabel";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { ErrorMessage } from "@/components/ui/error-message";
+import { useGame } from "../api/get-game";
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   prototype: { label: "Prototype", color: "bg-gray-300 text-gray-700" },
@@ -37,80 +38,67 @@ function getStatusBadge(status?: string) {
   );
 }
 
-// Removed getCategoryBadge, use CategoryBadge component instead
-
 const PLACEHOLDER_IMAGE =
   "https://placehold.co/600x400/cccccc/222222?text=Image+indisponible";
+
+const PLACEHOLDER_AUTHOR_IMAGE =
+  "https://placehold.co/96x96/cccccc/222222?text=?";
+
+function pluralizeAuteur(count: number) {
+  return count > 1 ? "auteurs" : "auteur";
+}
+function pluralizeContactez(count: number) {
+  return count > 1 ? "Contactez les auteurs" : "Contactez l'auteur";
+}
 
 export default function GameDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  // Simulate loading and error states
-  const [loading, setLoading] = useState(true);
-  const [game, setGame] = useState<Game | null>(null);
-  const [author, setAuthor] = useState<Author | null>(null);
-  const [showContactModal, setShowContactModal] = useState(false);
+  // Fetch game data
+  const { data: gameResponse, isLoading: gameLoading, error: gameError } = useGame({
+    gameId: id!,
+    queryConfig: {
+      enabled: !!id,
+    },
+  });
+  const game = gameResponse;
 
-  useEffect(() => {
-    setLoading(true);
-    // Simulate async fetch
-    setTimeout(() => {
-      // Find the game by id from mockGames
-      const foundGame = GAMES.find((g: Game) => g.id === id) || null;
-      setGame(foundGame);
+  // For modal contact (if no email)
+  const [showContactModal, setShowContactModal] = useState<null | string>(null);
 
-      // Find the author by id from mockAuthors
-      let foundAuthor: Author | null = null;
-      if (foundGame && foundGame.authorIds && foundGame.authorIds.length > 0) {
-        foundAuthor =
-          mockAuthors.find((a: Author) => a.id === foundGame.authorIds[0]) || null;
-      }
-      setAuthor(foundAuthor);
-
-      setLoading(false);
-    }, 600);
-  }, [id]);
+  const loading = gameLoading;
 
   // Lightbox for gallery (optional)
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <svg className="animate-spin h-10 w-10 text-blue-500" viewBox="0 0 24 24">
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-            fill="none"
-          />
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8v8z"
-          />
-        </svg>
-      </div>
+      <LoadingSpinner 
+        fullScreen 
+        message="Chargement du prototype…" 
+        size="lg"
+      />
     );
   }
 
-  if (!game) {
+  if (gameError || (!loading && !game)) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <h2 className="text-3xl font-bold text-red-600 mb-4">Jeu introuvable</h2>
-        <p className="mb-6 text-gray-600">Le prototype demandé n'existe pas ou a été supprimé.</p>
-        <Link
-          to="/prototypes"
-          className="px-5 py-2 rounded-lg bg-[oklch(69%_0.19_41)] text-white font-semibold shadow hover:bg-[oklch(69%_0.19_41)]/80 transition"
-        >
-          ← Retour aux prototypes
-        </Link>
-      </div>
+      <ErrorMessage 
+        fullScreen
+        title="Prototype introuvable"
+        message="Le prototype demandé n'existe pas ou a été supprimé."
+        backLink={{
+          to: "/prototypes",
+          label: "← Retour aux prototypes"
+        }}
+      />
     );
+  }
+
+  // Early return if we don't have game data yet
+  if (!game) {
+    return null;
   }
 
   // --- Main Render ---
@@ -197,12 +185,23 @@ export default function GameDetails() {
             </h1>
             <div className="flex items-center mb-2">
               <span className="text-gray-600 mr-2">par</span>
-              <Link
-                to={`/auteurs/${author?.id}`}
-                className="text-orange-600 font-semibold hover:underline"
-              >
-                {author?.name || game.authorNames[0]}
-              </Link>
+              {game.authors && game.authors.length > 0 ? (
+                <span className="flex flex-wrap gap-1">
+                  {game.authors.map((author, idx) => (
+                    <span key={author.id} className="flex items-center">
+                      <Link
+                        to={`/auteurs/${author.id}/${author.name ? slugify(author.name, { lower: true, strict: true }) : ''}`}
+                        className="text-orange-600 font-semibold hover:underline"
+                      >
+                        {author.name}
+                      </Link>
+                      {idx < game.authors.length - 1 && <span className="mx-1 text-gray-400">,</span>}
+                    </span>
+                  ))}
+                </span>
+              ) : (
+                <span className="text-orange-600 font-semibold">Auteur inconnu</span>
+              )}
             </div>
             <div className="flex items-center gap-2 mb-3">
               <CategoryBadge category={game.category} />
@@ -221,11 +220,6 @@ export default function GameDetails() {
                 <span className="mr-1">📅</span>
                 {formatDate(game.publishedDate)}
               </div>
-            </div>
-            <div className="mt-2">
-              <span className="inline-block bg-[oklch(96%_0.01_250)] text-[oklch(69%_0.19_41)]/90 px-3 py-1 rounded-full text-xs font-semibold shadow">
-                #{game.categories[0] || "Jeu"}
-              </span>
             </div>
           </div>
         </div>
@@ -290,24 +284,6 @@ export default function GameDetails() {
                     className="inline-block bg-blue-100 text-blue-800 rounded-full px-3 py-1 text-xs font-medium"
                   >
                     {mech}
-                  </span>
-                ))
-              ) : (
-                <span className="text-gray-400">Aucune</span>
-              )}
-            </div>
-          </div>
-          {/* Categories */}
-          <div>
-            <span className="font-semibold text-gray-700">Catégories :</span>
-            <div className="flex flex-wrap gap-2 mt-1">
-              {game.categories && game.categories.length > 0 ? (
-                game.categories.map((cat) => (
-                  <span
-                    key={cat}
-                    className="inline-block bg-orange-100 text-orange-800 rounded-full px-3 py-1 text-xs font-medium"
-                  >
-                    {cat}
                   </span>
                 ))
               ) : (
@@ -415,66 +391,111 @@ export default function GameDetails() {
           </div>
         </div>
 
-        {/* Contacter l'auteur */}
-        <div className="bg-white/90 rounded-xl shadow p-6 flex flex-col md:flex-row items-center gap-6">
-          <div className="flex-shrink-0">
-            <img
-              src={author?.photoUrl || "https://placehold.co/96x96/cccccc/222222?text=?"}
-              alt={author?.name}
-              className="w-24 h-24 rounded-full object-cover border-4 border-[oklch(69%_0.19_41)] shadow"
-            />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-xl font-bold text-[oklch(69%_0.19_41)]/90 mb-1">
-              {author?.name || game.authorNames[0]}
-            </h3>
-            <p className="text-gray-700 mb-2">{author?.bio || "Auteur de jeux de société."}</p>
-            <p className="text-gray-500 mb-3">
-              Intéressé par ce jeu ? <span className="font-semibold">Contactez l'auteur !</span>
-            </p>
-            {game.contactEmail ? (
-              <a
-                href={`mailto:${game.contactEmail}`}
-                className="inline-block px-5 py-2 rounded-lg bg-[oklch(69%_0.19_41)] text-white font-semibold shadow hover:bg-[oklch(69%_0.19_41)]/80 transition"
-              >
-                Contacter
-              </a>
+        {/* Contacter l'auteur / les auteurs */}
+        <div>
+          <h2 className="text-2xl font-bold text-[oklch(69%_0.19_41)]/90 mb-6">
+            {game.authors && game.authors.length > 1
+              ? "Les auteurs"
+              : "L'auteur"}
+          </h2>
+          <div className={`grid gap-6 ${game.authors && game.authors.length > 1 ? "md:grid-cols-2" : ""}`}>
+            {game.authors && game.authors.length > 0 ? (
+              game.authors.map((author) => (
+                <div
+                  key={author.id}
+                  className="flex flex-col md:flex-row items-center gap-6 bg-white/90 rounded-xl shadow p-6"
+                >
+                  <div className="flex-shrink-0">
+                    <img
+                      src={author.photoUrl || PLACEHOLDER_AUTHOR_IMAGE}
+                      alt={author.name}
+                      className="w-24 h-24 rounded-full object-cover border-4 border-[oklch(69%_0.19_41)] shadow"
+                    />
+                  </div>
+                  <div className="flex-1 w-full">
+                    <h3 className="text-xl font-bold text-[oklch(69%_0.19_41)]/90 mb-1">
+                      <Link
+                        to={`/auteurs/${author.id}/${author.name ? slugify(author.name, { lower: true, strict: true }) : ''}`}
+                        className="text-orange-600 font-semibold hover:underline"
+                      >
+                        {author.name}
+                      </Link>
+                    </h3>
+                    <p className="text-gray-700 mb-2">
+                      {author.bio || "Auteur de jeux de société."}
+                    </p>
+                    <p className="text-gray-500 mb-3">
+                      Intéressé par ce jeu ?{" "}
+                      <span className="font-semibold">
+                        {author.name ? "Contactez l'auteur !" : ""}
+                      </span>
+                    </p>
+                    {author.email ? (
+                      <a
+                        href={`mailto:${author.email}`}
+                        className="inline-block px-5 py-2 rounded-lg bg-[oklch(69%_0.19_41)] text-white font-semibold shadow hover:bg-[oklch(69%_0.19_41)]/80 transition"
+                      >
+                        Contacter
+                      </a>
+                    ) : (
+                      <button
+                        className="inline-block px-5 py-2 rounded-lg bg-[oklch(69%_0.19_41)] text-white font-semibold shadow hover:bg-[oklch(69%_0.19_41)]/80 transition"
+                        onClick={() => setShowContactModal(author.id)}
+                      >
+                        Contacter
+                      </button>
+                    )}
+                  </div>
+                  {/* Modal for this author */}
+                  {showContactModal === author.id && (
+                    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
+                      <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full relative">
+                        <button
+                          className="absolute top-3 right-4 text-2xl text-gray-400 hover:text-gray-700"
+                          onClick={() => setShowContactModal(null)}
+                          aria-label="Fermer"
+                        >
+                          &times;
+                        </button>
+                        <h4 className="text-xl font-bold mb-2 text-[oklch(69%_0.19_41)]/90">
+                          Contacter l'auteur
+                        </h4>
+                        <p className="mb-4 text-gray-600">
+                          Le formulaire de contact n'est pas encore disponible. Merci de revenir plus tard !
+                        </p>
+                        <button
+                          className="mt-2 px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold"
+                          onClick={() => setShowContactModal(null)}
+                        >
+                          Fermer
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))
             ) : (
-              <button
-                className="inline-block px-5 py-2 rounded-lg bg-[oklch(69%_0.19_41)] text-white font-semibold shadow hover:bg-[oklch(69%_0.19_41)]/80 transition"
-                onClick={() => setShowContactModal(true)}
-              >
-                Contacter
-              </button>
+              <div className="flex flex-col md:flex-row items-center gap-6 bg-white/90 rounded-xl shadow p-6">
+                <div className="flex-shrink-0">
+                  <img
+                    src={PLACEHOLDER_AUTHOR_IMAGE}
+                    alt="Auteur inconnu"
+                    className="w-24 h-24 rounded-full object-cover border-4 border-[oklch(69%_0.19_41)] shadow"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-[oklch(69%_0.19_41)]/90 mb-1">
+                    Auteur inconnu
+                  </h3>
+                  <p className="text-gray-700 mb-2">
+                    Auteur de jeux de société.
+                  </p>
+                </div>
+              </div>
             )}
           </div>
         </div>
       </section>
-
-      {/* Contact Modal (if no email) */}
-      {showContactModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
-          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full relative">
-            <button
-              className="absolute top-3 right-4 text-2xl text-gray-400 hover:text-gray-700"
-              onClick={() => setShowContactModal(false)}
-              aria-label="Fermer"
-            >
-              &times;
-            </button>
-            <h4 className="text-xl font-bold mb-2 text-[oklch(69%_0.19_41)]/90">Contacter l'auteur</h4>
-            <p className="mb-4 text-gray-600">
-              Le formulaire de contact n'est pas encore disponible. Merci de revenir plus tard !
-            </p>
-            <button
-              className="mt-2 px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold"
-              onClick={() => setShowContactModal(false)}
-            >
-              Fermer
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

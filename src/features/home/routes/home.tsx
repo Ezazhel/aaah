@@ -4,6 +4,7 @@ import { GameCard } from "@/features/games/components/game-card";
 import { EventCard } from "@/features/events/components/event-card";
 import { Link } from "react-router-dom";
 import { mockEvents } from "@/features/events/api/mock-data";
+import { useFeaturedGames } from "@/features/games/api/get-games";
 
 export default function Home() {
   // Dummy data for Stats
@@ -36,6 +37,15 @@ export default function Home() {
     .filter((event) => event.status === "upcoming")
     .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
     .slice(0, 3);
+
+  // Fetch the last 3 created games (prototypes récents)
+  const {
+    data: gamesResponse,
+    isLoading: gamesLoading,
+    error: gamesError,
+  } = useFeaturedGames();
+
+  const recentGames = gamesResponse?.data ?? [];
 
   return (
     <div className="bg-gradient-to-br from-[oklch(96%_0.01_250)] to-[oklch(94%_0.04_250)]">
@@ -75,57 +85,23 @@ export default function Home() {
             Prototypes récents
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <GameCard
-            variant="featured"
-            game={{
-              id: "1",
-              name: "Le Royaume Oublié",
-              authorIds: ["1"],
-              authorNames: ["Marie Dubois"],
-              description: "Enquêtez dans un château hanté pour découvrir le secret du fantôme avant les autres joueurs.",
-              minPlayers: 2,
-              maxPlayers: 5,
-              duration: 45,
-              category: "familial",
-              mechanics: ["Déduction", "Bluff"],
-              categories: ["Mystery", "Familial"],
-              imageUrl: "",
-            }}
-            />
-            <GameCard
-              variant="featured"
-              game={{
-                id: "2",
-                name: "Mystère à Minuit",
-                authorIds: ["2"],
-                authorNames: ["Jean Martin"],
-                description: "Enquêtez dans un château hanté pour découvrir le secret du fantôme avant les autres joueurs.",
-                minPlayers: 2,
-                maxPlayers: 5,
-                duration: 45,
-                category: "familial",
-                mechanics: ["Déduction", "Bluff"],
-                categories: ["Mystery", "Familial"],
-                imageUrl: "",
-              }}
-            />
-            <GameCard
-              variant="featured"
-              game={{
-                id: "3",
-                name: "Les Sentiers Perdus",
-                authorIds: ["3"],
-                authorNames: ["Sophie Laurent"],
-                description: "Enquêtez dans un château hanté pour découvrir le secret du fantôme avant les autres joueurs.",
-                minPlayers: 2,
-                maxPlayers: 5,
-                duration: 45,
-                category: "familial",
-                mechanics: ["Déduction", "Bluff"],
-                categories: ["Mystery", "Familial"],
-                imageUrl: "",
-              }}
-            />
+            {gamesLoading && (
+              <>
+                <div className="h-64 bg-gray-100 rounded-xl animate-pulse" />
+                <div className="h-64 bg-gray-100 rounded-xl animate-pulse" />
+                <div className="h-64 bg-gray-100 rounded-xl animate-pulse" />
+              </>
+            )}
+            {gamesError && (
+              <div className="col-span-3 text-center text-red-500">
+                Erreur lors du chargement des prototypes.
+              </div>
+            )}
+            {!gamesLoading &&
+              !gamesError &&
+              recentGames.map((game) => (
+                <GameCard key={game.id} variant="featured" game={game} />
+              ))}
           </div>
         </div>
       </section>

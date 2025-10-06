@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { AuthorCard } from "../components/author-card";
-import { mockAuthors } from "@/mocks/data/mock-authors";
+import { useAuthors } from "../api/get-authors";
 import { MEMBER_ROLES } from "@/constants/labels";
 import { getLabel } from "@/lib/getLabel";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { ErrorMessage } from "@/components/ui/error-message";
 
 const ROLES = [
   { value: "Tous rôles", label: "Tous rôles" },
@@ -15,14 +17,33 @@ const ROLES = [
 export default function Authors() {
   const [search, setSearch] = useState("");
   const [role, setRole] = useState("Tous rôles");
+  
+  const { data: authorsData, isLoading, error } = useAuthors();
+  
+  const authors = authorsData?.data || [];
 
-  const filteredAuthors = mockAuthors.filter((author) => {
+  const filteredAuthors = authors.filter((author) => {
     const matchesRole =
       role === "Tous rôles" || author.role === role;
     const matchesSearch =
       author.name.toLowerCase().includes(search.toLowerCase());
     return matchesRole && matchesSearch;
   });
+
+  if (isLoading) {
+    return <LoadingSpinner message="Chargement des auteurs…" fullScreen />;
+  }
+
+  if (error) {
+    return (
+      <ErrorMessage 
+        title="Erreur de chargement"
+        message="Impossible de charger les auteurs"
+        onRetry={() => window.location.reload()}
+        fullScreen
+      />
+    );
+  }
 
   return (
     <div className="bg-gradient-to-br from-[oklch(96%_0.01_250)] to-[oklch(94%_0.04_250)] min-h-screen py-12 px-4">
@@ -70,13 +91,8 @@ export default function Authors() {
           ) : (
             filteredAuthors.map((author) => (
               <AuthorCard
-                key={author.name}
-                author={{
-                  id: author.id,
-                  name: author.name,
-                  photoUrl: author.photoUrl,
-                  role: author.role,
-                }}
+                key={author.id}
+                author={author}
               />
             ))
           )}

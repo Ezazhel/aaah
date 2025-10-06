@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import slugify from "slugify";
 import type { Author } from "@/types";
 import { MEMBER_ROLES } from "@/constants/labels";
 import { getLabel } from "@/lib/getLabel";
@@ -10,10 +11,11 @@ type AuthorCardProps = {
 
 export const AuthorCard: React.FC<AuthorCardProps> = ({ author }) => {
   const { id, name, photoUrl, role } = author;
+  const slug = slugify(name, { lower: true, strict: true });
 
   return (
     <Link
-      to={`/auteurs/${id}`}
+      to={`/auteurs/${id}/${slug}`}
       className={`
         bg-white rounded-xl border border-gray-200 shadow
         hover:shadow-2xl hover:-translate-y-2 hover:border-[oklch(69%_0.19_41)] hover:ring-2 hover:ring-[oklch(69%_0.19_41)]/30
