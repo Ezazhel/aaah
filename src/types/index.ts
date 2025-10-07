@@ -3,7 +3,7 @@ import type {
   MemberRole,
   EventType,
   EventStatus,
-} from '@/constants/labels';
+} from "@/constants/labels";
 
 export type Game = {
   id: string;
@@ -22,7 +22,7 @@ export type Game = {
   contactEmail?: string; // author's contact email
   fullDescription?: string; // longer description for detail page
   publishedDate?: string; // when the prototype was created
-  status?: 'prototype' | 'playtesting' | 'published'; // development status
+  status?: "prototype" | "playtesting" | "published"; // development status
 };
 
 export type Author = {
@@ -31,8 +31,7 @@ export type Author = {
   region: string; // required
   role: MemberRole;
   // --- Additional optional fields for detail page ---
-  bio?: string; // short bio, 1-2 sentences (optional, for compatibility)
-  fullBio?: string; // longer biography for detail page
+  bio?: string; // bio
   photoUrl?: string; // profile photo URL
   joinedDate?: string; // ISO date string when joined association
   specialties?: string[]; // array of game types/mechanics they specialize in

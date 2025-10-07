@@ -12,7 +12,8 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ErrorMessage } from "@/components/ui/error-message";
 
 // If Breadcrumb component exists, import it. Otherwise, fallback to inline.
-let Breadcrumb: React.FC<{ items: { label: string; to?: string }[] }> | null = null;
+let Breadcrumb: React.FC<{ items: { label: string; to?: string }[] }> | null =
+  null;
 try {
   // @ts-ignore
   Breadcrumb = require("@/components/Breadcrumb").Breadcrumb;
@@ -45,10 +46,10 @@ function getMostUsedMechanics(games: Game[], count = 3): string[] {
 }
 
 // Social icon buttons
-const SocialIcon: React.FC<{ type: "twitter" | "instagram" | "bgg"; url: string }> = ({
-  type,
-  url,
-}) => {
+const SocialIcon: React.FC<{
+  type: "twitter" | "instagram" | "bgg";
+  url: string;
+}> = ({ type, url }) => {
   const icons: Record<string, React.ReactNode> = {
     twitter: (
       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -65,7 +66,16 @@ const SocialIcon: React.FC<{ type: "twitter" | "instagram" | "bgg"; url: string 
     bgg: (
       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
         <rect x="3" y="3" width="18" height="18" rx="4" />
-        <text x="12" y="16" textAnchor="middle" fontSize="10" fill="white" fontFamily="sans-serif">BGG</text>
+        <text
+          x="12"
+          y="16"
+          textAnchor="middle"
+          fontSize="10"
+          fill="white"
+          fontFamily="sans-serif"
+        >
+          BGG
+        </text>
       </svg>
     ),
   };
@@ -86,26 +96,24 @@ const AuthorDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
   // Get author data
-  const { 
-    data: authorData, 
-    isLoading: authorLoading, 
-    error: authorError 
-  } = useAuthor({ 
+  const {
+    data: authorData,
+    isLoading: authorLoading,
+    error: authorError,
+  } = useAuthor({
     authorId: id || "",
-    queryConfig: { enabled: !!id } 
+    queryConfig: { enabled: !!id },
   });
-  
+
   // Get author's games
-  const { 
-    data: gamesData, 
-    isLoading: gamesLoading, 
-    error: gamesError 
-  } = useAuthorGames({ 
+  const {
+    data: gamesData,
+    isLoading: gamesLoading,
+    error: gamesError,
+  } = useAuthorGames({
     authorId: id || "",
-    queryConfig: { enabled: !!id } 
+    queryConfig: { enabled: !!id },
   });
-console.log(authorData);
-console.log(gamesData);
   const author = authorData;
   const games = gamesData || [];
 
@@ -142,7 +150,9 @@ console.log(gamesData);
 
   // Loading state
   if (loading) {
-    const message = authorLoading ? "Chargement de l'auteur…" : "Chargement des jeux…";
+    const message = authorLoading
+      ? "Chargement de l'auteur…"
+      : "Chargement des jeux…";
     return <LoadingSpinner message={message} />;
   }
 
@@ -161,11 +171,17 @@ console.log(gamesData);
           <Breadcrumb items={breadcrumbItems} />
         ) : (
           <nav className="text-sm text-gray-500 flex items-center gap-2">
-            <Link to="/" className="hover:underline">Accueil</Link>
+            <Link to="/" className="hover:underline">
+              Accueil
+            </Link>
             <span>/</span>
-            <Link to="/auteurs" className="hover:underline">Auteurs</Link>
+            <Link to="/auteurs" className="hover:underline">
+              Auteurs
+            </Link>
             <span>/</span>
-            <span className="text-brand-dark font-semibold">{author?.name}</span>
+            <span className="text-brand-dark font-semibold">
+              {author?.name}
+            </span>
           </nav>
         )}
       </div>
@@ -216,13 +232,17 @@ console.log(gamesData);
             <div className="flex items-center gap-3 mt-2 flex-wrap text-gray-700">
               {author?.region && (
                 <span className="flex items-center gap-1 text-sm">
-                  <span role="img" aria-label="Région">📍</span>
+                  <span role="img" aria-label="Région">
+                    📍
+                  </span>
                   {author.region}
                 </span>
               )}
               {author?.joinedDate && (
                 <span className="flex items-center gap-1 text-sm">
-                  <span role="img" aria-label="Membre depuis">🗓️</span>
+                  <span role="img" aria-label="Membre depuis">
+                    🗓️
+                  </span>
                   Membre depuis {formatDateFr(author.joinedDate)}
                 </span>
               )}
@@ -246,7 +266,10 @@ console.log(gamesData);
                   <SocialIcon type="twitter" url={author.socialLinks.twitter} />
                 )}
                 {author.socialLinks.instagram && (
-                  <SocialIcon type="instagram" url={author.socialLinks.instagram} />
+                  <SocialIcon
+                    type="instagram"
+                    url={author.socialLinks.instagram}
+                  />
                 )}
                 {author.socialLinks.bgg && (
                   <SocialIcon type="bgg" url={author.socialLinks.bgg} />
@@ -281,7 +304,9 @@ console.log(gamesData);
       {/* Achievements */}
       {author?.achievements && author.achievements.length > 0 && (
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-brand-dark mb-3">Réalisations</h2>
+          <h2 className="text-xl font-bold text-brand-dark mb-3">
+            Réalisations
+          </h2>
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {author.achievements.map((ach, idx) => (
               <li
@@ -305,7 +330,9 @@ console.log(gamesData);
           </span>
         </div>
         {games.length === 0 ? (
-          <div className="text-gray-500 italic">Aucun jeu publié pour le moment</div>
+          <div className="text-gray-500 italic">
+            Aucun jeu publié pour le moment
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
             {games.map((game) => (
@@ -318,22 +345,32 @@ console.log(gamesData);
       {/* Stats (optional, only if games exist) */}
       {games.length > 0 && (
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-brand-dark mb-3">Statistiques</h2>
+          <h2 className="text-xl font-bold text-brand-dark mb-3">
+            Statistiques
+          </h2>
           <div className="flex flex-wrap gap-4">
             <div className="bg-white rounded-lg shadow px-5 py-4 flex flex-col items-center min-w-[120px]">
-              <span className="text-2xl font-bold text-brand-primary">{games.length}</span>
+              <span className="text-2xl font-bold text-brand-primary">
+                {games.length}
+              </span>
               <span className="text-xs text-gray-500 mt-1">Jeux créés</span>
             </div>
             <div className="bg-white rounded-lg shadow px-5 py-4 flex flex-col items-center min-w-[120px]">
-              <span className="text-2xl font-bold text-brand-primary">{totalPlaytime}</span>
-              <span className="text-xs text-gray-500 mt-1">Minutes de jeu total</span>
+              <span className="text-2xl font-bold text-brand-primary">
+                {totalPlaytime}
+              </span>
+              <span className="text-xs text-gray-500 mt-1">
+                Minutes de jeu total
+              </span>
             </div>
             {mostUsedMechanics.length > 0 && (
               <div className="bg-white rounded-lg shadow px-5 py-4 flex flex-col items-center min-w-[120px]">
                 <span className="text-lg font-semibold text-brand-primary">
                   {mostUsedMechanics.join(", ")}
                 </span>
-                <span className="text-xs text-gray-500 mt-1">Mécaniques favorites</span>
+                <span className="text-xs text-gray-500 mt-1">
+                  Mécaniques favorites
+                </span>
               </div>
             )}
           </div>
