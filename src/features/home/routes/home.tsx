@@ -11,7 +11,6 @@ export default function Home() {
   const statsData = {
     authors: 42,
     prototypes: 87,
-    publishedGames: 15,
   };
 
   // Dummy data for articles

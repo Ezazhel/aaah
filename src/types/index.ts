@@ -23,6 +23,15 @@ export type Game = {
   fullDescription?: string; // longer description for detail page
   publishedDate?: string; // when the prototype was created
   status?: "prototype" | "playtesting" | "published"; // development status
+  // Auth & ownership fields
+  createdBy?: string; // User ID who created the game
+  isDraft?: boolean; // Whether the game is a draft (not published yet)
+  updatedAt?: string; // Last update date
+};
+
+// Game creation/update input type (for forms)
+export type GameInput = Omit<Game, 'id' | 'authors' | 'createdBy' | 'updatedAt'> & {
+  authorIds: string[]; // Array of author IDs instead of full Author objects
 };
 
 export type Author = {
@@ -72,4 +81,59 @@ export type Event = {
   price?: number;
   tags?: string[];
   status: EventStatus;
+};
+
+// ============= User & Auth Types =============
+
+export type User = {
+  id: string;
+  email: string;
+  name: string;
+  role: 'member' | 'admin';
+  authorId?: string; // Link to Authors table if user is an author
+  createdAt: string;
+};
+
+export type AuthResponse = {
+  token: string;
+  user: User;
+};
+
+export type LoginCredentials = {
+  email: string;
+  password: string;
+  rememberMe?: boolean;
+};
+
+export type RegisterData = {
+  email: string;
+  password: string;
+  name: string;
+  invitationToken: string;
+};
+
+export type ResetPasswordRequest = {
+  email: string;
+};
+
+export type ResetPasswordConfirm = {
+  token: string;
+  newPassword: string;
+};
+
+export type ChangePasswordData = {
+  currentPassword: string;
+  newPassword: string;
+};
+
+// ============= Invitation Types =============
+
+export type Invitation = {
+  id: string;
+  email: string;
+  token: string;
+  createdAt: string;
+  expiresAt: string;
+  usedAt?: string;
+  createdBy: string; // User ID who created the invitation
 };

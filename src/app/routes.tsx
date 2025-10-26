@@ -13,8 +13,19 @@ import { Events } from '@/features/events/routes';
 import { Home } from '@/features/home/routes';
 import Contact from '@/features/contact/routes/contact';
 
+// Auth routes
+import { Login } from '@/features/auth/routes/login';
+import { Register } from '@/features/auth/routes/register';
+import { ResetPassword } from '@/features/auth/routes/reset-password';
+
+// Protected routes
+import { Account } from '@/features/account/routes/account';
+import { Admin } from '@/features/admin/routes/admin';
+import { MyGames } from '@/features/games/routes/my-games';
+
 // Layout components
 import { Navigation } from '@/components/navigation';
+import { ProtectedRoute } from '@/components/protected-route';
 
 // Loading component
 const LoadingFallback = () => (
@@ -37,6 +48,7 @@ export const AppRoutes = () => {
       <main className="flex-1">
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
+            {/* Public routes */}
             <Route path="/" element={<Home />} />
             <Route path="/auteurs" element={<Authors />} />
             <Route path="/auteurs/:id/:slug?" element={<AuthorDetail />} />
@@ -44,6 +56,41 @@ export const AppRoutes = () => {
             <Route path="/prototypes/:id/:slug?" element={<GameDetails />} />
             <Route path="/evenements" element={<Events />} />
             <Route path="/contact" element={<Contact />} />
+
+            {/* Auth routes */}
+            <Route path="/auth/login" element={<Login />} />
+            <Route path="/auth/register" element={<Register />} />
+            <Route path="/auth/reset-password" element={<ResetPassword />} />
+
+            {/* Protected routes - require authentication */}
+            <Route
+              path="/compte"
+              element={
+                <ProtectedRoute>
+                  <Account />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mes-prototypes"
+              element={
+                <ProtectedRoute>
+                  <MyGames />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin routes - require admin role */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <Admin />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

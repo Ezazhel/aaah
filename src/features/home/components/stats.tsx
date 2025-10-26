@@ -9,7 +9,6 @@ interface StatsProps {
 export const Stats: React.FC<StatsProps> = ({
   authors,
   prototypes,
-  publishedGames,
 }) => {
   const stats = [
     {
@@ -19,10 +18,6 @@ export const Stats: React.FC<StatsProps> = ({
     {
       value: prototypes,
       label: "Prototypes",
-    },
-    {
-      value: publishedGames,
-      label: "Jeux publiés",
     },
   ];
 

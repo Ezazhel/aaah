@@ -60,7 +60,7 @@ src/
 Each feature follows this structure:
 - `api/` - API layer with React Query hooks and query options
 - `components/` - Feature-specific UI components
-- `routes/` - Route components with an `index.tsx` that exports public API
+- `routes/` - Route components (imported directly, NO barrel exports)
 
 **2. API Layer Pattern:**
 API functions follow a consistent pattern using React Query:
@@ -141,6 +141,25 @@ The app is in French. Label mappings are in `src/constants/labels.ts`:
 - This project uses **pnpm** exclusively (not npm/yarn)
 - Port 3000 is configured for dev server
 - The codebase was rebased from PascalCase to kebab-case for file naming
-- Feature routes are exported through their feature's `routes/index.tsx` for clean public API
 - Mock data exists in `src/mocks/data/` for development without backend
 - **Icons**: Use `lucide-react` for all icons in the project (installed and configured)
+
+## Code Style Rules
+
+### NO Barrel Exports
+**IMPORTANT**: Do NOT use `index.ts` or `index.tsx` files for barrel exports (re-exporting modules).
+
+- ❌ **BAD**: Creating `features/auth/routes/index.ts` that exports all routes
+- ✅ **GOOD**: Import routes directly from their files: `import { Login } from '@/features/auth/routes/login'`
+
+This applies to ALL directories:
+- Features (`features/*`)
+- Components (`components/*`)
+- API layers (`features/*/api/*`)
+- Utilities (`lib/*`)
+
+**Why?** Direct imports improve:
+- Code clarity and explicitness
+- IDE navigation and refactoring
+- Build performance
+- Debugging experience
