@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import type { 
-  GameFilters 
+import { X } from "lucide-react";
+import type {
+  GameFilters
 } from "../types/filters";
-import { 
-  DEFAULT_GAME_FILTERS, 
-  CATEGORIES, 
-  MECHANICS 
+import {
+  DEFAULT_GAME_FILTERS,
+  CATEGORIES,
+  MECHANICS
 } from "../types/filters";
 
 interface FilterDrawerProps {
@@ -148,9 +149,7 @@ export const FilterDrawer: React.FC<FilterDrawerProps> = ({
             className="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[oklch(69%_0.19_41)]"
             type="button"
           >
-            <svg width="22" height="22" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-              <path d="M6 6l8 8M14 6l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
+            <X size={22} aria-hidden="true" />
           </button>
         </div>
         {/* Body */}

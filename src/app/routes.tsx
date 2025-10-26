@@ -11,6 +11,7 @@ import { Games, GameDetails } from '@/features/games/routes';
 import { Authors, AuthorDetail } from '@/features/authors/routes';
 import { Events } from '@/features/events/routes';
 import { Home } from '@/features/home/routes';
+import Contact from '@/features/contact/routes/contact';
 
 // Layout components
 import { Navigation } from '@/components/navigation';
@@ -42,6 +43,7 @@ export const AppRoutes = () => {
             <Route path="/prototypes" element={<Games />} />
             <Route path="/prototypes/:id/:slug?" element={<GameDetails />} />
             <Route path="/evenements" element={<Events />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

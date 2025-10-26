@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SlidersHorizontal } from "lucide-react";
 import { GameCard } from "../components/game-card";
 import { FilterDrawer } from "@/components/filter-drawer";
 import { ActiveFilters } from "@/components/active-filters";
@@ -109,7 +110,7 @@ export default function Games() {
             onClick={() => setIsDrawerOpen(true)}
             className="relative flex items-center px-5 py-2 rounded-lg bg-[oklch(69%_0.19_41)] text-white font-semibold shadow hover:bg-[oklch(69%_0.19_41)]/80 transition focus:outline-none focus:ring-2 focus:ring-[oklch(69%_0.19_41)]"
           >
-            <span className="mr-2">🎛️</span> Filtres
+            <SlidersHorizontal className="mr-2" size={20} /> Filtres
             {countActiveFilters() > 0 && (
               <>
                 <span className="ml-3 inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-bold bg-white text-[oklch(69%_0.19_41)]/90">

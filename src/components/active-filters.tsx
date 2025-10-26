@@ -1,10 +1,11 @@
 import React from "react";
-import type { 
-  GameFilters, 
-  GameCategory 
+import { X } from "lucide-react";
+import type {
+  GameFilters,
+  GameCategory
 } from "../types/filters";
-import { 
-  DEFAULT_GAME_FILTERS, 
+import {
+  DEFAULT_GAME_FILTERS,
   CATEGORY_LABELS
 } from "../types/filters";
 
@@ -35,7 +36,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
           aria-label="Retirer le filtre de recherche"
           type="button"
         >
-          &times;
+          <X size={14} />
         </button>
       </span>
     );
@@ -55,7 +56,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
           aria-label="Retirer le filtre catégorie"
           type="button"
         >
-          &times;
+          <X size={14} />
         </button>
       </span>
     );
@@ -76,7 +77,7 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
             aria-label={`Retirer la mécanique ${mech}`}
             type="button"
           >
-            &times;
+            <X size={14} />
           </button>
         </span>
       );
