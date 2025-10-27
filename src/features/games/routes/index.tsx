@@ -3,5 +3,6 @@ import { lazy } from 'react';
 // Lazy load the game routes
 const Games = lazy(() => import('./games'));
 const GameDetails = lazy(() => import('./game-details'));
+const CreateGame = lazy(() => import('./create-game'));
 
-export { Games, GameDetails };
+export { Games, GameDetails, CreateGame };

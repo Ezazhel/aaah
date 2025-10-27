@@ -7,7 +7,7 @@ import { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 // Feature routes with lazy loading
-import { Games, GameDetails } from '@/features/games/routes';
+import { Games, GameDetails, CreateGame } from '@/features/games/routes';
 import { Authors, AuthorDetail } from '@/features/authors/routes';
 import { Events } from '@/features/events/routes';
 import { Home } from '@/features/home/routes';
@@ -76,6 +76,14 @@ export const AppRoutes = () => {
               element={
                 <ProtectedRoute>
                   <MyGames />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/prototypes/nouveau"
+              element={
+                <ProtectedRoute>
+                  <CreateGame />
                 </ProtectedRoute>
               }
             />
