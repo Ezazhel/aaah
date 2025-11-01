@@ -2,7 +2,7 @@ import type { Author } from '@/types';
 
 export const mockAuthors: Author[] = [
   {
-    id: "camille-lefevre",
+    id: 1,
     name: "Camille Lefèvre",
     region: "Île-de-France",
     photoUrl: "https://i.pravatar.cc/300?img=12",
@@ -16,10 +16,8 @@ En tant que présidente de l'association, elle encourage l'entraide entre auteur
     joinedDate: "2020-03-15",
     specialties: ["Jeux familiaux", "Jeux d'ambiance", "Mécaniques de draft"],
     website: "https://camillelefevre.fr",
-    socialLinks: {
-      twitter: "https://twitter.com/camillelefevre",
-      instagram: "https://instagram.com/camillelefevre",
-    },
+    twitterUrl: "https://twitter.com/camillelefevre",
+    instagramUrl: "https://instagram.com/camillelefevre",
     achievements: [
       "Prix du meilleur prototype 2021",
       "Animatrice du festival Paris Ludique",
@@ -28,7 +26,7 @@ En tant que présidente de l'association, elle encourage l'entraide entre auteur
     contactEmail: "camille.lefevre@example.com",
   },
   {
-    id: "thomas-roux",
+    id: 2,
     name: "Thomas Roux",
     region: "Auvergne-Rhône-Alpes",
     photoUrl: "https://i.pravatar.cc/300?img=23",
@@ -42,9 +40,7 @@ En dehors du jeu, il pratique l'escalade et s'inspire souvent de ses aventures e
     joinedDate: "2022-09-10",
     specialties: ["Jeux de stratégie", "Mécaniques de gestion de ressources"],
     website: "#",
-    socialLinks: {
-      bgg: "https://boardgamegeek.com/user/thomasroux",
-    },
+    bggUrl: "https://boardgamegeek.com/user/thomasroux",
     achievements: [
       "Finaliste du concours Protolab 2023",
       "Organisateur de soirées jeux à Lyon"
@@ -52,7 +48,7 @@ En dehors du jeu, il pratique l'escalade et s'inspire souvent de ses aventures e
     contactEmail: "thomas.roux@example.com",
   },
   {
-    id: "marie-dubois",
+    id: 3,
     name: "Marie Dubois",
     region: "Nouvelle-Aquitaine",
     photoUrl: "https://i.pravatar.cc/300?img=34",
@@ -66,9 +62,7 @@ Elle a reçu plusieurs distinctions pour ses créations et continue d'innover av
     joinedDate: "2021-06-22",
     specialties: ["Jeux coopératifs", "Jeux familiaux", "Narration"],
     website: "https://mariedubois-jeux.fr",
-    socialLinks: {
-      twitter: "https://twitter.com/mariedubois",
-    },
+    twitterUrl: "https://twitter.com/mariedubois",
     achievements: [
       "3 jeux publiés chez FunPlay",
       "Lauréate du prix CréaLudique 2022",
@@ -77,7 +71,7 @@ Elle a reçu plusieurs distinctions pour ses créations et continue d'innover av
     contactEmail: "marie.dubois@example.com",
   },
   {
-    id: "lucas-martin",
+    id: 4,
     name: "Lucas Martin",
     region: "Bretagne",
     photoUrl: "https://i.pravatar.cc/300?img=45",
@@ -91,9 +85,7 @@ Toujours à l'écoute des membres, Lucas veille à la bonne ambiance et au dynam
     joinedDate: "2020-11-05",
     specialties: ["Jeux d'enquête", "Escape games", "Scénarisation"],
     website: "https://lucasmartin-jeux.fr",
-    socialLinks: {
-      instagram: "https://instagram.com/lucas.martin",
-    },
+    instagramUrl: "https://instagram.com/lucas.martin",
     achievements: [
       "Organisateur du festival Enigmes & Jeux 2022",
       "Créateur de 2 escape games éphémères"
@@ -101,7 +93,7 @@ Toujours à l'écoute des membres, Lucas veille à la bonne ambiance et au dynam
     contactEmail: "lucas.martin@example.com",
   },
   {
-    id: "sophie-leblanc",
+    id: 5,
     name: "Sophie Leblanc",
     region: "Occitanie",
     photoUrl: "https://i.pravatar.cc/300?img=56",
@@ -122,7 +114,7 @@ Son objectif : rendre l'apprentissage ludique et accessible à tous.`,
     contactEmail: "sophie.leblanc@example.com",
   },
   {
-    id: "antoine-girard",
+    id: 6,
     name: "Antoine Girard",
     region: "Grand Est",
     photoUrl: "https://i.pravatar.cc/300?img=67",
@@ -143,7 +135,7 @@ Il travaille actuellement sur un projet de jeu sur la Révolution française.`,
     contactEmail: "antoine.girard@example.com",
   },
   {
-    id: "julie-bernard",
+    id: 7,
     name: "Julie Bernard",
     region: "Provence-Alpes-Côte d'Azur",
     photoUrl: "https://i.pravatar.cc/300?img=8",
@@ -157,10 +149,8 @@ Toujours curieuse, elle voyage à travers l'Europe pour découvrir les tendances
     joinedDate: "2020-01-12",
     specialties: ["Mécaniques de deck-building", "Jeux de cartes", "Prototypage"],
     website: "https://juliebernard.com",
-    socialLinks: {
-      twitter: "https://twitter.com/juliebernard",
-      bgg: "https://boardgamegeek.com/user/juliebernard",
-    },
+    twitterUrl: "https://twitter.com/juliebernard",
+    bggUrl: "https://boardgamegeek.com/user/juliebernard",
     achievements: [
       "4 jeux publiés chez différents éditeurs",
       "Jury du concours Protoludique 2022",
@@ -169,7 +159,7 @@ Toujours curieuse, elle voyage à travers l'Europe pour découvrir les tendances
     contactEmail: "julie.bernard@example.com",
   },
   {
-    id: "paul-renard",
+    id: 8,
     name: "Paul Renard",
     region: "Pays de la Loire",
     photoUrl: "https://i.pravatar.cc/300?img=19",
@@ -189,7 +179,7 @@ Il espère bientôt éditer son premier jeu et partager sa passion avec un publi
     contactEmail: "paul.renard@example.com",
   },
   {
-    id: "claire-petit",
+    id: 9,
     name: "Claire Petit",
     region: "Bourgogne-Franche-Comté",
     photoUrl: "https://i.pravatar.cc/300?img=27",
@@ -210,7 +200,7 @@ Elle travaille actuellement sur une série de jeux narratifs pour enfants.`,
     contactEmail: "claire.petit@example.com",
   },
   {
-    id: "hugo-moreau",
+    id: 10,
     name: "Hugo Moreau",
     region: "Normandie",
     photoUrl: "https://i.pravatar.cc/300?img=61",

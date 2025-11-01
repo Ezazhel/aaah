@@ -260,19 +260,16 @@ const AuthorDetail: React.FC = () => {
               </div>
             )}
             {/* Social links */}
-            {author?.socialLinks && (
+            {(author?.twitterUrl || author?.instagramUrl || author?.bggUrl) && (
               <div className="flex gap-2 mt-4">
-                {author.socialLinks.twitter && (
-                  <SocialIcon type="twitter" url={author.socialLinks.twitter} />
+                {author.twitterUrl && (
+                  <SocialIcon type="twitter" url={author.twitterUrl} />
                 )}
-                {author.socialLinks.instagram && (
-                  <SocialIcon
-                    type="instagram"
-                    url={author.socialLinks.instagram}
-                  />
+                {author.instagramUrl && (
+                  <SocialIcon type="instagram" url={author.instagramUrl} />
                 )}
-                {author.socialLinks.bgg && (
-                  <SocialIcon type="bgg" url={author.socialLinks.bgg} />
+                {author.bggUrl && (
+                  <SocialIcon type="bgg" url={author.bggUrl} />
                 )}
               </div>
             )}
@@ -321,27 +318,6 @@ const AuthorDetail: React.FC = () => {
         </section>
       )}
 
-      {/* Games */}
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-3">
-          <h2 className="text-xl font-bold text-brand-dark">Jeux créés</h2>
-          <span className="inline-block px-2 py-0.5 rounded-full bg-brand-primary/10 text-brand-primary text-xs font-semibold border border-brand-primary/20">
-            {games.length}
-          </span>
-        </div>
-        {games.length === 0 ? (
-          <div className="text-gray-500 italic">
-            Aucun jeu publié pour le moment
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-            {games.map((game) => (
-              <GameCard key={game.id} game={game} hideAuthor />
-            ))}
-          </div>
-        )}
-      </section>
-
       {/* Stats (optional, only if games exist) */}
       {games.length > 0 && (
         <section className="mb-10">
@@ -376,6 +352,27 @@ const AuthorDetail: React.FC = () => {
           </div>
         </section>
       )}
+
+      {/* Games */}
+      <section className="mb-10">
+        <div className="flex items-center gap-3 mb-3">
+          <h2 className="text-xl font-bold text-brand-dark">Jeux créés</h2>
+          <span className="inline-block px-2 py-0.5 rounded-full bg-brand-primary/10 text-brand-primary text-xs font-semibold border border-brand-primary/20">
+            {games.length}
+          </span>
+        </div>
+        {games.length === 0 ? (
+          <div className="text-gray-500 italic">
+            Aucun jeu publié pour le moment
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+            {games.map((game) => (
+              <GameCard key={game.id} game={game} hideAuthor />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 };

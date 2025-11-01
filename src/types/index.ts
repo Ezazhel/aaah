@@ -6,7 +6,7 @@ import type {
 } from "@/constants/labels";
 
 export type Game = {
-  id: string;
+  id: number; // Changed from string to number
   name: string;
   authors: Author[];
   description: string;
@@ -24,47 +24,51 @@ export type Game = {
   publishedDate?: string; // when the prototype was created
   status?: "prototype" | "playtesting" | "published"; // development status
   // Auth & ownership fields
-  createdBy?: string; // User ID who created the game
+  createdBy?: string; // User ID who created the game (UUID)
   isDraft?: boolean; // Whether the game is a draft (not published yet)
   updatedAt?: string; // Last update date
 };
 
 // Game creation/update input type (for forms)
 export type GameInput = Omit<Game, 'id' | 'authors' | 'createdBy' | 'updatedAt'> & {
-  authorIds: string[]; // Array of author IDs instead of full Author objects
+  authorIds: number[]; // Changed from string[] to number[]
 };
 
 export type Author = {
-  id: string;
+  id: number; // Changed from string to number
   name: string;
   region: string; // required
   role: MemberRole;
   // --- Additional optional fields for detail page ---
-  bio?: string; // bio
+  bio?: string; // Short bio
+  fullBio?: string; // Full bio for detail page
   photoUrl?: string; // profile photo URL
   joinedDate?: string; // ISO date string when joined association
   specialties?: string[]; // array of game types/mechanics they specialize in
   website?: string; // personal website URL
-  socialLinks?: {
-    twitter?: string;
-    instagram?: string;
-    bgg?: string; // BoardGameGeek profile
-  };
+  // Social links (flattened structure to match backend)
+  twitterUrl?: string;
+  instagramUrl?: string;
+  bggUrl?: string; // BoardGameGeek profile
   achievements?: string[]; // awards, published games, etc.
   contactEmail?: string; // email for contact
 };
 
 export type Article = {
-  id: string;
+  id: number; // Changed from string to number
   title: string;
   content: string;
-  authorId: string;
+  authorId: number; // Changed from string to number
   publishedAt: string;
   imageUrl: string;
+  // Additional fields to match backend
+  excerpt?: string; // Summary/extract of the article
+  tags?: string[]; // Article tags/categories
+  status?: 'draft' | 'published'; // Publication status
 };
 
 export type Event = {
-  eventId: string;
+  id: number; // Renamed from eventId and changed from string to number
   name: string;
   startDate: string;
   endDate?: string;
@@ -75,7 +79,7 @@ export type Event = {
   imageUrl?: string;
   type: EventType;
   organizerName?: string;
-  attendees?: string[];
+  attendees?: Author[]; // Changed from string[] to Author[] to match backend
   registrationUrl?: string;
   isFree: boolean;
   price?: number;
@@ -86,11 +90,11 @@ export type Event = {
 // ============= User & Auth Types =============
 
 export type User = {
-  id: string;
+  id: string; // Remains string (UUID from backend)
   email: string;
   name: string;
   role: 'member' | 'admin';
-  authorId?: string; // Link to Authors table if user is an author
+  authorId?: number; // Changed from string to number
   createdAt: string;
 };
 

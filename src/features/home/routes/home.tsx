@@ -116,7 +116,7 @@ export default function Home() {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {upcomingEvents.map((event) => (
-              <EventCard key={event.eventId} event={event} />
+              <EventCard key={event.id} event={event} />
             ))}
           </div>
           <div className="flex justify-center mt-10">

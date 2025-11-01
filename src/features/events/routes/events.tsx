@@ -188,7 +188,7 @@ const Events: React.FC = () => {
           "
         >
           {filteredEvents.map((event) => (
-            <EventCard key={event.eventId} event={event} />
+            <EventCard key={event.id} event={event} />
           ))}
         </div>
       ) : (

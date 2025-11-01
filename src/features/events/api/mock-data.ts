@@ -3,7 +3,7 @@ import type { Event } from '@/types';
 export const mockEvents: Event[] = [
   // 1. Past event (2024)
   {
-    eventId: "evt1",
+    id: 1,
     name: "Soirée découverte de prototypes",
     type: "association",
     status: "past",
@@ -20,11 +20,11 @@ export const mockEvents: Event[] = [
     isFree: true,
     price: 0,
     registrationUrl: "https://inscription-aaaj-protos.fr/evt1",
-    attendees: ["auth1", "auth2", "auth3"],
+    // attendees: ["auth1", "auth2", "auth3"],
   },
   // 2. Past event (2024)
   {
-    eventId: "evt2",
+    id: 2,
     name: "Festival International des Jeux - Cannes",
     type: "external",
     status: "past",
@@ -41,11 +41,11 @@ export const mockEvents: Event[] = [
     isFree: false,
     price: 15,
     registrationUrl: "https://festivaldesjeux-cannes.com/billetterie",
-    attendees: ["auth4", "auth5", "auth6", "auth7"],
+    // attendees: ["auth4", "auth5", "auth6", "auth7"],
   },
   // 3. Past event (2024)
   {
-    eventId: "evt3",
+    id:3,
     name: "Session de playtesting",
     type: "association",
     status: "past",
@@ -62,11 +62,11 @@ export const mockEvents: Event[] = [
     isFree: true,
     price: 0,
     registrationUrl: "https://aaaj-bordeaux.fr/inscription",
-    attendees: ["auth2", "auth8"],
+    // attendees: ["auth2", "auth8"],
   },
   // 4. Past event (2024)
   {
-    eventId: "evt4",
+    id:4,
     name: "Salon du jeu de Parthenay",
     type: "external",
     status: "past",
@@ -83,11 +83,11 @@ export const mockEvents: Event[] = [
     isFree: true,
     price: 0,
     registrationUrl: "https://flip-parthenay.fr/inscription",
-    attendees: ["auth1", "auth9", "auth10"],
+    // attendees: ["auth1", "auth9", "auth10"],
   },
   // 5. Past event (2024)
   {
-    eventId: "evt5",
+    id:5,
     name: "Atelier game design",
     type: "association",
     status: "past",
@@ -104,11 +104,11 @@ export const mockEvents: Event[] = [
     isFree: false,
     price: 20,
     registrationUrl: "https://aaaj-lille.fr/atelier",
-    attendees: ["auth3", "auth11"],
+    // attendees: ["auth3", "auth11"],
   },
   // 6. Past event (2024)
   {
-    eventId: "evt6",
+    id:6,
     name: "Rencontre mensuelle des auteurs",
     type: "association",
     status: "past",
@@ -125,11 +125,11 @@ export const mockEvents: Event[] = [
     isFree: true,
     price: 0,
     registrationUrl: "https://aaaj-strasbourg.fr/rencontre",
-    attendees: ["auth4", "auth12", "auth13"],
+    // attendees: ["auth4", "auth12", "auth13"],
   },
   // 7. Past event (2024)
   {
-    eventId: "evt7",
+    id:7,
     name: "Ludinord",
     type: "external",
     status: "past",
@@ -146,11 +146,11 @@ export const mockEvents: Event[] = [
     isFree: false,
     price: 8,
     registrationUrl: "https://ludinord.fr/billetterie",
-    attendees: ["auth5", "auth14"],
+    // attendees: ["auth5", "auth14"],
   },
   // 8. Ongoing event (current month)
   {
-    eventId: "evt8",
+    id:8,
     name: "Pitch de prototypes",
     type: "association",
     status: "ongoing",
@@ -177,11 +177,11 @@ export const mockEvents: Event[] = [
     isFree: true,
     price: 0,
     registrationUrl: "https://aaaj-toulouse.fr/pitch",
-    attendees: ["auth6", "auth15", "auth16"],
+    // attendees: ["auth6", "auth15", "auth16"],
   },
   // 9. Ongoing event (current month)
   {
-    eventId: "evt9",
+    id:9,
     name: "Paris Est Ludique",
     type: "external",
     status: "ongoing",
@@ -208,11 +208,11 @@ export const mockEvents: Event[] = [
     isFree: false,
     price: 10,
     registrationUrl: "https://parisestludique.fr/billets",
-    attendees: ["auth7", "auth17", "auth18"],
+    // attendees: ["auth7", "auth17", "auth18"],
   },
   // 10. Ongoing event (current month)
   {
-    eventId: "evt10",
+    id:10,
     name: "Atelier game design express",
     type: "association",
     status: "ongoing",
@@ -239,11 +239,11 @@ export const mockEvents: Event[] = [
     isFree: false,
     price: 25,
     registrationUrl: "https://aaaj-rennes.fr/atelier-express",
-    attendees: ["auth8", "auth19"],
+    // attendees: ["auth8", "auth19"],
   },
   // 11. Upcoming event (next 6 months)
   {
-    eventId: "evt11",
+    id:11,
     name: "Rencontre mensuelle des auteurs",
     type: "association",
     status: "upcoming",
@@ -272,11 +272,11 @@ export const mockEvents: Event[] = [
     isFree: true,
     price: 0,
     registrationUrl: "https://aaaj-lyon.fr/rencontre",
-    attendees: ["auth9", "auth20"],
+    // attendees: ["auth9", "auth20"],
   },
   // 12. Upcoming event (next 6 months)
   {
-    eventId: "evt12",
+    id:12,
     name: "Essen Spiel",
     type: "external",
     status: "upcoming",
@@ -305,11 +305,11 @@ export const mockEvents: Event[] = [
     isFree: false,
     price: 50,
     registrationUrl: "https://spiel-essen.de/fr/billets",
-    attendees: ["auth10", "auth1", "auth2"],
+    // attendees: ["auth10", "auth1", "auth2"],
   },
   // 13. Upcoming event (next 6 months)
   {
-    eventId: "evt13",
+    id:13,
     name: "Soirée découverte de prototypes",
     type: "association",
     status: "upcoming",
@@ -338,11 +338,11 @@ export const mockEvents: Event[] = [
     isFree: true,
     price: 0,
     registrationUrl: "https://aaaj-nantes.fr/soiree-protos",
-    attendees: ["auth11", "auth3"],
+    // attendees: ["auth11", "auth3"],
   },
   // 14. Upcoming event (next 6 months)
   {
-    eventId: "evt14",
+    id:14,
     name: "Lyon Game Show",
     type: "external",
     status: "upcoming",
@@ -371,11 +371,11 @@ export const mockEvents: Event[] = [
     isFree: false,
     price: 18,
     registrationUrl: "https://lyongameshow.fr/billetterie",
-    attendees: ["auth12", "auth4"],
+    // attendees: ["auth12", "auth4"],
   },
   // 15. Upcoming event (next 6 months)
   {
-    eventId: "evt15",
+    id:15,
     name: "Session de playtesting",
     type: "association",
     status: "upcoming",
@@ -404,11 +404,11 @@ export const mockEvents: Event[] = [
     isFree: true,
     price: 0,
     registrationUrl: "https://aaaj-strasbourg.fr/playtest",
-    attendees: ["auth13", "auth5"],
+    // attendees: ["auth13", "auth5"],
   },
   // 16. Upcoming event (next 6 months)
   {
-    eventId: "evt16",
+    id:16,
     name: "Atelier game design",
     type: "association",
     status: "upcoming",
@@ -437,11 +437,11 @@ export const mockEvents: Event[] = [
     isFree: false,
     price: 12,
     registrationUrl: "https://aaaj-brest.fr/atelier",
-    attendees: ["auth14", "auth6"],
+    // attendees: ["auth14", "auth6"],
   },
   // 17. Upcoming event (next 6 months)
   {
-    eventId: "evt17",
+    id:17,
     name: "Festival International des Jeux - Cannes",
     type: "external",
     status: "upcoming",
@@ -470,11 +470,11 @@ export const mockEvents: Event[] = [
     isFree: false,
     price: 20,
     registrationUrl: "https://festivaldesjeux-cannes.com/billetterie",
-    attendees: ["auth15", "auth7"],
+    // attendees: ["auth15", "auth7"],
   },
   // 18. Upcoming event (next 6 months)
   {
-    eventId: "evt18",
+    id:18,
     name: "Soirée découverte de prototypes",
     type: "association",
     status: "upcoming",
@@ -503,11 +503,11 @@ export const mockEvents: Event[] = [
     isFree: true,
     price: 0,
     registrationUrl: "https://aaaj-montpellier.fr/soiree-protos",
-    attendees: ["auth16", "auth8"],
+    // attendees: ["auth16", "auth8"],
   },
   // 19. Upcoming event (next 6 months)
   {
-    eventId: "evt19",
+    id:19,
     name: "Session de playtesting",
     type: "association",
     status: "upcoming",
@@ -536,11 +536,11 @@ export const mockEvents: Event[] = [
     isFree: true,
     price: 0,
     registrationUrl: "https://aaaj-nancy.fr/playtest",
-    attendees: ["auth17", "auth9"],
+    // attendees: ["auth17", "auth9"],
   },
   // 20. Upcoming event (next 6 months)
   {
-    eventId: "evt20",
+    id:20,
     name: "Atelier game design",
     type: "association",
     status: "upcoming",
@@ -569,6 +569,6 @@ export const mockEvents: Event[] = [
     isFree: false,
     price: 15,
     registrationUrl: "https://aaaj-marseille.fr/atelier",
-    attendees: ["auth18", "auth10"],
+    // attendees: ["auth18", "auth10"],
   },
 ];

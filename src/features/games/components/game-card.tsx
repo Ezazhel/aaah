@@ -60,7 +60,7 @@ export function GameCard({
   const {
     id,
     name,
-    authorNames,
+    authors,
     description,
     minPlayers,
     maxPlayers,
@@ -69,8 +69,8 @@ export function GameCard({
     imageUrl,
   } = game
 
-  const authorName = authorNames?.length 
-    ? authorNames.join(", ") 
+  const authorName = authors?.length
+    ? authors.map(author => author.name).join(", ")
     : "Auteur inconnu"
 
   const slug = slugify(name, { lower: true, strict: true });
