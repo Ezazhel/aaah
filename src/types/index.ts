@@ -5,6 +5,15 @@ import type {
   EventStatus,
 } from "@/constants/labels";
 
+// Mechanic type (from backend)
+export type Mechanic = {
+  id: number;
+  name: string;
+  slug: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type Game = {
   id: number; // Changed from string to number
   name: string;
@@ -14,8 +23,8 @@ export type Game = {
   maxPlayers: number;
   duration: number; // in minutes
   imageUrl: string;
-  category: GameCategory;
-  mechanics: string[];
+  category: GameCategory; // familial, initie, expert (string, not array)
+  mechanics: Mechanic[]; // Changed from string[] to Mechanic[]
   images?: string[]; // array of image URLs for gallery
   rulesUrl?: string; // link to PDF rules
   videoRulesUrl?: string; // link to video rules, e.g., YouTube
@@ -32,6 +41,7 @@ export type Game = {
 // Game creation/update input type (for forms)
 export type GameInput = Omit<Game, 'id' | 'authors' | 'createdBy' | 'updatedAt'> & {
   authorIds: number[]; // Changed from string[] to number[]
+  mechanics: Mechanic[]; // Use Mechanic[] instead of string[]
 };
 
 export type Author = {

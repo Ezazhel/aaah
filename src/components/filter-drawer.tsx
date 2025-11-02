@@ -6,8 +6,8 @@ import type {
 import {
   DEFAULT_GAME_FILTERS,
   CATEGORIES,
-  MECHANICS
 } from "../types/filters";
+import { useMechanics } from "@/features/mechanics/api/get-mechanics";
 
 interface FilterDrawerProps {
   isOpen: boolean;
@@ -25,6 +25,10 @@ export const FilterDrawer: React.FC<FilterDrawerProps> = ({
   const [localFilters, setLocalFilters] = useState<GameFilters>(filters);
   const drawerRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch mechanics from API
+  const { data: mechanicsData } = useMechanics();
+  const mechanics = mechanicsData?.data || [];
 
   // Sync local state with incoming filters when opening
   useEffect(() => {
@@ -196,22 +200,22 @@ export const FilterDrawer: React.FC<FilterDrawerProps> = ({
               Mécaniques
             </label>
             <div className="flex flex-wrap gap-2">
-              {MECHANICS.map((mech) => (
+              {mechanics.map((mechanic) => (
                 <button
-                  key={mech}
+                  key={mechanic.id}
                   type="button"
-                  onClick={() => handleMechanicToggle(mech)}
+                  onClick={() => handleMechanicToggle(mechanic.name)}
                   className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors duration-150
                     ${
-                      localFilters.mechanics.includes(mech)
+                      localFilters.mechanics.includes(mechanic.name)
                         ? "bg-[oklch(69%_0.19_41)] text-white border-[oklch(69%_0.19_41)]"
                         : "bg-white text-gray-700 border-gray-300 hover:bg-[oklch(96%_0.01_250)]"
                     }
                     focus:outline-none focus:ring-2 focus:ring-[oklch(69%_0.19_41)]
                   `}
-                  aria-pressed={localFilters.mechanics.includes(mech)}
+                  aria-pressed={localFilters.mechanics.includes(mechanic.name)}
                 >
-                  {mech}
+                  {mechanic.name}
                 </button>
               ))}
             </div>

@@ -280,10 +280,10 @@ export default function GameDetails() {
               {game.mechanics && game.mechanics.length > 0 ? (
                 game.mechanics.map((mech) => (
                   <span
-                    key={mech}
+                    key={mech.id}
                     className="inline-block bg-blue-100 text-blue-800 rounded-full px-3 py-1 text-xs font-medium"
                   >
-                    {mech}
+                    {mech.name}
                   </span>
                 ))
               ) : (

@@ -4,8 +4,8 @@ import { type QueryConfig } from '@/lib/react-query';
 import { type Game } from '@/types';
 
 // Get games created by the current user (including drafts)
-export const getMyGames = (): Promise<{ data: Game[] }> => {
-  return apiClient.get<Game[]>('/games/my-games');
+export const getMyGames = (): Promise<Game[]> => {
+  return apiClient.get('/games/my-games');
 };
 
 export const getMyGamesQueryOptions = () => {

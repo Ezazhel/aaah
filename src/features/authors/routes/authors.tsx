@@ -8,10 +8,12 @@ import { ErrorMessage } from "@/components/ui/error-message";
 
 const ROLES = [
   { value: "Tous rôles", label: "Tous rôles" },
-  ...Object.keys(MEMBER_ROLES).map((role) => ({
-    value: role,
-    label: getLabel(MEMBER_ROLES, role),
-  })),
+  ...Object.keys(MEMBER_ROLES)
+    .filter((role) => role !== "admin")
+    .map((role) => ({
+      value: role,
+      label: getLabel(MEMBER_ROLES, role),
+    })),
 ];
 
 export default function Authors() {

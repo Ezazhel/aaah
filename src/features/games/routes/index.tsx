@@ -4,5 +4,6 @@ import { lazy } from 'react';
 const Games = lazy(() => import('./games'));
 const GameDetails = lazy(() => import('./game-details'));
 const CreateGame = lazy(() => import('./create-game'));
+const EditGame = lazy(() => import('./edit-game'));
 
-export { Games, GameDetails, CreateGame };
+export { Games, GameDetails, CreateGame, EditGame };

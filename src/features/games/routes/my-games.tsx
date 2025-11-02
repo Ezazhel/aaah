@@ -1,18 +1,37 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useMyGames } from '../api/get-my-games';
+import { useAuth } from '@/lib/auth';
+import { useAuthorGames } from '@/features/authors/api/get-author-games';
 import { useDeleteGame } from '../api/delete-game';
 import { Plus, Edit, Trash2, FileText, Eye } from 'lucide-react';
 import type { Game } from '@/types';
 
 export const MyGames: React.FC = () => {
-  const { data, isLoading } = useMyGames();
+  const { user, isAuthenticated } = useAuth();
+
+  // Redirect if user doesn't have an authorId
+  if (isAuthenticated && !user?.authorId) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-yellow-900 mb-2">Profil auteur requis</h2>
+          <p className="text-yellow-800">
+            Vous devez avoir un profil d'auteur pour gérer vos prototypes. Contactez un administrateur pour lier votre compte à un profil d'auteur.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const { data, isLoading } = useAuthorGames({
+    authorId: user?.authorId?.toString() || ''
+  });
   const deleteMutation = useDeleteGame();
 
-  const handleDelete = async (gameId: string, gameName: string) => {
+  const handleDelete = async (gameId: number, gameName: string) => {
     if (window.confirm(`Êtes-vous sûr de vouloir supprimer "${gameName}" ?`)) {
       try {
-        await deleteMutation.mutateAsync(gameId);
+        await deleteMutation.mutateAsync(gameId.toString());
       } catch (err) {
         alert('Erreur lors de la suppression du jeu');
       }
@@ -30,7 +49,7 @@ export const MyGames: React.FC = () => {
     );
   }
 
-  const games = data?.data || [];
+  const games = data || [];
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
@@ -66,25 +85,31 @@ export const MyGames: React.FC = () => {
           {games.map((game: Game) => (
             <div
               key={game.id}
-              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition"
+              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition flex flex-col"
             >
-              <div className="relative h-48 bg-gray-200">
-                <img
-                  src={game.imageUrl}
-                  alt={game.name}
-                  className="w-full h-full object-cover"
-                />
+              <div className="relative h-48 bg-gradient-to-br from-primary-orange-light to-primary-blue-secondary">
+                {game.imageUrl ? (
+                  <img
+                    src={game.imageUrl}
+                    alt={game.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center w-full h-full font-bold select-none text-5xl text-white opacity-60">
+                    {"🎲"}
+                  </div>
+                )}
                 {game.isDraft && (
                   <span className="absolute top-3 right-3 bg-yellow-500 text-white text-xs px-3 py-1 rounded-full font-medium">
                     Brouillon
                   </span>
                 )}
               </div>
-              <div className="p-5">
+              <div className="p-5 flex flex-col flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">{game.name}</h3>
                 <p className="text-sm text-gray-600 mb-4 line-clamp-2">{game.description}</p>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mt-auto">
                   <Link
                     to={`/prototypes/${game.id}`}
                     className="flex-1 text-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition flex items-center justify-center gap-2"

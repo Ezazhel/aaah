@@ -7,9 +7,10 @@ import { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 // Feature routes with lazy loading
-import { Games, GameDetails, CreateGame } from '@/features/games/routes';
+import { Games, GameDetails, CreateGame, EditGame } from '@/features/games/routes';
 import { Authors, AuthorDetail } from '@/features/authors/routes';
-import { Events } from '@/features/events/routes';
+// MVP: Events and Articles features disabled for now
+// import { Events } from '@/features/events/routes';
 import { Home } from '@/features/home/routes';
 import Contact from '@/features/contact/routes/contact';
 
@@ -54,7 +55,8 @@ export const AppRoutes = () => {
             <Route path="/auteurs/:id/:slug?" element={<AuthorDetail />} />
             <Route path="/prototypes" element={<Games />} />
             <Route path="/prototypes/:id/:slug?" element={<GameDetails />} />
-            <Route path="/evenements" element={<Events />} />
+            {/* MVP: Events route disabled for now */}
+            {/* <Route path="/evenements" element={<Events />} /> */}
             <Route path="/contact" element={<Contact />} />
 
             {/* Auth routes */}
@@ -84,6 +86,14 @@ export const AppRoutes = () => {
               element={
                 <ProtectedRoute>
                   <CreateGame />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mes-prototypes/:id/modifier"
+              element={
+                <ProtectedRoute>
+                  <EditGame />
                 </ProtectedRoute>
               }
             />

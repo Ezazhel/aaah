@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { GAME_CATEGORIES } from "@/constants/labels";
 import { CategoryBadge } from "@/components/category-badge";
 import { useAuthors } from "@/features/authors/api/get-authors";
+import { MechanicsSelect } from "@/features/mechanics/components/mechanics-select";
 import { useAuth } from "@/lib/auth";
 import { type GameInput } from "@/types";
 import { X, Plus } from "lucide-react";
@@ -65,8 +66,7 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
     }
   }, [user?.authorId, initialData, formData.authorIds]);
 
-  // Temporary states for adding mechanics and authors
-  const [newMechanic, setNewMechanic] = useState("");
+  // Temporary state for adding authors
   const [selectedAuthorToAdd, setSelectedAuthorToAdd] = useState<number | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -78,19 +78,6 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const addMechanic = () => {
-    if (newMechanic.trim()) {
-      updateField("mechanics", [...formData.mechanics, newMechanic.trim()]);
-      setNewMechanic("");
-    }
-  };
-
-  const removeMechanic = (index: number) => {
-    updateField(
-      "mechanics",
-      formData.mechanics.filter((_, i) => i !== index)
-    );
-  };
 
   const addImage = () => {
     const url = prompt("Entrez l'URL de l'image :");
@@ -343,48 +330,10 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
           <h2 className="text-2xl font-bold text-[oklch(36%_0.13_250)] mb-3">Caractéristiques</h2>
 
           {/* Mechanics */}
-          <div className="mb-4">
-            <label className="block font-semibold text-gray-700 mb-2">Mécaniques</label>
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={newMechanic}
-                onChange={(e) => setNewMechanic(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    addMechanic();
-                  }
-                }}
-                placeholder="Ajouter une mécanique"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
-              />
-              <button
-                type="button"
-                onClick={addMechanic}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
-              >
-                <Plus size={16} /> Ajouter
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {formData.mechanics.map((mech, idx) => (
-                <span
-                  key={idx}
-                  className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 rounded-full px-3 py-1 text-xs font-medium"
-                >
-                  {mech}
-                  <button
-                    type="button"
-                    onClick={() => removeMechanic(idx)}
-                    className="hover:text-blue-900"
-                  >
-                    <X size={14} />
-                  </button>
-                </span>
-              ))}
-            </div>
-          </div>
+          <MechanicsSelect
+            selectedMechanics={formData.mechanics}
+            onChange={(mechanics) => updateField("mechanics", mechanics)}
+          />
         </div>
 
         {/* Galerie */}

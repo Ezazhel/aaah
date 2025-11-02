@@ -2,16 +2,6 @@
 
 export type GameCategory = 'familial' | 'initie' | 'expert';
 
-export type Mechanic = 
-  | 'Draft'
-  | 'Placement d\'ouvriers'
-  | 'Gestion de main'
-  | 'Bluff'
-  | 'Coopératif'
-  | 'Déduction'
-  | 'Collection'
-  | 'Majorité';
-
 export interface CategoryOption {
   value: GameCategory | '';
   label: string;
@@ -21,7 +11,7 @@ export interface CategoryOption {
 export interface GameFilters {
   search: string;
   category: GameCategory | '';
-  mechanics: Mechanic[];
+  mechanics: string[]; // Mechanic names as strings for filtering
 }
 
 // Extended filters used in FilterDrawer and ActiveFilters (with player/duration ranges)
@@ -31,18 +21,6 @@ export interface ExtendedGameFilters extends GameFilters {
   minDuration: number;
   maxDuration: number;
 }
-
-// Constants
-export const MECHANICS: Mechanic[] = [
-  'Draft',
-  'Placement d\'ouvriers',
-  'Gestion de main',
-  'Bluff',
-  'Coopératif',
-  'Déduction',
-  'Collection',
-  'Majorité',
-];
 
 export const CATEGORIES: CategoryOption[] = [
   { value: 'familial', label: 'Familial' },

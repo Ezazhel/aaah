@@ -31,10 +31,12 @@ export default function Games() {
     const matchesCategory = filters.category
       ? game.category === filters.category
       : true;
-    // Mechanics filter
+    // Mechanics filter - compare mechanic names since game.mechanics is now an array of objects
     const matchesMechanics =
       filters.mechanics.length > 0
-        ? filters.mechanics.every((mech) => game.mechanics.includes(mech))
+        ? filters.mechanics.every((mechanicName) =>
+            game.mechanics.some((mech) => mech.name === mechanicName)
+          )
         : true;
     return matchesSearch && matchesCategory && matchesMechanics;
   });

@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
-import { User, LogOut, Shield, FileText, LogIn } from "lucide-react";
+import { User, LogOut, Shield, FileText, LogIn, UserCircle } from "lucide-react";
 
-// Insert "Événements" after "Prototypes"
+// MVP: Events and Articles links disabled for now
 const navLinks = [
   { name: "Accueil", to: "/" },
   { name: "Auteurs", to: "/auteurs" },
   { name: "Prototypes", to: "/prototypes" },
-  { name: "Événements", to: "/evenements" },
-  { name: "Articles", to: "/articles" },
+  // { name: "Événements", to: "/evenements" },
+  // { name: "Articles", to: "/articles" },
   { name: "Contact", to: "/contact" },
 ];
 
@@ -80,6 +80,16 @@ export const Navigation: React.FC = () => {
                         <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
                         <p className="text-xs text-gray-500">{user?.email}</p>
                       </div>
+                      {user?.authorId && (
+                        <Link
+                          to={`/auteurs/${user.authorId}`}
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                          <UserCircle className="w-4 h-4" />
+                          Mon profil public
+                        </Link>
+                      )}
                       <Link
                         to="/mes-prototypes"
                         onClick={() => setUserMenuOpen(false)}
@@ -188,6 +198,16 @@ export const Navigation: React.FC = () => {
                   <p className="text-sm font-semibold">{user?.name}</p>
                   <p className="text-xs text-gray-300">{user?.email}</p>
                 </div>
+                {user?.authorId && (
+                  <Link
+                    to={`/auteurs/${user.authorId}`}
+                    className="flex items-center gap-3 py-2 px-2 rounded hover:bg-[oklch(40%_0.13_250)]"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <UserCircle className="w-4 h-4" />
+                    Mon profil public
+                  </Link>
+                )}
                 <Link
                   to="/mes-prototypes"
                   className="flex items-center gap-3 py-2 px-2 rounded hover:bg-[oklch(40%_0.13_250)]"

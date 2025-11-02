@@ -5,7 +5,13 @@ import { queryClient } from '@/lib/react-query';
 import type { Game, GameInput } from '@/types';
 
 export const createGame = (data: GameInput): Promise<Game> => {
-  return apiClient.post('/games', data);
+  // Remove mechanics array as backend expects IDs only
+  const { mechanics, ...payloadData } = data;
+
+  return apiClient.post('/games', {
+    ...payloadData,
+    mechanicIds: data.mechanics.map(m => m.id),
+  });
 };
 
 type UseCreateGameOptions = {

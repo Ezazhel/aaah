@@ -9,7 +9,13 @@ export type UpdateGameData = GameInput & {
 };
 
 export const updateGame = ({ id, ...data }: UpdateGameData): Promise<Game> => {
-  return apiClient.put(`/games/${id}`, data);
+  // Remove mechanics array as backend expects IDs only
+  const { mechanics, ...payloadData } = data;
+
+  return apiClient.put(`/games/${id}`, {
+    ...payloadData,
+    mechanicIds: data.mechanics.map(m => m.id),
+  });
 };
 
 type UseUpdateGameOptions = {
