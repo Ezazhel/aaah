@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GAME_CATEGORIES } from "@/constants/labels";
 import { CategoryBadge } from "@/components/category-badge";
-import { getLabel } from "@/lib/getLabel";
 import { useAuthors } from "@/features/authors/api/get-authors";
+import { useAuth } from "@/lib/auth";
 import { type GameInput } from "@/types";
 import { X, Plus } from "lucide-react";
 
@@ -31,6 +31,7 @@ type GameFormProps = {
 };
 
 export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFormProps) {
+  const { user } = useAuth();
   const { data: authorsResponse, isLoading: authorsLoading } = useAuthors();
   const authors = authorsResponse?.data || [];
 
@@ -54,8 +55,19 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
     isDraft: initialData?.isDraft ?? true,
   });
 
-  // Temporary states for adding mechanics
+  // Add current user's authorId by default when creating a new game
+  useEffect(() => {
+    if (!initialData && user?.authorId && !formData.authorIds.includes(user.authorId)) {
+      setFormData(prev => ({
+        ...prev,
+        authorIds: [user.authorId as number]
+      }));
+    }
+  }, [user?.authorId, initialData, formData.authorIds]);
+
+  // Temporary states for adding mechanics and authors
   const [newMechanic, setNewMechanic] = useState("");
+  const [selectedAuthorToAdd, setSelectedAuthorToAdd] = useState<number | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,37 +159,54 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
               {authorsLoading ? (
                 <p className="text-gray-500">Chargement des auteurs...</p>
               ) : (
-                <select
-                  multiple
-                  value={formData.authorIds}
-                  onChange={(e) =>
-                    updateField(
-                      "authorIds",
-                      Array.from(e.target.selectedOptions, (option) => option.value)
-                    )
-                  }
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                  size={5}
-                >
-                  {authors.map((author) => (
-                    <option key={author.id} value={author.id}>
-                      {author.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="flex gap-2">
+                  <select
+                    value={selectedAuthorToAdd || ""}
+                    onChange={(e) => setSelectedAuthorToAdd(Number(e.target.value) || null)}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                  >
+                    <option value="">Sélectionner un auteur à ajouter</option>
+                    {authors
+                      .filter(a => !formData.authorIds.includes(a.id))
+                      .map((author) => (
+                        <option key={author.id} value={author.id}>
+                          {author.name}
+                        </option>
+                      ))
+                    }
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (selectedAuthorToAdd && !formData.authorIds.includes(selectedAuthorToAdd)) {
+                        updateField("authorIds", [...formData.authorIds, selectedAuthorToAdd]);
+                        setSelectedAuthorToAdd(null);
+                      }
+                    }}
+                    disabled={!selectedAuthorToAdd}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    <Plus size={16} /> Ajouter
+                  </button>
+                </div>
               )}
-              <p className="text-xs text-gray-500 mt-1">
-                Maintenez Ctrl/Cmd pour sélectionner plusieurs auteurs
-              </p>
               {selectedAuthors.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-2">
                   {selectedAuthors.map((author) => (
                     <span
                       key={author.id}
-                      className="inline-block bg-orange-100 text-orange-800 rounded-full px-3 py-1 text-sm"
+                      className="inline-flex items-center gap-1 bg-orange-100 text-orange-800 rounded-full px-3 py-1 text-sm"
                     >
                       {author.name}
+                      {author.id !== user?.authorId && (
+                        <button
+                          type="button"
+                          onClick={() => updateField("authorIds", formData.authorIds.filter(id => id !== author.id))}
+                          className="hover:text-orange-900"
+                        >
+                          <X size={14} />
+                        </button>
+                      )}
                     </span>
                   ))}
                 </div>
@@ -192,7 +221,7 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
                 </label>
                 <select
                   value={formData.category}
-                  onChange={(e) => updateField("category", e.target.value as any)}
+                  onChange={(e) => updateField("category", e.target.value as GameInput['category'])}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >
@@ -213,7 +242,7 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
                 </label>
                 <select
                   value={formData.status}
-                  onChange={(e) => updateField("status", e.target.value as any)}
+                  onChange={(e) => updateField("status", e.target.value as GameInput['status'])}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >

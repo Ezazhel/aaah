@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
 import { ProfileForm } from '../components/profile-form';
 import { ChangePasswordForm } from '../components/change-password-form';
-import { User, Lock, Calendar, Shield } from 'lucide-react';
+import { EditAuthorForm } from '../components/edit-author-form';
+import { User, Lock, Calendar, Shield, Pencil, ExternalLink } from 'lucide-react';
 
 export const Account: React.FC = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'profile' | 'password'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'author' | 'password'>('profile');
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
@@ -36,6 +38,17 @@ export const Account: React.FC = () => {
                 </div>
               )}
             </div>
+            {user?.authorId && (
+              <div className="mt-4">
+                <Link
+                  to={`/auteurs/${user.authorId}`}
+                  className="inline-flex items-center gap-2 text-sm text-[oklch(69%_0.19_41)] hover:underline"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Voir ma page publique d'auteur
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -54,6 +67,19 @@ export const Account: React.FC = () => {
             <User className="w-4 h-4" />
             Informations personnelles
           </button>
+          {user?.authorId && (
+            <button
+              onClick={() => setActiveTab('author')}
+              className={`flex-1 px-6 py-4 text-sm font-medium transition flex items-center justify-center gap-2 ${
+                activeTab === 'author'
+                  ? 'text-[oklch(69%_0.19_41)] border-b-2 border-[oklch(69%_0.19_41)]'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Pencil className="w-4 h-4" />
+              Profil auteur
+            </button>
+          )}
           <button
             onClick={() => setActiveTab('password')}
             className={`flex-1 px-6 py-4 text-sm font-medium transition flex items-center justify-center gap-2 ${
@@ -72,6 +98,13 @@ export const Account: React.FC = () => {
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Modifier mes informations</h3>
               <ProfileForm />
+            </div>
+          )}
+
+          {activeTab === 'author' && (
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Modifier mon profil d'auteur</h3>
+              <EditAuthorForm />
             </div>
           )}
 
