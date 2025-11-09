@@ -4,6 +4,8 @@ import { useUpdateAuthor } from '@/features/authors/api/update-author';
 import { useAuthor } from '@/features/authors/api/get-author';
 import { useAuth } from '@/lib/auth';
 import { Link } from 'react-router-dom';
+import { ImageUploader } from '@/components/ui/image-uploader';
+import { useAvatarPrepare } from '@/hooks/use-avatar-prepare';
 
 export const EditAuthorForm: React.FC = () => {
   const { user } = useAuth();
@@ -19,6 +21,7 @@ export const EditAuthorForm: React.FC = () => {
 
   const [formData, setFormData] = useState({
     name: '',
+    photoUrl: '',
     region: '',
     bio: '',
     specialties: [] as string[],
@@ -34,14 +37,21 @@ export const EditAuthorForm: React.FC = () => {
   const [achievementInput, setAchievementInput] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   const updateMutation = useUpdateAuthor();
+
+  // Hook pour préparer l'avatar (compression + renommage)
+  const { prepareAvatar, isPreparing, error: prepareError } = useAvatarPrepare({
+    authorName: formData.name,
+  });
 
   // Initialize form with author data
   useEffect(() => {
     if (author) {
       setFormData({
         name: author.name || '',
+        photoUrl: author.photoUrl || '',
         region: author.region || '',
         bio: author.bio || '',
         specialties: author.specialties || [],
@@ -58,6 +68,16 @@ export const EditAuthorForm: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Gére la sélection d'un fichier avatar
+  const handleAvatarSelect = async (file: File | null) => {
+    if (file) {
+      const preparedFile = await prepareAvatar(file);
+      setAvatarFile(preparedFile);
+    } else {
+      setAvatarFile(null);
+    }
   };
 
   const addSpecialty = () => {
@@ -105,11 +125,33 @@ export const EditAuthorForm: React.FC = () => {
     }
 
     try {
+      // Créer FormData pour envoyer les données + le fichier
+      const submitFormData = new FormData();
+
+      // Ajouter les données JSON
+      submitFormData.append('name', formData.name);
+      submitFormData.append('region', formData.region || '');
+      submitFormData.append('bio', formData.bio || '');
+      submitFormData.append('contactEmail', formData.contactEmail || '');
+      submitFormData.append('website', formData.website || '');
+      submitFormData.append('twitterUrl', formData.twitterUrl || '');
+      submitFormData.append('instagramUrl', formData.instagramUrl || '');
+      submitFormData.append('bggUrl', formData.bggUrl || '');
+      submitFormData.append('specialties', JSON.stringify(formData.specialties));
+      submitFormData.append('achievements', JSON.stringify(formData.achievements));
+
+      // Ajouter le fichier avatar si un nouveau fichier a été sélectionné
+      if (avatarFile) {
+        submitFormData.append('photo', avatarFile);
+      }
+
       await updateMutation.mutateAsync({
         authorId,
-        data: formData,
+        data: submitFormData,
       });
+
       setSuccess(true);
+      setAvatarFile(null); // Réinitialiser après succès
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       const error = err as { response?: { data?: { message?: string } } };
@@ -168,6 +210,47 @@ export const EditAuthorForm: React.FC = () => {
             <span className="text-sm">{error}</span>
           </div>
         )}
+
+        {/* Avatar Upload */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Photo de profil
+          </label>
+          <div className="flex items-start gap-6">
+            {/* Current Avatar Preview */}
+            <div className="flex-shrink-0">
+              {formData.photoUrl ? (
+                <img
+                  src={formData.photoUrl}
+                  alt={formData.name}
+                  className="w-[120px] h-[120px] rounded-full object-cover border-4 border-[oklch(69%_0.19_41)] shadow"
+                />
+              ) : (
+                <div className="w-[120px] h-[120px] rounded-full flex items-center justify-center bg-gray-100 border-4 border-[oklch(69%_0.19_41)] text-5xl text-gray-400">
+                  <span>👤</span>
+                </div>
+              )}
+            </div>
+
+            {/* Image Uploader */}
+            <div className="flex-1">
+              <ImageUploader
+                onFileSelect={handleAvatarSelect}
+                currentImageUrl={formData.photoUrl}
+                error={prepareError}
+              />
+              <p className="mt-2 text-xs text-gray-500">
+                L'image sera automatiquement redimensionnée en 200×200px et renommée avec votre nom d'auteur lors de la sauvegarde.
+              </p>
+              {isPreparing && (
+                <p className="mt-2 text-xs text-blue-600">Préparation de l'image...</p>
+              )}
+              {avatarFile && (
+                <p className="mt-2 text-xs text-green-600">✓ Nouvelle image prête à être envoyée</p>
+              )}
+            </div>
+          </div>
+        </div>
 
         {/* Name */}
         <div>

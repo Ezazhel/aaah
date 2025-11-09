@@ -1,7 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority"
 import { Link } from "react-router-dom"
-import slugify from "slugify"
-import { cn } from "@/lib/utils"
+import { cn, generateSlug } from "@/lib/utils"
 import type { Game } from "@/types"
 import { CategoryBadge } from "@/components/category-badge"
 
@@ -73,7 +72,7 @@ export function GameCard({
     ? authors.map(author => author.name).join(", ")
     : "Auteur inconnu"
 
-  const slug = slugify(name, { lower: true, strict: true });
+  const slug = generateSlug(name);
 
   return (
     <Link

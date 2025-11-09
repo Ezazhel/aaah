@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import slugify from "slugify";
 import { GAME_CATEGORIES } from "@/constants/labels";
 import { CategoryBadge } from "@/components/category-badge";
 import { getLabel } from "@/lib/getLabel";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ErrorMessage } from "@/components/ui/error-message";
 import { useGame } from "../api/get-game";
+import { generateSlug } from "@/lib/utils";
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   prototype: { label: "Prototype", color: "bg-gray-300 text-gray-700" },
@@ -190,7 +190,7 @@ export default function GameDetails() {
                   {game.authors.map((author, idx) => (
                     <span key={author.id} className="flex items-center">
                       <Link
-                        to={`/auteurs/${author.id}/${author.name ? slugify(author.name, { lower: true, strict: true }) : ''}`}
+                        to={`/auteurs/${author.id}/${author.name ? generateSlug(author.name) : ''}`}
                         className="text-orange-600 font-semibold hover:underline"
                       >
                         {author.name}
@@ -415,7 +415,7 @@ export default function GameDetails() {
                   <div className="flex-1 w-full">
                     <h3 className="text-xl font-bold text-[oklch(69%_0.19_41)]/90 mb-1">
                       <Link
-                        to={`/auteurs/${author.id}/${author.name ? slugify(author.name, { lower: true, strict: true }) : ''}`}
+                        to={`/auteurs/${author.id}/${author.name ? generateSlug(author.name) : ''}`}
                         className="text-orange-600 font-semibold hover:underline"
                       >
                         {author.name}

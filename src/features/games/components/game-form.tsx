@@ -6,22 +6,7 @@ import { MechanicsSelect } from "@/features/mechanics/components/mechanics-selec
 import { useAuth } from "@/lib/auth";
 import { type GameInput } from "@/types";
 import { X, Plus } from "lucide-react";
-
-const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  prototype: { label: "Prototype", color: "bg-gray-300 text-gray-700" },
-  playtesting: { label: "En test", color: "bg-yellow-200 text-yellow-800" },
-  published: { label: "Publié", color: "bg-green-200 text-green-800" },
-};
-
-function getStatusBadge(status?: string) {
-  if (!status) return null;
-  const s = STATUS_LABELS[status] || STATUS_LABELS["prototype"];
-  return (
-    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${s.color} ml-2`}>
-      {s.label}
-    </span>
-  );
-}
+import { ImageUploader } from "@/components/ui/image-uploader";
 
 const PLACEHOLDER_IMAGE = "https://placehold.co/600x400/cccccc/222222?text=Ajouter+une+image";
 
@@ -52,7 +37,6 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
     videoRulesUrl: initialData?.videoRulesUrl || "",
     fullDescription: initialData?.fullDescription || "",
     publishedDate: initialData?.publishedDate || new Date().toISOString().split('T')[0],
-    status: initialData?.status || "prototype",
     isDraft: initialData?.isDraft ?? true,
   });
 
@@ -79,10 +63,9 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
   };
 
 
-  const addImage = () => {
-    const url = prompt("Entrez l'URL de l'image :");
-    if (url?.trim()) {
-      updateField("images", [...(formData.images || []), url.trim()]);
+  const handleGalleryImageUpload = (url: string) => {
+    if (url) {
+      updateField("images", [...(formData.images || []), url]);
     }
   };
 
@@ -102,20 +85,12 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
         {/* Image Preview */}
         <div className="md:w-1/2 w-full flex flex-col items-center">
           <div className="w-full">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Image principale
-            </label>
-            <input
-              type="url"
-              value={formData.imageUrl}
-              onChange={(e) => updateField("imageUrl", e.target.value)}
-              placeholder="URL de l'image"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-3"
-            />
-            <img
-              src={formData.imageUrl || PLACEHOLDER_IMAGE}
-              alt="Aperçu"
-              className="rounded-xl shadow-lg object-cover w-full h-64 md:h-80"
+            <ImageUploader
+              uploadType="game"
+              onUploadComplete={(url) => updateField("imageUrl", url)}
+              currentImageUrl={formData.imageUrl}
+              label="Image principale"
+              description="Formats acceptés : JPG, PNG, GIF, WEBP (max 10MB)"
             />
           </div>
         </div>
@@ -200,46 +175,25 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
               )}
             </div>
 
-            {/* Category and Status */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Catégorie *
-                </label>
-                <select
-                  value={formData.category}
-                  onChange={(e) => updateField("category", e.target.value as GameInput['category'])}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                >
-                  {Object.entries(GAME_CATEGORIES).map(([key, { label }]) => (
-                    <option key={key} value={key}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-                <div className="mt-2">
-                  <CategoryBadge category={formData.category} />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Statut *
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) => updateField("status", e.target.value as GameInput['status'])}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                >
-                  {Object.entries(STATUS_LABELS).map(([key, { label }]) => (
-                    <option key={key} value={key}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-                <div className="mt-2">{getStatusBadge(formData.status)}</div>
+            {/* Category */}
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Catégorie *
+              </label>
+              <select
+                value={formData.category}
+                onChange={(e) => updateField("category", e.target.value as GameInput['category'])}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              >
+                {Object.entries(GAME_CATEGORIES).map(([key, { label }]) => (
+                  <option key={key} value={key}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+              <div className="mt-2">
+                <CategoryBadge category={formData.category} />
               </div>
             </div>
 
@@ -338,35 +292,44 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
 
         {/* Galerie */}
         <div className="bg-white/90 rounded-xl shadow p-6">
-          <h2 className="text-2xl font-bold text-[oklch(36%_0.13_250)] mb-3">Galerie</h2>
-          <button
-            type="button"
-            onClick={addImage}
-            className="mb-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
-          >
-            <Plus size={16} /> Ajouter une image
-          </button>
-          {formData.images && formData.images.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {formData.images.map((img, idx) => (
-                <div key={idx} className="relative">
-                  <img
-                    src={img || PLACEHOLDER_IMAGE}
-                    alt={`Image ${idx + 1}`}
-                    className="rounded-lg shadow object-cover w-full h-40 md:h-48"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(idx)}
-                    className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              ))}
+          <h2 className="text-2xl font-bold text-[oklch(36%_0.13_250)] mb-3">Galerie d'images</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Ajoutez plusieurs images pour présenter votre prototype sous différents angles
+          </p>
+
+          <ImageUploader
+            uploadType="game"
+            onUploadComplete={handleGalleryImageUpload}
+            label="Ajouter une image à la galerie"
+            description="Formats acceptés : JPG, PNG, GIF, WEBP (max 10MB)"
+            className="mb-6"
+            resetAfterUpload={true}
+          />
+
+          {formData.images && formData.images.length > 0 && (
+            <div className="mt-6">
+              <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                Images de la galerie ({formData.images.length})
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {formData.images.map((img, idx) => (
+                  <div key={idx} className="relative">
+                    <img
+                      src={img || PLACEHOLDER_IMAGE}
+                      alt={`Image ${idx + 1}`}
+                      className="rounded-lg shadow object-cover w-full h-40 md:h-48"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(idx)}
+                      className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
-          ) : (
-            <p className="text-gray-500">Aucune image dans la galerie</p>
           )}
         </div>
 

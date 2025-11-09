@@ -22,8 +22,18 @@ export const updateAuthor = ({
   data,
 }: {
   authorId: number;
-  data: UpdateAuthorInput;
+  data: UpdateAuthorInput | FormData;
 }): Promise<Author> => {
+  // Si c'est FormData, utiliser multipart/form-data
+  if (data instanceof FormData) {
+    return apiClient.put(`/authors/${authorId}`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  }
+
+  // Sinon, envoyer en JSON comme avant
   return apiClient.put(`/authors/${authorId}`, data);
 };
 

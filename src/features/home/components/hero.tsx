@@ -18,12 +18,14 @@ export const Hero: React.FC = () => {
           >
             Découvrir nos créations
           </Link>
-          <Link
-            to="https://www.helloasso.com/associations/association-des-auteur-rice-s-autour-et-en-herault"
+          <a
+            href="https://www.helloasso.com/associations/association-des-auteur-rice-s-autour-et-en-herault"
+            target="_blank"
+            rel="noopener noreferrer"
             className="border border-white text-white font-semibold py-3 px-7 rounded shadow transition duration-150 text-base bg-transparent hover:bg-white hover:text-[oklch(36%_0.13_250)]"
           >
             Rejoindre l'association
-          </Link>
+          </a>
         </div>
       </div>
     </section>

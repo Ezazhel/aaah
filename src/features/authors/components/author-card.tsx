@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import slugify from "slugify";
 import type { Author } from "@/types";
 import { MEMBER_ROLES } from "@/constants/labels";
 import { getLabel } from "@/lib/getLabel";
+import { generateSlug } from "@/lib/utils";
 
 type AuthorCardProps = {
   author: Pick<Author, "id" | "name" | "photoUrl" | "role">;
@@ -11,7 +11,7 @@ type AuthorCardProps = {
 
 export const AuthorCard: React.FC<AuthorCardProps> = ({ author }) => {
   const { id, name, photoUrl, role } = author;
-  const slug = slugify(name, { lower: true, strict: true });
+  const slug = generateSlug(name);
 
   return (
     <Link

@@ -31,7 +31,6 @@ export type Game = {
   contactEmail?: string; // author's contact email
   fullDescription?: string; // longer description for detail page
   publishedDate?: string; // when the prototype was created
-  status?: "prototype" | "playtesting" | "published"; // development status
   // Auth & ownership fields
   createdBy?: string; // User ID who created the game (UUID)
   isDraft?: boolean; // Whether the game is a draft (not published yet)
