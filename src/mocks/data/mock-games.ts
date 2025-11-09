@@ -1,155 +1,143 @@
 import type { Game } from '../../types';
 import { mockAuthors } from './mock-authors';
 
-// Helper: Find author by role or name
-const findAuthorByRole = (role: string) =>
-  mockAuthors.find((a) => a.role === role);
-const findAuthorByName = (name: string) =>
-  mockAuthors.find((a) => a.name === name);
-
 // Assign authors (example based on mockAuthors from context)
 const camille = mockAuthors.find((a) => a.name === "Camille Lefèvre"); // president, experienced
 const thomas = mockAuthors.find((a) => a.name === "Thomas Roux"); // member
 const julie = mockAuthors.find((a) => a.name === "Julie Morel"); // honorific, experienced
 const antoine = mockAuthors.find((a) => a.name === "Antoine Girard"); // member
 const fatima = mockAuthors.find((a) => a.name === "Fatima Benali"); // member
-const leo = mockAuthors.find((a) => a.name === "Léo Dubreuil"); // member, new (0 games)
-const claire = mockAuthors.find((a) => a.name === "Claire Petit"); // member, new (0 games)
+
+// Mock mechanics (since we need Mechanic[] type)
+const mockMechanics = {
+  deduction: { id: 1, name: "Déduction", slug: "deduction", createdAt: "2024-01-01", updatedAt: "2024-01-01" },
+  bluff: { id: 2, name: "Bluff", slug: "bluff", createdAt: "2024-01-01", updatedAt: "2024-01-01" },
+  draft: { id: 3, name: "Draft", slug: "draft", createdAt: "2024-01-01", updatedAt: "2024-01-01" },
+  handManagement: { id: 4, name: "Gestion de main", slug: "gestion-de-main", createdAt: "2024-01-01", updatedAt: "2024-01-01" },
+  collection: { id: 5, name: "Collection", slug: "collection", createdAt: "2024-01-01", updatedAt: "2024-01-01" },
+  majority: { id: 6, name: "Majorité", slug: "majorite", createdAt: "2024-01-01", updatedAt: "2024-01-01" },
+  workerPlacement: { id: 7, name: "Placement d'ouvriers", slug: "placement-ouvriers", createdAt: "2024-01-01", updatedAt: "2024-01-01" },
+  cooperative: { id: 8, name: "Coopératif", slug: "cooperatif", createdAt: "2024-01-01", updatedAt: "2024-01-01" },
+  exploration: { id: 9, name: "Exploration", slug: "exploration", createdAt: "2024-01-01", updatedAt: "2024-01-01" },
+  tilePlacement: { id: 10, name: "Placement de tuiles", slug: "placement-tuiles", createdAt: "2024-01-01", updatedAt: "2024-01-01" },
+};
 
 export const GAMES: Game[] = [
   // Camille Lefèvre (president, 3 games)
   {
-    id: "game-1",
+    id: 1,
     name: "Château Mystère",
-    authorIds: [camille?.id ?? "camille-lefevre"],
-    authorNames: [camille?.name ?? "Camille Lefèvre"],
+    authors: camille ? [camille] : [],
     description: "Enquêtez dans un château hanté pour découvrir le secret du fantôme avant les autres joueurs.",
     minPlayers: 2,
     maxPlayers: 5,
     duration: 45,
     category: "familial",
-    mechanics: ["Déduction", "Bluff"],
-    categories: ["Mystery", "Familial"],
+    mechanics: [mockMechanics.deduction, mockMechanics.bluff],
     imageUrl: "",
   },
   {
-    id: "game-2",
+    id: 2,
     name: "Potion Express",
-    authorIds: [camille?.id ?? "camille-lefevre"],
-    authorNames: [camille?.name ?? "Camille Lefèvre"],
+    authors: camille ? [camille] : [],
     description: "Préparez des potions magiques plus vite que vos adversaires dans ce jeu effréné.",
     minPlayers: 2,
     maxPlayers: 6,
     duration: 30,
     category: "familial",
-    mechanics: ["Draft", "Gestion de main"],
-    categories: ["Fantasy", "Racing"],
+    mechanics: [mockMechanics.draft, mockMechanics.handManagement],
     imageUrl: "",
   },
   {
-    id: "game-3",
+    id: 3,
     name: "Marchands de l'Ouest",
-    authorIds: [camille?.id ?? "camille-lefevre"],
-    authorNames: [camille?.name ?? "Camille Lefèvre"],
+    authors: camille ? [camille] : [],
     description: "Devenez le marchand le plus prospère en gérant vos ressources et en négociant habilement.",
     minPlayers: 3,
     maxPlayers: 6,
     duration: 60,
     category: "initie",
-    mechanics: ["Gestion de main", "Collection"],
-    categories: ["Trading", "Strategy"],
+    mechanics: [mockMechanics.handManagement, mockMechanics.collection],
     imageUrl: "",
   },
 
   // Julie Morel (honorific, 2 games)
   {
-    id: "game-4",
+    id: 4,
     name: "Dynastie",
-    authorIds: [julie?.id ?? "julie-morel"],
-    authorNames: [julie?.name ?? "Julie Morel"],
+    authors: julie ? [julie] : [],
     description: "Bâtissez votre empire et dominez vos rivaux grâce à la stratégie et la majorité.",
     minPlayers: 3,
     maxPlayers: 5,
     duration: 75,
     category: "initie",
-    mechanics: ["Majorité", "Placement d'ouvriers"],
-    categories: ["Strategy", "Empire Building"],
+    mechanics: [mockMechanics.majority, mockMechanics.workerPlacement],
     imageUrl: "",
   },
   {
-    id: "game-5",
+    id: 5,
     name: "Les Arcanes Perdus",
-    authorIds: [julie?.id ?? "julie-morel"],
-    authorNames: [julie?.name ?? "Julie Morel"],
+    authors: julie ? [julie] : [],
     description: "Maîtrisez les arcanes anciens pour triompher dans ce jeu de stratégie exigeant.",
     minPlayers: 2,
     maxPlayers: 4,
     duration: 120,
     category: "expert",
-    mechanics: ["Gestion de main", "Collection", "Bluff"],
-    categories: ["Fantasy", "Strategy"],
+    mechanics: [mockMechanics.handManagement, mockMechanics.collection, mockMechanics.bluff],
     imageUrl: "",
   },
 
   // Thomas Roux (member, 2 games)
   {
-    id: "game-6",
+    id: 6,
     name: "Expédition Arctique",
-    authorIds: [thomas?.id ?? "thomas-roux"],
-    authorNames: [thomas?.name ?? "Thomas Roux"],
+    authors: thomas ? [thomas] : [],
     description: "Collaborez pour survivre à une expédition périlleuse dans le Grand Nord.",
     minPlayers: 1,
     maxPlayers: 4,
     duration: 90,
     category: "expert",
-    mechanics: ["Coopératif", "Placement d'ouvriers"],
-    categories: ["Adventure", "Cooperative"],
+    mechanics: [mockMechanics.cooperative, mockMechanics.workerPlacement],
     imageUrl: "",
   },
   {
-    id: "game-7",
+    id: 7,
     name: "Les Mines de l'Oubli",
-    authorIds: [thomas?.id ?? "thomas-roux"],
-    authorNames: [thomas?.name ?? "Thomas Roux"],
+    authors: thomas ? [thomas] : [],
     description: "Explorez des mines mystérieuses et affrontez des dangers pour récolter des trésors.",
     minPlayers: 2,
     maxPlayers: 5,
     duration: 60,
     category: "initie",
-    mechanics: ["Gestion de main", "Exploration"],
-    categories: ["Adventure", "Strategy"],
+    mechanics: [mockMechanics.handManagement, mockMechanics.exploration],
     imageUrl: "",
   },
 
   // Fatima Benali (member, 1 game)
   {
-    id: "game-8",
+    id: 8,
     name: "Festival des Lanternes",
-    authorIds: [fatima?.id ?? "fatima-benali"],
-    authorNames: [fatima?.name ?? "Fatima Benali"],
+    authors: fatima ? [fatima] : [],
     description: "Créez le plus beau festival de lanternes en posant habilement vos tuiles.",
     minPlayers: 2,
     maxPlayers: 4,
     duration: 40,
     category: "familial",
-    mechanics: ["Placement de tuiles", "Collection"],
-    categories: ["Family", "Puzzle"],
+    mechanics: [mockMechanics.tilePlacement, mockMechanics.collection],
     imageUrl: "",
   },
 
   // Antoine Girard (member, 1 game)
   {
-    id: "game-9",
+    id: 9,
     name: "Safari Express",
-    authorIds: [antoine?.id ?? "antoine-girard"],
-    authorNames: [antoine?.name ?? "Antoine Girard"],
+    authors: antoine ? [antoine] : [],
     description: "Partez en safari et photographiez le plus d'animaux rares possible.",
     minPlayers: 2,
     maxPlayers: 6,
     duration: 35,
     category: "familial",
-    mechanics: ["Collection", "Draft"],
-    categories: ["Family", "Animals"],
+    mechanics: [mockMechanics.collection, mockMechanics.draft],
     imageUrl: "",
   },
 

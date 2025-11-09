@@ -29,7 +29,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     };
 
     try {
-      const response = await loginMutation.mutateAsync(credentials);
+      await loginMutation.mutateAsync(credentials);
 
       // Update auth context
       await authLogin(credentials);

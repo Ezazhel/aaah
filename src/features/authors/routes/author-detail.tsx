@@ -36,7 +36,8 @@ function getMostUsedMechanics(games: Game[], count = 3): string[] {
   const freq: Record<string, number> = {};
   games.forEach((g) => {
     g.mechanics?.forEach((m) => {
-      freq[m] = (freq[m] || 0) + 1;
+      const mechanicName = typeof m === 'string' ? m : m.name;
+      freq[mechanicName] = (freq[mechanicName] || 0) + 1;
     });
   });
   return Object.entries(freq)

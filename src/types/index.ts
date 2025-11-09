@@ -14,6 +14,13 @@ export type Mechanic = {
   updatedAt: string;
 };
 
+// Category type (for game categories)
+export type Category = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
 export type Game = {
   id: number; // Changed from string to number
   name: string;
@@ -34,6 +41,7 @@ export type Game = {
   // Auth & ownership fields
   createdBy?: string; // User ID who created the game (UUID)
   isDraft?: boolean; // Whether the game is a draft (not published yet)
+  status?: string; // Game status field
   updatedAt?: string; // Last update date
 };
 
@@ -61,6 +69,7 @@ export type Author = {
   bggUrl?: string; // BoardGameGeek profile
   achievements?: string[]; // awards, published games, etc.
   contactEmail?: string; // email for contact
+  email?: string; // Alternative email field
 };
 
 export type Article = {

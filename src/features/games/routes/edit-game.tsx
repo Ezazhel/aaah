@@ -72,7 +72,7 @@ export default function EditGame() {
     videoRulesUrl: game.videoRulesUrl || "",
     fullDescription: game.fullDescription || "",
     publishedDate: game.publishedDate || new Date().toISOString().split('T')[0],
-    status: game.status || "prototype",
+    ...(game.status && { status: game.status }),
     isDraft: game.isDraft ?? true,
   };
 

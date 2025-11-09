@@ -25,7 +25,7 @@ import { Admin } from '@/features/admin/routes/admin';
 import { MyGames } from '@/features/games/routes/my-games';
 
 // Layout components
-import { Navigation } from '@/components/navigation';
+import { Navigation } from '@/components/Navigation';
 import { ProtectedRoute } from '@/components/protected-route';
 
 // Loading component

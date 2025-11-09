@@ -86,8 +86,16 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
         <div className="md:w-1/2 w-full flex flex-col items-center">
           <div className="w-full">
             <ImageUploader
-              uploadType="game"
-              onUploadComplete={(url) => updateField("imageUrl", url)}
+              onFileSelect={(file) => {
+                // For now, just create a preview URL
+                // In production, you would upload the file to the server here
+                if (file) {
+                  const objectUrl = URL.createObjectURL(file);
+                  updateField("imageUrl", objectUrl);
+                } else {
+                  updateField("imageUrl", "");
+                }
+              }}
               currentImageUrl={formData.imageUrl}
               label="Image principale"
               description="Formats acceptés : JPG, PNG, GIF, WEBP (max 10MB)"
@@ -298,12 +306,17 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
           </p>
 
           <ImageUploader
-            uploadType="game"
-            onUploadComplete={handleGalleryImageUpload}
+            onFileSelect={(file) => {
+              // For now, just create a preview URL for gallery
+              // In production, you would upload the file to the server here
+              if (file) {
+                const objectUrl = URL.createObjectURL(file);
+                handleGalleryImageUpload(objectUrl);
+              }
+            }}
             label="Ajouter une image à la galerie"
             description="Formats acceptés : JPG, PNG, GIF, WEBP (max 10MB)"
             className="mb-6"
-            resetAfterUpload={true}
           />
 
           {formData.images && formData.images.length > 0 && (

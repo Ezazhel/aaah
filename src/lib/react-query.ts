@@ -1,4 +1,4 @@
-import { type DefaultOptions, QueryClient, type UseMutationOptions, type UseQueryOptions } from '@tanstack/react-query';
+import { type DefaultOptions, QueryClient, type UseMutationOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 
 // Configuration par défaut pour React Query

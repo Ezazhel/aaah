@@ -44,13 +44,6 @@ const PLACEHOLDER_IMAGE =
 const PLACEHOLDER_AUTHOR_IMAGE =
   "https://placehold.co/96x96/cccccc/222222?text=?";
 
-function pluralizeAuteur(count: number) {
-  return count > 1 ? "auteurs" : "auteur";
-}
-function pluralizeContactez(count: number) {
-  return count > 1 ? "Contactez les auteurs" : "Contactez l'auteur";
-}
-
 export default function GameDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -65,7 +58,7 @@ export default function GameDetails() {
   const game = gameResponse;
 
   // For modal contact (if no email)
-  const [showContactModal, setShowContactModal] = useState<null | string>(null);
+  const [showContactModal, setShowContactModal] = useState<number | null>(null);
 
   const loading = gameLoading;
 
@@ -205,7 +198,7 @@ export default function GameDetails() {
             </div>
             <div className="flex items-center gap-2 mb-3">
               <CategoryBadge category={game.category} />
-              {getStatusBadge(game.status)}
+              {game.status && getStatusBadge(game.status)}
             </div>
             <div className="flex flex-wrap gap-4 text-sm text-gray-700 mb-3">
               <div className="flex items-center">
@@ -430,9 +423,9 @@ export default function GameDetails() {
                         {author.name ? "Contactez l'auteur !" : ""}
                       </span>
                     </p>
-                    {author.email ? (
+                    {(author.email || author.contactEmail) ? (
                       <a
-                        href={`mailto:${author.email}`}
+                        href={`mailto:${author.email || author.contactEmail}`}
                         className="inline-block px-5 py-2 rounded-lg bg-[oklch(69%_0.19_41)] text-white font-semibold shadow hover:bg-[oklch(69%_0.19_41)]/80 transition"
                       >
                         Contacter
