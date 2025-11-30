@@ -114,7 +114,7 @@ export const AppRoutes = () => {
         </Suspense>
       </main>
       <footer className="py-6 text-center text-gray-400 text-sm border-t border-gray-100 mt-8">
-        &copy; {new Date().getFullYear()} Association des Auteurs de Jeux de Société d'Auvergne. Tous droits réservés.
+        &copy; {new Date().getFullYear()} Association des Auteur-rice-s Autour et en Hérault. Tous droits réservés.
       </footer>
     </div>
   );
