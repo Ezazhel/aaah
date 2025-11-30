@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
-import { User, LogOut, Shield, FileText, LogIn, UserCircle } from "lucide-react";
+import { User, LogOut, Shield, FileText, UserCircle } from "lucide-react";
 
 // MVP: Events and Articles links disabled for now
 const navLinks = [
@@ -58,7 +58,7 @@ export const Navigation: React.FC = () => {
             ))}
 
             {/* Auth Links */}
-            {isAuthenticated ? (
+            {isAuthenticated && (
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
@@ -127,14 +127,6 @@ export const Navigation: React.FC = () => {
                   </>
                 )}
               </div>
-            ) : (
-              <Link
-                to="/auth/login"
-                className="flex items-center gap-2 px-4 py-2 bg-white text-[oklch(36%_0.13_250)] rounded-lg hover:bg-gray-100 transition font-medium"
-              >
-                <LogIn className="w-4 h-4" />
-                Connexion
-              </Link>
             )}
           </div>
           {/* Mobile Hamburger */}
@@ -191,70 +183,59 @@ export const Navigation: React.FC = () => {
           ))}
 
           {/* Mobile Auth Links */}
-          {isAuthenticated ? (
-            <>
-              <div className="border-t border-[oklch(40%_0.13_250)] pt-3 mt-3">
-                <div className="px-2 py-2 mb-2">
-                  <p className="text-sm font-semibold">{user?.name}</p>
-                  <p className="text-xs text-gray-300">{user?.email}</p>
-                </div>
-                {user?.authorId && (
-                  <Link
-                    to={`/auteurs/${user.authorId}`}
-                    className="flex items-center gap-3 py-2 px-2 rounded hover:bg-[oklch(40%_0.13_250)]"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <UserCircle className="w-4 h-4" />
-                    Mon profil public
-                  </Link>
-                )}
-                <Link
-                  to="/mes-prototypes"
-                  className="flex items-center gap-3 py-2 px-2 rounded hover:bg-[oklch(40%_0.13_250)]"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <FileText className="w-4 h-4" />
-                  Mes prototypes
-                </Link>
-                <Link
-                  to="/compte"
-                  className="flex items-center gap-3 py-2 px-2 rounded hover:bg-[oklch(40%_0.13_250)]"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <User className="w-4 h-4" />
-                  Mon compte
-                </Link>
-                {user?.role === 'admin' && (
-                  <Link
-                    to="/admin"
-                    className="flex items-center gap-3 py-2 px-2 rounded hover:bg-[oklch(40%_0.13_250)]"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <Shield className="w-4 h-4" />
-                    Administration
-                  </Link>
-                )}
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setMenuOpen(false);
-                  }}
-                  className="w-full flex items-center gap-3 py-2 px-2 rounded hover:bg-red-900 text-red-300"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Se déconnecter
-                </button>
+          {isAuthenticated && (
+            <div className="border-t border-[oklch(40%_0.13_250)] pt-3 mt-3">
+              <div className="px-2 py-2 mb-2">
+                <p className="text-sm font-semibold">{user?.name}</p>
+                <p className="text-xs text-gray-300">{user?.email}</p>
               </div>
-            </>
-          ) : (
-            <Link
-              to="/auth/login"
-              className="flex items-center gap-3 py-2 px-2 rounded bg-white text-[oklch(36%_0.13_250)] font-medium hover:bg-gray-100 mt-3"
-              onClick={() => setMenuOpen(false)}
-            >
-              <LogIn className="w-4 h-4" />
-              Connexion
-            </Link>
+              {user?.authorId && (
+                <Link
+                  to={`/auteurs/${user.authorId}`}
+                  className="flex items-center gap-3 py-2 px-2 rounded hover:bg-[oklch(40%_0.13_250)]"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <UserCircle className="w-4 h-4" />
+                  Mon profil public
+                </Link>
+              )}
+              <Link
+                to="/mes-prototypes"
+                className="flex items-center gap-3 py-2 px-2 rounded hover:bg-[oklch(40%_0.13_250)]"
+                onClick={() => setMenuOpen(false)}
+              >
+                <FileText className="w-4 h-4" />
+                Mes prototypes
+              </Link>
+              <Link
+                to="/compte"
+                className="flex items-center gap-3 py-2 px-2 rounded hover:bg-[oklch(40%_0.13_250)]"
+                onClick={() => setMenuOpen(false)}
+              >
+                <User className="w-4 h-4" />
+                Mon compte
+              </Link>
+              {user?.role === 'admin' && (
+                <Link
+                  to="/admin"
+                  className="flex items-center gap-3 py-2 px-2 rounded hover:bg-[oklch(40%_0.13_250)]"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <Shield className="w-4 h-4" />
+                  Administration
+                </Link>
+              )}
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 py-2 px-2 rounded hover:bg-red-900 text-red-300"
+              >
+                <LogOut className="w-4 h-4" />
+                Se déconnecter
+              </button>
+            </div>
           )}
         </div>
       )}
