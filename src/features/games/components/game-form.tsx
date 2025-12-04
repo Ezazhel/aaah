@@ -5,8 +5,10 @@ import { useAuthors } from "@/features/authors/api/get-authors";
 import { MechanicsSelect } from "@/features/mechanics/components/mechanics-select";
 import { useAuth } from "@/lib/auth";
 import { type GameInput } from "@/types";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Loader2 } from "lucide-react";
 import { ImageUploader } from "@/components/ui/image-uploader";
+import { MultiImageUploader } from "@/components/ui/multi-image-uploader";
+import { useImageUpload } from "@/hooks/use-image-upload";
 
 const PLACEHOLDER_IMAGE = "https://placehold.co/600x400/cccccc/222222?text=Ajouter+une+image";
 
@@ -20,6 +22,21 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
   const { user } = useAuth();
   const { data: authorsResponse, isLoading: authorsLoading } = useAuthors();
   const authors = authorsResponse?.data || [];
+
+  // Upload hook
+  const { uploadImage, isUploading } = useImageUpload();
+  const [uploadProgress, setUploadProgress] = useState<string>('');
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  // Image states - separate files from URLs
+  const [mainImageFile, setMainImageFile] = useState<File | null>(null);
+  const [mainImagePreview, setMainImagePreview] = useState<string | null>(
+    initialData?.imageUrl || null
+  );
+  const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
+  const [existingGalleryUrls, setExistingGalleryUrls] = useState<string[]>(
+    initialData?.images || []
+  );
 
   // Form state
   const [formData, setFormData] = useState<GameInput>({
@@ -53,27 +70,50 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
   // Temporary state for adding authors
   const [selectedAuthorToAdd, setSelectedAuthorToAdd] = useState<number | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    setUploadError(null);
+
+    try {
+      let finalImageUrl = initialData?.imageUrl || '';
+      let finalGalleryUrls = [...existingGalleryUrls];
+
+      // 1. Upload main image if new file selected
+      if (mainImageFile) {
+        setUploadProgress("Upload de l'image principale...");
+        const result = await uploadImage(mainImageFile, 'game');
+        finalImageUrl = result.secureUrl;
+      }
+
+      // 2. Upload gallery images in parallel
+      if (galleryFiles.length > 0) {
+        setUploadProgress(`Upload de ${galleryFiles.length} image(s)...`);
+        const uploadPromises = galleryFiles.map(f => uploadImage(f, 'game'));
+        const results = await Promise.all(uploadPromises);
+        finalGalleryUrls = [
+          ...finalGalleryUrls,
+          ...results.map(r => r.secureUrl)
+        ];
+      }
+
+      setUploadProgress('');
+
+      // 3. Submit with real Cloudinary URLs
+      onSubmit({
+        ...formData,
+        imageUrl: finalImageUrl,
+        images: finalGalleryUrls,
+      });
+    } catch (error) {
+      setUploadProgress('');
+      const errorMessage = error instanceof Error ? error.message : "Erreur lors de l'upload";
+      setUploadError(errorMessage);
+      console.error('Upload error:', error);
+    }
   };
 
   const updateField = <K extends keyof GameInput>(field: K, value: GameInput[K]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-
-  const handleGalleryImageUpload = (url: string) => {
-    if (url) {
-      updateField("images", [...(formData.images || []), url]);
-    }
-  };
-
-  const removeImage = (index: number) => {
-    updateField(
-      "images",
-      formData.images?.filter((_, i) => i !== index) || []
-    );
   };
 
   const selectedAuthors = authors.filter((a) => formData.authorIds.includes(a.id));
@@ -87,16 +127,16 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
           <div className="w-full">
             <ImageUploader
               onFileSelect={(file) => {
-                // For now, just create a preview URL
-                // In production, you would upload the file to the server here
                 if (file) {
-                  const objectUrl = URL.createObjectURL(file);
-                  updateField("imageUrl", objectUrl);
+                  setMainImageFile(file);
+                  // Create local preview (blob URL for display only)
+                  setMainImagePreview(URL.createObjectURL(file));
                 } else {
-                  updateField("imageUrl", "");
+                  setMainImageFile(null);
+                  setMainImagePreview(initialData?.imageUrl || null);
                 }
               }}
-              currentImageUrl={formData.imageUrl}
+              currentImageUrl={mainImagePreview || undefined}
               label="Image principale"
               description="Formats acceptés : JPG, PNG, GIF, WEBP (max 10MB)"
             />
@@ -305,45 +345,21 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
             Ajoutez plusieurs images pour présenter votre prototype sous différents angles
           </p>
 
-          <ImageUploader
-            onFileSelect={(file) => {
-              // For now, just create a preview URL for gallery
-              // In production, you would upload the file to the server here
-              if (file) {
-                const objectUrl = URL.createObjectURL(file);
-                handleGalleryImageUpload(objectUrl);
-              }
+          <MultiImageUploader
+            onFilesSelect={(files) => {
+              setGalleryFiles(prev => [...prev, ...files]);
             }}
-            label="Ajouter une image à la galerie"
-            description="Formats acceptés : JPG, PNG, GIF, WEBP (max 10MB)"
-            className="mb-6"
+            existingUrls={existingGalleryUrls}
+            onRemoveExisting={(url) => {
+              setExistingGalleryUrls(prev => prev.filter(u => u !== url));
+            }}
+            pendingFiles={galleryFiles}
+            onRemovePending={(index) => {
+              setGalleryFiles(prev => prev.filter((_, i) => i !== index));
+            }}
+            label="Ajouter des images à la galerie"
+            description="Sélectionnez plusieurs images d'un coup (JPG, PNG, GIF, WEBP - max 10MB)"
           />
-
-          {formData.images && formData.images.length > 0 && (
-            <div className="mt-6">
-              <h3 className="text-lg font-semibold text-gray-700 mb-3">
-                Images de la galerie ({formData.images.length})
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {formData.images.map((img, idx) => (
-                  <div key={idx} className="relative">
-                    <img
-                      src={img || PLACEHOLDER_IMAGE}
-                      alt={`Image ${idx + 1}`}
-                      className="rounded-lg shadow object-cover w-full h-40 md:h-48"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(idx)}
-                      className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Règles et ressources */}
@@ -392,14 +408,22 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
           </label>
         </div>
 
+        {/* Upload Error */}
+        {uploadError && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-red-700 text-sm">{uploadError}</p>
+          </div>
+        )}
+
         {/* Submit Button */}
         <div className="flex justify-end gap-4">
           <button
             type="submit"
-            disabled={isSubmitting}
-            className="px-8 py-3 bg-[oklch(69%_0.19_41)] text-white font-semibold rounded-lg shadow hover:bg-[oklch(69%_0.19_41)]/80 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting || isUploading}
+            className="px-8 py-3 bg-[oklch(69%_0.19_41)] text-white font-semibold rounded-lg shadow hover:bg-[oklch(69%_0.19_41)]/80 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            {isSubmitting ? "Enregistrement..." : "Enregistrer le prototype"}
+            {(isUploading || uploadProgress) && <Loader2 size={18} className="animate-spin" />}
+            {uploadProgress || (isSubmitting ? "Enregistrement..." : "Enregistrer le prototype")}
           </button>
         </div>
       </section>

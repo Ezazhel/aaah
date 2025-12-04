@@ -132,6 +132,7 @@ export type RegisterData = {
   password: string;
   name: string;
   invitationToken: string;
+  authorId?: number;
 };
 
 export type ResetPasswordRequest = {

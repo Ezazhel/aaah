@@ -21,10 +21,13 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ invitationToken, onS
   const registerMutation = useRegister();
   const { data: invitationData, isLoading: isVerifying, error: verificationError } = useVerifyInvitation({ token: invitationToken });
 
-  // Pre-fill email from invitation
+  // Pre-fill email and name from invitation
   useEffect(() => {
-    if (invitationData?.data?.email) {
-      setEmail(invitationData.data.email);
+    if (invitationData?.email) {
+      setEmail(invitationData.email);
+    }
+    if (invitationData?.authorName) {
+      setName(invitationData.authorName);
     }
   }, [invitationData]);
 
@@ -49,6 +52,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ invitationToken, onS
       email,
       password,
       invitationToken,
+      authorId: invitationData?.authorId,
     };
 
     try {
@@ -78,7 +82,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ invitationToken, onS
     );
   }
 
-  if (verificationError || !invitationData?.data?.valid) {
+  if (verificationError || !invitationData?.valid) {
     return (
       <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg flex items-start gap-3">
         <AlertCircle className="w-6 h-6 flex-shrink-0 mt-0.5" />
@@ -98,7 +102,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ invitationToken, onS
         <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
         <div className="text-sm">
           <p className="font-medium mb-1">Invitation valide</p>
-          <p>Vous pouvez créer votre compte pour {invitationData.data.email}</p>
+          <p>Vous pouvez créer votre compte pour {invitationData.email}</p>
         </div>
       </div>
 

@@ -6,15 +6,17 @@ export type InvitationVerification = {
   valid: boolean;
   email: string;
   expiresAt: string;
+  authorId?: number;
+  authorName?: string;
 };
 
-export const verifyInvitation = (token: string): Promise<{ data: InvitationVerification }> => {
-  return apiClient.get<InvitationVerification>(`/auth/invitation/verify/${token}`);
+export const verifyInvitation = (token: string): Promise<InvitationVerification> => {
+  return apiClient.get(`/auth/invitation/verify/${token}`);
 };
 
 type UseVerifyInvitationOptions = {
   token: string;
-  queryConfig?: QueryConfig<() => Promise<{ data: InvitationVerification }>>;
+  queryConfig?: QueryConfig<typeof verifyInvitation>;
 };
 
 export const useVerifyInvitation = ({ token, queryConfig }: UseVerifyInvitationOptions) => {
