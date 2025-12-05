@@ -6,7 +6,7 @@ import { getLabel } from "@/lib/getLabel";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ErrorMessage } from "@/components/ui/error-message";
 import { useGame } from "../api/get-game";
-import { generateSlug } from "@/lib/utils";
+import { generateSlug, formatAuthorName } from "@/lib/utils";
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   prototype: { label: "Prototype", color: "bg-gray-300 text-gray-700" },
@@ -180,17 +180,20 @@ export default function GameDetails() {
               <span className="text-gray-600 mr-2">par</span>
               {game.authors && game.authors.length > 0 ? (
                 <span className="flex flex-wrap gap-1">
-                  {game.authors.map((author, idx) => (
-                    <span key={author.id} className="flex items-center">
-                      <Link
-                        to={`/auteurs/${author.id}/${author.name ? generateSlug(author.name) : ''}`}
-                        className="text-orange-600 font-semibold hover:underline"
-                      >
-                        {author.name}
-                      </Link>
-                      {idx < game.authors.length - 1 && <span className="mx-1 text-gray-400">,</span>}
-                    </span>
-                  ))}
+                  {game.authors.map((author, idx) => {
+                    const authorFullName = formatAuthorName(author);
+                    return (
+                      <span key={author.id} className="flex items-center">
+                        <Link
+                          to={`/auteurs/${author.id}/${generateSlug(authorFullName)}`}
+                          className="text-orange-600 font-semibold hover:underline"
+                        >
+                          {authorFullName}
+                        </Link>
+                        {idx < game.authors.length - 1 && <span className="mx-1 text-gray-400">,</span>}
+                      </span>
+                    );
+                  })}
                 </span>
               ) : (
                 <span className="text-orange-600 font-semibold">Auteur inconnu</span>
@@ -393,7 +396,9 @@ export default function GameDetails() {
           </h2>
           <div className={`grid gap-6 ${game.authors && game.authors.length > 1 ? "md:grid-cols-2" : ""}`}>
             {game.authors && game.authors.length > 0 ? (
-              game.authors.map((author) => (
+              game.authors.map((author) => {
+                const authorFullName = formatAuthorName(author);
+                return (
                 <div
                   key={author.id}
                   className="flex flex-col md:flex-row items-center gap-6 bg-white/90 rounded-xl shadow p-6"
@@ -401,17 +406,17 @@ export default function GameDetails() {
                   <div className="flex-shrink-0">
                     <img
                       src={author.photoUrl || PLACEHOLDER_AUTHOR_IMAGE}
-                      alt={author.name}
+                      alt={authorFullName}
                       className="w-24 h-24 rounded-full object-cover border-4 border-[oklch(69%_0.19_41)] shadow"
                     />
                   </div>
                   <div className="flex-1 w-full">
                     <h3 className="text-xl font-bold text-[oklch(69%_0.19_41)]/90 mb-1">
                       <Link
-                        to={`/auteurs/${author.id}/${author.name ? generateSlug(author.name) : ''}`}
+                        to={`/auteurs/${author.id}/${generateSlug(authorFullName)}`}
                         className="text-orange-600 font-semibold hover:underline"
                       >
-                        {author.name}
+                        {authorFullName}
                       </Link>
                     </h3>
                     <p className="text-gray-700 mb-2">
@@ -420,7 +425,7 @@ export default function GameDetails() {
                     <p className="text-gray-500 mb-3">
                       Intéressé par ce jeu ?{" "}
                       <span className="font-semibold">
-                        {author.name ? "Contactez l'auteur !" : ""}
+                        Contactez l'auteur !
                       </span>
                     </p>
                     {(author.email || author.contactEmail) ? (
@@ -466,7 +471,7 @@ export default function GameDetails() {
                     </div>
                   )}
                 </div>
-              ))
+                )})
             ) : (
               <div className="flex flex-col md:flex-row items-center gap-6 bg-white/90 rounded-xl shadow p-6">
                 <div className="flex-shrink-0">

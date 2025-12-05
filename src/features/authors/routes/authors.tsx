@@ -27,8 +27,10 @@ export default function Authors() {
   const filteredAuthors = authors.filter((author) => {
     const matchesRole =
       role === "Tous rôles" || author.role === role;
+    const searchLower = search.toLowerCase();
     const matchesSearch =
-      author.name.toLowerCase().includes(search.toLowerCase());
+      author.firstname.toLowerCase().includes(searchLower) ||
+      author.lastname.toLowerCase().includes(searchLower);
     return matchesRole && matchesSearch;
   });
 

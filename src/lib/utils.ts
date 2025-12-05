@@ -24,3 +24,17 @@ export function cn(...inputs: ClassValue[]) {
 export function generateSlug(text: string): string {
   return slugify(text, { lower: true, strict: true })
 }
+
+/**
+ * Format author name from firstname and lastname
+ * Formate le nom complet d'un auteur à partir du prénom et nom
+ *
+ * @param author - Object with firstname and lastname properties
+ * @returns Full name string
+ *
+ * @example
+ * formatAuthorName({ firstname: "Jean", lastname: "Martin" }) // "Jean Martin"
+ */
+export function formatAuthorName(author: { firstname: string; lastname: string }): string {
+  return `${author.firstname} ${author.lastname}`.trim()
+}

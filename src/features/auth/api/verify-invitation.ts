@@ -7,7 +7,8 @@ export type InvitationVerification = {
   email: string;
   expiresAt: string;
   authorId?: number;
-  authorName?: string;
+  authorFirstname?: string;
+  authorLastname?: string;
 };
 
 export const verifyInvitation = (token: string): Promise<InvitationVerification> => {

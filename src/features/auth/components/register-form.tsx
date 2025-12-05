@@ -11,7 +11,8 @@ interface RegisterFormProps {
 }
 
 export const RegisterForm: React.FC<RegisterFormProps> = ({ invitationToken, onSuccess }) => {
-  const [name, setName] = useState('');
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -21,13 +22,17 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ invitationToken, onS
   const registerMutation = useRegister();
   const { data: invitationData, isLoading: isVerifying, error: verificationError } = useVerifyInvitation({ token: invitationToken });
 
-  // Pre-fill email and name from invitation
+  // Pre-fill email from invitation
   useEffect(() => {
     if (invitationData?.email) {
       setEmail(invitationData.email);
     }
-    if (invitationData?.authorName) {
-      setName(invitationData.authorName);
+    // Pre-fill firstname/lastname if author is linked to invitation
+    if (invitationData?.authorFirstname) {
+      setFirstname(invitationData.authorFirstname);
+    }
+    if (invitationData?.authorLastname) {
+      setLastname(invitationData.authorLastname);
     }
   }, [invitationData]);
 
@@ -48,7 +53,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ invitationToken, onS
     }
 
     const data: RegisterData = {
-      name,
+      firstname,
+      lastname,
       email,
       password,
       invitationToken,
@@ -114,21 +120,40 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ invitationToken, onS
           </div>
         )}
 
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-            Nom complet
-          </label>
-          <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[oklch(69%_0.19_41)] focus:border-transparent outline-none transition"
-              placeholder="Jean Dupont"
-            />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="firstname" className="block text-sm font-medium text-gray-700 mb-2">
+              Prénom
+            </label>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                id="firstname"
+                type="text"
+                value={firstname}
+                onChange={(e) => setFirstname(e.target.value)}
+                required
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[oklch(69%_0.19_41)] focus:border-transparent outline-none transition"
+                placeholder="Jean"
+              />
+            </div>
+          </div>
+          <div>
+            <label htmlFor="lastname" className="block text-sm font-medium text-gray-700 mb-2">
+              Nom
+            </label>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                id="lastname"
+                type="text"
+                value={lastname}
+                onChange={(e) => setLastname(e.target.value)}
+                required
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[oklch(69%_0.19_41)] focus:border-transparent outline-none transition"
+                placeholder="Dupont"
+              />
+            </div>
           </div>
         </div>
 

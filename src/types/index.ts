@@ -53,7 +53,8 @@ export type GameInput = Omit<Game, 'id' | 'authors' | 'createdBy' | 'updatedAt'>
 
 export type Author = {
   id: number; // Changed from string to number
-  name: string;
+  firstname: string;
+  lastname: string;
   region: string; // required
   role: MemberRole;
   // --- Additional optional fields for detail page ---
@@ -130,7 +131,8 @@ export type LoginCredentials = {
 export type RegisterData = {
   email: string;
   password: string;
-  name: string;
+  firstname: string;
+  lastname: string;
   invitationToken: string;
   authorId?: number;
 };

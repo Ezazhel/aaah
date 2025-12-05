@@ -7,6 +7,7 @@ import { MEMBER_ROLES } from "@/constants/labels";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { getLabel } from "@/lib/getLabel";
+import { formatAuthorName } from "@/lib/utils";
 import { GameCard } from "@/features/games/components/game-card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ErrorMessage } from "@/components/ui/error-message";
@@ -157,11 +158,14 @@ const AuthorDetail: React.FC = () => {
     return <LoadingSpinner message={message} />;
   }
 
+  // Compute author name
+  const authorName = author ? formatAuthorName(author) : "Auteur";
+
   // Breadcrumb items
   const breadcrumbItems = [
     { label: "Accueil", to: "/" },
     { label: "Auteurs", to: "/auteurs" },
-    { label: author?.name || "Auteur" },
+    { label: authorName },
   ];
 
   return (
@@ -181,7 +185,7 @@ const AuthorDetail: React.FC = () => {
             </Link>
             <span>/</span>
             <span className="text-brand-dark font-semibold">
-              {author?.name}
+              {authorName}
             </span>
           </nav>
         )}
@@ -208,12 +212,12 @@ const AuthorDetail: React.FC = () => {
           {author?.photoUrl ? (
             <img
               src={author.photoUrl}
-              alt={author.name}
+              alt={authorName}
               className="w-[200px] h-[200px] rounded-full border-4 border-brand-primary object-cover shadow"
             />
           ) : (
             <div className="w-[200px] h-[200px] rounded-full border-4 border-brand-primary bg-gradient-to-br from-[oklch(98%_0.01_250)] to-[oklch(80%_0.19_41)] flex items-center justify-center text-[oklch(36%_0.13_250)] text-6xl font-bold shadow">
-              {author?.name?.charAt(0).toUpperCase() || "?"}
+              {author?.firstname?.charAt(0).toUpperCase() || "?"}
             </div>
           )}
         </div>
@@ -222,7 +226,7 @@ const AuthorDetail: React.FC = () => {
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="text-3xl md:text-4xl font-extrabold text-brand-primary break-words">
-                {author?.name}
+                {authorName}
               </h1>
               {author?.role && (
                 <span className="inline-block px-3 py-1 rounded-full bg-brand-primary/10 text-brand-primary text-xs font-semibold border border-brand-primary/20">

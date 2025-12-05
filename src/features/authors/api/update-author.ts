@@ -4,7 +4,8 @@ import { type MutationConfig } from '@/lib/react-query';
 import type { Author } from '@/types';
 
 export type UpdateAuthorInput = {
-  name?: string;
+  firstname?: string;
+  lastname?: string;
   photoUrl?: string;
   region?: string;
   bio?: string;

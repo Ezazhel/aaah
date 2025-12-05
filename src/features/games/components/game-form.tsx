@@ -9,6 +9,7 @@ import { X, Plus, Loader2 } from "lucide-react";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { MultiImageUploader } from "@/components/ui/multi-image-uploader";
 import { useImageUpload } from "@/hooks/use-image-upload";
+import { formatAuthorName } from "@/lib/utils";
 
 const PLACEHOLDER_IMAGE = "https://placehold.co/600x400/cccccc/222222?text=Ajouter+une+image";
 
@@ -180,7 +181,7 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
                       .filter(a => !formData.authorIds.includes(a.id))
                       .map((author) => (
                         <option key={author.id} value={author.id}>
-                          {author.name}
+                          {formatAuthorName(author)}
                         </option>
                       ))
                     }
@@ -207,7 +208,7 @@ export function GameForm({ onSubmit, initialData, isSubmitting = false }: GameFo
                       key={author.id}
                       className="inline-flex items-center gap-1 bg-orange-100 text-orange-800 rounded-full px-3 py-1 text-sm"
                     >
-                      {author.name}
+                      {formatAuthorName(author)}
                       {author.id !== user?.authorId && (
                         <button
                           type="button"

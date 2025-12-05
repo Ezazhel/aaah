@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority"
 import { Link } from "react-router-dom"
-import { cn, generateSlug } from "@/lib/utils"
+import { cn, generateSlug, formatAuthorName } from "@/lib/utils"
 import type { Game } from "@/types"
 import { CategoryBadge } from "@/components/category-badge"
 
@@ -69,7 +69,7 @@ export function GameCard({
   } = game
 
   const authorName = authors?.length
-    ? authors.map(author => author.name).join(", ")
+    ? authors.map(author => formatAuthorName(author)).join(", ")
     : "Auteur inconnu"
 
   const slug = generateSlug(name);

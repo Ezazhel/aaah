@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/auth';
 import { Link } from 'react-router-dom';
 import { ImageUploader } from '@/components/ui/image-uploader';
 import { useAvatarPrepare } from '@/hooks/use-avatar-prepare';
+import { formatAuthorName } from '@/lib/utils';
 
 export const EditAuthorForm: React.FC = () => {
   const { user } = useAuth();
@@ -20,7 +21,8 @@ export const EditAuthorForm: React.FC = () => {
   });
 
   const [formData, setFormData] = useState({
-    name: '',
+    firstname: '',
+    lastname: '',
     photoUrl: '',
     region: '',
     bio: '',
@@ -43,14 +45,15 @@ export const EditAuthorForm: React.FC = () => {
 
   // Hook pour préparer l'avatar (compression + renommage)
   const { prepareAvatar, isPreparing, error: prepareError } = useAvatarPrepare({
-    authorName: formData.name,
+    authorName: formatAuthorName({ firstname: formData.firstname, lastname: formData.lastname }),
   });
 
   // Initialize form with author data
   useEffect(() => {
     if (author) {
       setFormData({
-        name: author.name || '',
+        firstname: author.firstname || '',
+        lastname: author.lastname || '',
         photoUrl: author.photoUrl || '',
         region: author.region || '',
         bio: author.bio || '',
@@ -129,7 +132,8 @@ export const EditAuthorForm: React.FC = () => {
       const submitFormData = new FormData();
 
       // Ajouter les données JSON
-      submitFormData.append('name', formData.name);
+      submitFormData.append('firstname', formData.firstname);
+      submitFormData.append('lastname', formData.lastname);
       submitFormData.append('region', formData.region || '');
       submitFormData.append('bio', formData.bio || '');
       submitFormData.append('contactEmail', formData.contactEmail || '');
@@ -222,7 +226,7 @@ export const EditAuthorForm: React.FC = () => {
               {formData.photoUrl ? (
                 <img
                   src={formData.photoUrl}
-                  alt={formData.name}
+                  alt={formatAuthorName({ firstname: formData.firstname, lastname: formData.lastname })}
                   className="w-[120px] h-[120px] rounded-full object-cover border-4 border-[oklch(69%_0.19_41)] shadow"
                 />
               ) : (
@@ -252,22 +256,41 @@ export const EditAuthorForm: React.FC = () => {
           </div>
         </div>
 
-        {/* Name */}
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-            Nom d'auteur
-          </label>
-          <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              id="name"
-              name="name"
-              type="text"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[oklch(69%_0.19_41)] focus:border-transparent outline-none transition"
-            />
+        {/* Firstname & Lastname */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="firstname" className="block text-sm font-medium text-gray-700 mb-2">
+              Prénom
+            </label>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                id="firstname"
+                name="firstname"
+                type="text"
+                value={formData.firstname}
+                onChange={handleChange}
+                required
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[oklch(69%_0.19_41)] focus:border-transparent outline-none transition"
+              />
+            </div>
+          </div>
+          <div>
+            <label htmlFor="lastname" className="block text-sm font-medium text-gray-700 mb-2">
+              Nom
+            </label>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                id="lastname"
+                name="lastname"
+                type="text"
+                value={formData.lastname}
+                onChange={handleChange}
+                required
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[oklch(69%_0.19_41)] focus:border-transparent outline-none transition"
+              />
+            </div>
           </div>
         </div>
 

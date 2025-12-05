@@ -3,14 +3,15 @@ import { Link } from "react-router-dom";
 import type { Author } from "@/types";
 import { MEMBER_ROLES } from "@/constants/labels";
 import { getLabel } from "@/lib/getLabel";
-import { generateSlug } from "@/lib/utils";
+import { generateSlug, formatAuthorName } from "@/lib/utils";
 
 type AuthorCardProps = {
-  author: Pick<Author, "id" | "name" | "photoUrl" | "role">;
+  author: Pick<Author, "id" | "firstname" | "lastname" | "photoUrl" | "role">;
 };
 
 export const AuthorCard: React.FC<AuthorCardProps> = ({ author }) => {
-  const { id, name, photoUrl, role } = author;
+  const { id, firstname, lastname, photoUrl, role } = author;
+  const name = formatAuthorName({ firstname, lastname });
   const slug = generateSlug(name);
 
   return (
