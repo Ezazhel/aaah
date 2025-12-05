@@ -11,8 +11,6 @@ import { MultiImageUploader } from "@/components/ui/multi-image-uploader";
 import { useImageUpload } from "@/hooks/use-image-upload";
 import { formatAuthorName } from "@/lib/utils";
 
-const PLACEHOLDER_IMAGE = "https://placehold.co/600x400/cccccc/222222?text=Ajouter+une+image";
-
 type GameFormProps = {
   onSubmit: (data: GameInput) => void;
   initialData?: Partial<GameInput>;
