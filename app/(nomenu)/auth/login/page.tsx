@@ -1,6 +1,6 @@
 "use client"
 
-import { createClient } from "@/app/utils/supabase/client"
+import { createClient } from "@/lib/supabase/client"
 import { signInWithMagicLink } from "./_lib/actions/auth";
 import { useState } from "react";
 

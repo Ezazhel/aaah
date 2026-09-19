@@ -1,5 +1,7 @@
 
-import { createClient } from "@/app/utils/supabase/server";
+'use server'
+
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -8,7 +10,7 @@ export async function exchangeCodeForSession(code:string) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if(error){
-        throw error;
+        redirect('./error');
     }
 
     revalidatePath('/', 'layout');

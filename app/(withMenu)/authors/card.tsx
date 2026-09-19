@@ -1,4 +1,4 @@
-import Typography from "@/app/components/typography";
+import Typography from "@/components/typography";
 
 type AuthorProps = {
     fullName: string;
