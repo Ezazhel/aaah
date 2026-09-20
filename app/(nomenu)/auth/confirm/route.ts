@@ -7,12 +7,22 @@ export async function GET(request: Request) {
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get('type') as EmailOtpType | null;
 
+  console.log("CONFIRM:", {
+    hasToken: !!token_hash,
+    type,
+  });
+
   if (token_hash && type) {
     const supabase = await createClient();
-    const { error } = await supabase.auth.verifyOtp({
+    const { data, error } = await supabase.auth.verifyOtp({
       token_hash,
       type,
     });
+   console.log("VERIFY OTP:", {
+    error,
+    user: data.user?.id,
+    hasSession: !!data.session,
+  });
 
     if (!error) {
       return NextResponse.redirect(`${origin}/authors`);

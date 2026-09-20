@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function signInWithMagicLink(initialState: {success:boolean, error: any}, formData: FormData): Promise<{success:boolean, error: any}> {
     const email = formData.get('email') as string;
-    
     if(!email){
         return { success : false, error: 'Email is required'};
     }
@@ -20,7 +19,7 @@ export async function signInWithMagicLink(initialState: {success:boolean, error:
     });
 
     if(error){
-        return { success: false, error };
+        return { success: false, error: error.message };
     }
 
     return { success: true, error: null };
