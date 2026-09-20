@@ -9,8 +9,8 @@ type Claims = {sub?:string};
 export default function AccountForm({claims}: {claims: Claims | undefined}) {
     const supabase = createClient();
     const [loading, setLoading] = useState(true);
-    const [firstName, setFirstName] = useState(null);
-    const [lastName, setLastName] = useState(null);
+    const [firstName, setFirstName] = useState<string>('');
+    const [lastName, setLastName] = useState<string>('');
    
     const getProfile = useCallback(async () => {
         try {
@@ -46,9 +46,10 @@ export default function AccountForm({claims}: {claims: Claims | undefined}) {
 
     const updateProfile: SubmitEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
+        debugger;
         const data = new FormData(e.target as HTMLFormElement);
-        const firstName = data.get('firstName');
-        const lastName = data.get('lastName');
+        const firstName = data.get('firstName') as string;
+        const lastName = data.get('lastName') as string;
 
         if(!firstName || !lastName){
             return;
@@ -66,6 +67,8 @@ export default function AccountForm({claims}: {claims: Claims | undefined}) {
                 last_name: lastName,
                 updated_at: new Date().toISOString()
             })
+            setFirstName(firstName);
+            setLastName(lastName);
         }
         catch(error){
             alert("Couldn't update your profile");
@@ -74,6 +77,7 @@ export default function AccountForm({claims}: {claims: Claims | undefined}) {
             setLoading(false);
         }
     }
+
     useEffect(() => {
         getProfile()
     }, [claims, getProfile])

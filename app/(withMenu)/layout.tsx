@@ -1,4 +1,5 @@
 import { User } from "@/components/user"
+import { requireUserSetup } from "@/lib/route_requires";
 import { createClient } from "@/lib/supabase/server"
 
 async function Header() {
@@ -14,7 +15,7 @@ async function Header() {
   </header>)
 }
 
-export default function WithMenuLayout({children}:React.ComponentProps<'div'>) {
+export default async function WithMenuLayout({children}:React.ComponentProps<'div'>) {
     return <>
     <Header/>
     {children}

@@ -15,9 +15,6 @@ export async function inviteUser(formData: FormData){
     })
 
     if(error){
-        console.error(error);
         throw new Error(error.message)
     }
-
-    console.log('Invited', data.user.email);
 }

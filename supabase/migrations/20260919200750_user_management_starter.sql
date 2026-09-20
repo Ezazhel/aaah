@@ -1,5 +1,5 @@
 create table authors (
-  id uuid not null references auth.users(id),
+  id uuid references auth.users(id) not null primary key,
   avatar_url text,
   description text,
   instagram_url text,

@@ -1,4 +1,5 @@
 export type Author = {
-    fullName:string;
+    firstName:string;
+    lastName:string;
     id:string;
 }

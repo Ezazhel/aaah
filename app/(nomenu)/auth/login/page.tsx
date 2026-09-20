@@ -7,6 +7,7 @@ export default function Login() {
  const [state, formAction, pending] = useActionState(signInWithMagicLink, {success: false, error: null});
   return (
     <>
+    <h1>Connectez-vous !</h1>
     <form id="form" action={formAction}>
         <div>
             <label htmlFor="email">Email</label>

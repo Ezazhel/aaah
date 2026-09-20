@@ -8,5 +8,8 @@ if(!user){
     return <a href='./auth/login'>Login</a>
 }
 
-  return <span>{user.email}</span>
+  return <div>
+    <span>{user.email}</span>
+    <a href="auth/sign-out">Deconnexion</a>
+    </div>
 }
