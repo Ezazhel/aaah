@@ -1,13 +1,13 @@
 import { Author } from "@/app/model/author";
-import { GetAuthor } from "./lib/get-author";
+import { GetAuthors } from "./lib/get-authors";
 import AuthorCard from "./card";
 
 export default async function Authors() {
-    const authors: Author[] = await GetAuthor();
+    const authors = await GetAuthors();
     return <div>
         <h1>Auteur.ices</h1>
         {authors.length ? authors.map(author => (
-           <AuthorCard firstName={author.firstName} lastName={author.lastName} key={author.id}/>
+           <AuthorCard firstName={author.first_name} lastName={author.last_name} key={author.slug} slug={author.slug!}/>
        )) : <div>Il n'y a actuellement pas d'auteurs </div>
        }
     </div>

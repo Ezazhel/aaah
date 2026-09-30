@@ -1,22 +1,14 @@
 import { Author } from "@/app/model/author";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server"
 
-export async function GetAuthor(): Promise<Author[]> {
+export const GetAuthor = async (slug:string) => {
     const supabase = await createClient();
-    try {
-        const { data, error } = await supabase.from('authors').select('last_name, first_name, id')
-        .neq('last_name',null)
-        .neq('first_name',null)
-        .neq('last_name','')
-        .neq('first_name','');
+    const {data,error} = await supabase.from('authors').select('*').eq('slug',slug).single();
 
-        return data?.map(data => ({
-            firstName: data.first_name,
-            lastName: data.last_name,
-            id: data.id
-        })) ?? [];
-    }catch(error){
-        console.log(error)
-        return [];
+    if(error){
+        throw new Error(error.message);
     }
+
+    console.log(data);
+    return data;
 }
