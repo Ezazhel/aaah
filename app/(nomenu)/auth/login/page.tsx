@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { signInWithMagicLink } from "./actions/auth";
+import { Button } from "@/components/ui/button";
 
 export default function Login() {
  const [state, formAction, pending] = useActionState(signInWithMagicLink, {success: false, error: null});
@@ -13,7 +14,7 @@ export default function Login() {
             <label htmlFor="email">Email</label>
             <input name="email" id="email" type='email' placeholder="Enter your email" />
         </div>
-        <button type="submit">Send link</button>
+        <Button type="submit" disabled={pending}>Send link</Button>
     </form>
     {state.success && 'Vérifiez vos mails !'}
     {state.error}

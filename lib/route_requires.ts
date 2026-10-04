@@ -15,7 +15,10 @@ export async function requireUserSetup(){
 
     const supabase = await createClient();
     const {data: user} = await supabase.auth.getUser();
-    const author = await supabase.from('authors').select('first_name, last_name').eq('id', user.user?.id).single();
+    if(!user.user){
+        return;
+    }
+    const author = await supabase.from('authors').select('first_name, last_name').eq('id', user.user.id).single();
 
     console.log(author);
     if(!author.data?.first_name || !author.data?.last_name){

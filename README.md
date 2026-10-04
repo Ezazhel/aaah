@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AAAH — site de l'association d'auteur·ices de jeux de société
 
-## Getting Started
+Site vitrine d'une association de créateur·ices de jeux de société.
 
-First, run the development server:
+- Tout le monde (sans connexion) peut consulter les **auteur·ices** de l'association et leurs **jeux**.
+- Les auteur·ices peuvent **se connecter**, **ajouter des jeux** et **éditer** les jeux dont ils et elles sont auteur·ices.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+> Projet au stade **MVP** : on se concentre sur les fonctionnalités et les données. Le design et le CSS viendront plus tard.
+
+## Stack
+
+- [Next.js 16](https://nextjs.org) (App Router, Server Components, Server Actions) — attention, certaines API diffèrent des versions précédentes : voir `node_modules/next/dist/docs/`.
+- [Supabase](https://supabase.com) : base Postgres, authentification (lien magique / invitation), Row Level Security.
+- [react-hook-form](https://react-hook-form.com) + [zod](https://zod.dev) pour les formulaires et la validation.
+- [Tailwind CSS v4](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com) (Radix) pour les composants UI.
+- pnpm comme gestionnaire de paquets.
+
+## Fonctionnalités
+
+| Page | Route | Accès |
+| --- | --- | --- |
+| Accueil | `/` | public |
+| Liste des auteur·ices | `/authors` | public |
+| Détail d'un·e auteur·ice | `/authors/[slug]` | public |
+| Liste des jeux | `/games` | public |
+| Détail d'un jeu | `/games/[slug]` | public (bouton « Éditer » visible seulement par ses auteur·ices) |
+| Nouveau jeu | `/games/new` | connecté·e |
+| Édition d'un jeu | `/games/edit/[slug]` | connecté·e **et** auteur·ice du jeu |
+| Mon compte | `/account` | connecté·e |
+| Connexion / invitation | `/auth/login`, `/auth/invite` | public |
+
+Un·e utilisateur·ice connecté·e doit renseigner son prénom et son nom (`/account`) avant d'apparaître dans la liste des auteur·ices.
+
+## Modèle de données
+
+Migrations dans [`supabase/migrations`](supabase/migrations).
+
+- **`authors`** : profil lié à `auth.users` (prénom, nom, `slug` généré automatiquement).
+- **`games`** : nom, description, âge minimum, nombre de joueurs (min/max), durée en minutes (min/max), `slug` généré par trigger à partir du nom (suffixe `-2`, `-3`… en cas de doublon), `created_by`.
+- **`game_authors`** : table de liaison **N–N** — un·e auteur·ice peut avoir plusieurs jeux, un jeu peut avoir plusieurs auteur·ices. Le créateur ou la créatrice d'un jeu est ajouté·e automatiquement comme premier·e auteur·ice (trigger).
+
+Règles RLS principales :
+
+- lecture des jeux et des auteur·ices : tout le monde ;
+- création d'un jeu : utilisateur·ice connecté·e, en son nom ;
+- modification / suppression d'un jeu : n'importe quel·le auteur·ice du jeu ;
+- ajout / retrait de co-auteur·ices : le créateur ou la créatrice du jeu.
+
+## Organisation du code
+
+```
+app/
+  (nomenu)/            pages sans menu : auth (login, invite, confirm, sign-out), erreur
+  (withMenu)/
+    (public)/          pages publiques : accueil, authors, games (liste + détail)
+    (member)/          pages réservées aux connecté·es (layout qui redirige vers /auth/login)
+      account/
+      games/new, games/edit/[slug], games/components (formulaire), games/lib (schéma zod, server actions)
+components/
+  ui/                  composants shadcn (button…)
+  typography.tsx       titres et textes (H1, H2, H3, P, Muted, Typography)
+lib/
+  supabase/            clients Supabase (server, client, proxy)
+  route_requires.ts    helpers d'accès (utilisateur connecté, profil complété)
+database.types.ts      types générés depuis le schéma Supabase
+proxy.ts               rafraîchit la session Supabase à chaque requête
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### UI
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Boutons : `Button` de `@/components/ui/button`. Pour afficher un lien comme un bouton :
+  `<Link href="…" className={buttonVariants({ variant: "outline" })}>…</Link>`.
+- Couleurs : palette **orange** (principale, `primary`) et **bleu** (`secondary`) définie dans [`app/globals.css`](app/globals.css). Pas de thème sombre.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Démarrer en local
 
-## Learn More
+Prérequis : Node, pnpm, Docker (pour Supabase en local).
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+pnpm install
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+pnpm supa-run
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Créer un fichier `.env.local` avec les valeurs affichées par `supabase start` :
 
-## Deploy on Vercel
+```
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key>
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+pnpm dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Le site est sur [http://localhost:3000](http://localhost:3000). Les mails (liens magiques) arrivent dans Mailpit : [http://127.0.0.1:54324](http://127.0.0.1:54324).
+
+### Scripts
+
+| Script | Rôle |
+| --- | --- |
+| `pnpm dev` / `pnpm build` / `pnpm start` | Next.js |
+| `pnpm supa-run` / `pnpm supa-stop` | démarre / arrête Supabase en local |
+| `pnpm supa-reset` | recrée la base locale en rejouant toutes les migrations (**efface les données locales**) |
+| `pnpm supa-gen` | régénère `database.types.ts` depuis la base locale (à lancer après chaque migration) |
+
+## Roadmap
+
+- [x] Auteur·ices : liste, détail, profil
+- [x] Jeux : liste, détail, création, édition par les auteur·ices
+- [ ] Gestion des co-auteur·ices d'un jeu
+- [ ] Images des jeux
+- [ ] Design / CSS

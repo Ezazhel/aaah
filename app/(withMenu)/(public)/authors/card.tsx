@@ -1,4 +1,4 @@
-import Typography from "@/components/typography";
+import { Typography } from "@/components/typography";
 import Link from "next/link";
 
 type AuthorProps = {
@@ -16,7 +16,7 @@ export default function AuthorCard({slug,lastName, firstName}:AuthorProps) {
     return (
         <div className="bg-background size-48 min-h-0 flex flex-col flex-1 items-center gap-4 p-4">
             <div className="bg-gray-500 rounded-full size-24 border flex flex-col justify-center items-center">
-                <Typography className="uppercase text-4xl">{initial}</Typography>
+                <Typography as="span" className="uppercase text-4xl">{initial}</Typography>
             </div>
             <div className="flex flex-col capitalize">
                 <Link href={`./authors/${slug}`}>

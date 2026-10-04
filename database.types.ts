@@ -73,12 +73,89 @@ export type Database = {
         }
         Relationships: []
       }
+      game_authors: {
+        Row: {
+          author_id: string
+          game_id: string
+        }
+        Insert: {
+          author_id: string
+          game_id: string
+        }
+        Update: {
+          author_id?: string
+          game_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_authors_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_authors_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      games: {
+        Row: {
+          age_threshold: number
+          created_by: string
+          description: string
+          id: string
+          max_players: number
+          max_time_minutes: number
+          min_players: number
+          min_time_minutes: number
+          name: string
+          slug: string
+        }
+        Insert: {
+          age_threshold: number
+          created_by?: string
+          description: string
+          id?: string
+          max_players: number
+          max_time_minutes: number
+          min_players: number
+          min_time_minutes: number
+          name: string
+          slug?: string
+        }
+        Update: {
+          age_threshold?: number
+          created_by?: string
+          description?: string
+          id?: string
+          max_players?: number
+          max_time_minutes?: number
+          min_players?: number
+          min_time_minutes?: number
+          name?: string
+          slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "games_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      unaccent: { Args: { "": string }; Returns: string }
+      slugify: { Args: { value: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never

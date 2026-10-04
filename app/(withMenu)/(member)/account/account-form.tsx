@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/client"
 import { SubmitEventHandler, useCallback, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 
 type Claims = {sub?:string};
@@ -32,8 +33,8 @@ export default function AccountForm({claims}: {claims: Claims | undefined}) {
             }
 
             if(data){
-                setFirstName(data.first_name);
-                setLastName(data.last_name);
+                setFirstName(data.first_name!);
+                setLastName(data.last_name!);
             }
         }
         catch(error){
@@ -46,7 +47,6 @@ export default function AccountForm({claims}: {claims: Claims | undefined}) {
 
     const updateProfile: SubmitEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
-        debugger;
         const data = new FormData(e.target as HTMLFormElement);
         const firstName = data.get('firstName') as string;
         const lastName = data.get('lastName') as string;
@@ -96,6 +96,6 @@ export default function AccountForm({claims}: {claims: Claims | undefined}) {
             <label htmlFor="lastName">Nom</label>
             <input type="text" name="lastName" required defaultValue={lastName ?? ''}/>
         </div>
-        <button type="submit">Modifier</button>
+        <Button type="submit">Modifier</Button>
         </form>)
 }
