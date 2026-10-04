@@ -20,7 +20,6 @@ export async function requireUserSetup(){
     }
     const author = await supabase.from('authors').select('first_name, last_name').eq('id', user.user.id).single();
 
-    console.log(author);
     if(!author.data?.first_name || !author.data?.last_name){
         redirect('/account');
     }

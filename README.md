@@ -5,7 +5,7 @@ Site vitrine d'une association de créateur·ices de jeux de société.
 - Tout le monde (sans connexion) peut consulter les **auteur·ices** de l'association et leurs **jeux**.
 - Les auteur·ices peuvent **se connecter**, **ajouter des jeux** et **éditer** les jeux dont ils et elles sont auteur·ices.
 
-> Projet au stade **MVP** : on se concentre sur les fonctionnalités et les données. Le design et le CSS viendront plus tard.
+> Projet au stade **MVP** : on se concentre sur les fonctionnalités et les données. Le design reprend celui de l'ancien site (old_aaah) via un petit design system (voir [UI](#ui)).
 
 ## Stack
 
@@ -21,12 +21,12 @@ Site vitrine d'une association de créateur·ices de jeux de société.
 | --- | --- | --- |
 | Accueil | `/` | public |
 | Liste des auteur·ices | `/authors` | public |
-| Détail d'un·e auteur·ice | `/authors/[slug]` | public |
+| Détail d'un·e auteur·ice | `/authors/[slug]` (dossier `authors/[id]`, le paramètre est le slug) | public |
 | Liste des jeux | `/games` | public |
 | Détail d'un jeu | `/games/[slug]` | public (bouton « Éditer » visible seulement par ses auteur·ices) |
 | Nouveau jeu | `/games/new` | connecté·e |
 | Édition d'un jeu | `/games/edit/[slug]` | connecté·e **et** auteur·ice du jeu |
-| Mon compte | `/account` | connecté·e |
+| Mon profil (prénom, nom, présentation) | `/account` | connecté·e |
 | Connexion / invitation | `/auth/login`, `/auth/invite` | public |
 
 Un·e utilisateur·ice connecté·e doit renseigner son prénom et son nom (`/account`) avant d'apparaître dans la liste des auteur·ices.
@@ -57,8 +57,14 @@ app/
       account/
       games/new, games/edit/[slug], games/components (formulaire), games/lib (schéma zod, server actions)
 components/
-  ui/                  composants shadcn (button…)
-  typography.tsx       titres et textes (H1, H2, H3, P, Muted, Typography)
+  ui/                  composants shadcn (button, card, input, label, textarea, dropdown-menu)
+  layout/              Container (max 1440px), SiteHeader, NavLinks, UserMenu, SiteFooter
+  page-header.tsx      bandeau titre en dégradé bleu
+  section-card.tsx     bloc blanc avec titre
+  author-avatar.tsx    photo ronde ou initiales, bordure orange
+  form-field.tsx       label + champ + message d'erreur
+  alert.tsx, breadcrumb.tsx, meta-chip.tsx
+  typography.tsx       titres et textes (H1, H2, H3, P, Lead, Muted, Typography)
 lib/
   supabase/            clients Supabase (server, client, proxy)
   route_requires.ts    helpers d'accès (utilisateur connecté, profil complété)
@@ -70,7 +76,11 @@ proxy.ts               rafraîchit la session Supabase à chaque requête
 
 - Boutons : `Button` de `@/components/ui/button`. Pour afficher un lien comme un bouton :
   `<Link href="…" className={buttonVariants({ variant: "outline" })}>…</Link>`.
-- Couleurs : palette **orange** (principale, `primary`) et **bleu** (`secondary`) définie dans [`app/globals.css`](app/globals.css). Pas de thème sombre.
+- Couleurs : palette **orange** (principale, `primary`) et **bleu** (`secondary`, `brand-dark` pour le navy) définie dans [`app/globals.css`](app/globals.css). Pas de thème sombre : les classes `dark:` ne s'appliquent que sous une classe `.dark`, jamais posée.
+- Dégradés : `bg-hero` (navy → bleu, hero et bandeaux de titre), `bg-page` (fond bleu clair des pages), `bg-placeholder` (jeu sans image).
+- Mise en page : chaque page enveloppe son contenu dans `Container` (centré, max 1440px, padding responsive) ; les fonds restent pleine largeur. Grilles responsives en `grid`, alignements en `flex`.
+- Formulaires : `FormField` + `Input` / `Textarea` de shadcn, validation zod + react-hook-form, erreur serveur dans `Alert`.
+- Cartes : `rounded-xl`, `shadow`, survol `hover:-translate-y-2 hover:shadow-2xl` pour les cartes cliquables.
 
 ## Démarrer en local
 
@@ -112,4 +122,5 @@ Le site est sur [http://localhost:3000](http://localhost:3000). Les mails (liens
 - [x] Jeux : liste, détail, création, édition par les auteur·ices
 - [ ] Gestion des co-auteur·ices d'un jeu
 - [ ] Images des jeux
-- [ ] Design / CSS
+- [x] Design system et pages principales (header, accueil, auteur·ices, jeux, formulaires)
+- [ ] Règles des jeux (PDF)

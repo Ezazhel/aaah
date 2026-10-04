@@ -1,28 +1,28 @@
-import { Typography } from "@/components/typography";
 import Link from "next/link";
+import { AuthorAvatar } from "@/components/author-avatar";
 
-type AuthorProps = {
-    slug:string;
-    lastName:string | null;
-    firstName:string | null;
+type AuthorCardProps = {
+    author: {
+        slug: string | null;
+        first_name: string | null;
+        last_name: string | null;
+        description: string | null;
+        avatar_url: string | null;
+    };
 }
 
-export default function AuthorCard({slug,lastName, firstName}:AuthorProps) {
-    if(lastName == null || firstName == null){
-        return null;
-    }
-    
-    const initial = `${firstName[0]}${lastName[0]}`;
+export default function AuthorCard({author}: AuthorCardProps) {
     return (
-        <div className="bg-background size-48 min-h-0 flex flex-col flex-1 items-center gap-4 p-4">
-            <div className="bg-gray-500 rounded-full size-24 border flex flex-col justify-center items-center">
-                <Typography as="span" className="uppercase text-4xl">{initial}</Typography>
-            </div>
-            <div className="flex flex-col capitalize">
-                <Link href={`./authors/${slug}`}>
-                    <strong>{firstName} {lastName}</strong>
-                </Link>
-            </div>
-        </div>
+        <Link
+            href={`/authors/${author.slug}`}
+            className="group flex h-full flex-col items-center gap-3 rounded-xl border border-gray-200 bg-white p-6 text-center shadow transition duration-200 hover:-translate-y-2 hover:border-primary hover:shadow-2xl hover:ring-2 hover:ring-primary/30 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+        >
+            <AuthorAvatar size="lg" firstName={author.first_name} lastName={author.last_name} avatarUrl={author.avatar_url} className="transition-transform group-hover:scale-105 group-hover:shadow-lg"/>
+            <h2 className="text-lg font-bold text-brand-dark">{author.first_name} {author.last_name}</h2>
+            {author.description && <p className="line-clamp-2 text-sm text-gray-600">{author.description}</p>}
+            <span className="mt-auto w-full rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow transition-opacity pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 pointer-fine:group-focus-visible:opacity-100">
+                Voir le profil
+            </span>
+        </Link>
     )
 }

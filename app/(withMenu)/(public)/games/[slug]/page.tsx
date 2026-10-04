@@ -1,17 +1,21 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Pencil } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
-import { H1, Muted, P } from "@/components/typography";
+import { AuthorAvatar } from "@/components/author-avatar";
+import { Breadcrumb } from "@/components/breadcrumb";
+import { Container } from "@/components/layout/container";
+import { SectionCard } from "@/components/section-card";
+import { GameMeta } from "../components/game-meta";
 import { GetGame, IsGameAuthor } from "../lib/get-game"
 
-
-const Range = ({label, range}: {label:string, range: number[]}) => {
-    return (
-    <div className="inline-flex gap-2">
-        <span>{label} : </span>
-        <span>{range[0]}-{range[1]}</span>
-    </div>)
+export async function generateMetadata({params}: PageProps<"/games/[slug]">): Promise<Metadata> {
+    const { slug } = await params;
+    const game = await GetGame(slug);
+    return { title: game?.name };
 }
+
 export default async function Game({params}: PageProps<"/games/[slug]">){
     const { slug } = await params;
     const game = await GetGame(slug)
@@ -21,24 +25,59 @@ export default async function Game({params}: PageProps<"/games/[slug]">){
     }
 
     const canEdit = await IsGameAuthor(game);
+    const authors = game.authors.map(({author}) => author);
 
-    return <div>
-        <div className="flex items-center gap-4">
-            <H1>{game.name}</H1>
-            {canEdit && <Link href={`/games/edit/${game.slug}`} className={buttonVariants({ variant: "outline", size: "sm" })}>Éditer</Link>}
-        </div>
-        <Muted>
-            Par{' '}
-            {game.authors.map(({author}, index) => (
-                <span key={author.id}>
-                    {index > 0 && ', '}
-                    <Link href={`/authors/${author.slug}`}>{author.first_name} {author.last_name}</Link>
-                </span>
-            ))}
-        </Muted>
-        <div>
-            <Range label="Joueurs" range={[game.min_players, game.max_players]}/> - <Range label="Durée" range={[game.min_time_minutes, game.max_time_minutes]}/>{' '}(minutes) - À partir de {game.age_threshold} ans
-        </div>
-        <P className="whitespace-pre-line">{game.description}</P>
-    </div>
+    return <Container className="flex max-w-6xl flex-col gap-8 py-8">
+        <Breadcrumb items={[{label: "Jeux", href: "/games"}, {label: game.name}]}/>
+
+        <section className="flex flex-col gap-8 md:flex-row">
+            <div className="flex h-64 items-center justify-center rounded-xl bg-placeholder shadow-lg md:h-80 md:w-1/2" aria-hidden>
+                <span className="text-7xl opacity-60">🎲</span>
+            </div>
+            <div className="flex flex-col gap-4 rounded-xl bg-white/80 p-6 shadow-lg md:w-1/2">
+                <h1 className="text-3xl font-extrabold break-words text-brand-dark md:text-4xl">{game.name}</h1>
+                {authors.length > 0 && (
+                    <p className="text-gray-600">
+                        par{' '}
+                        {authors.map((author, index) => (
+                            <span key={author.id}>
+                                {index > 0 && ', '}
+                                <Link href={`/authors/${author.slug}`} className="font-semibold text-primary hover:underline">{author.first_name} {author.last_name}</Link>
+                            </span>
+                        ))}
+                    </p>
+                )}
+                <GameMeta game={game} className="flex flex-wrap gap-2 [&>span]:text-sm"/>
+                {canEdit && (
+                    <Link href={`/games/edit/${game.slug}`} className={buttonVariants({ variant: "outline", className: "mt-auto self-start" })}>
+                        <Pencil/> Éditer
+                    </Link>
+                )}
+            </div>
+        </section>
+
+        <SectionCard title="Description">
+            <p className="whitespace-pre-line leading-7 text-gray-800">{game.description}</p>
+        </SectionCard>
+
+        {authors.length > 0 && (
+            <section className="flex flex-col gap-6">
+                <h2 className="text-2xl font-bold text-primary">{authors.length > 1 ? "Les auteur·ices" : "L'auteur·ice"}</h2>
+                <div className={authors.length > 1 ? "grid gap-6 md:grid-cols-2" : "grid gap-6"}>
+                    {authors.map(author => (
+                        <article key={author.id} className="flex flex-col items-center gap-6 rounded-xl bg-white/90 p-6 text-center shadow md:flex-row md:items-start md:text-left">
+                            <AuthorAvatar firstName={author.first_name} lastName={author.last_name} avatarUrl={author.avatar_url} className="shadow"/>
+                            <div className="flex flex-col gap-2">
+                                <h3 className="text-xl font-bold">
+                                    <Link href={`/authors/${author.slug}`} className="text-primary hover:underline">{author.first_name} {author.last_name}</Link>
+                                </h3>
+                                <p className="line-clamp-4 whitespace-pre-line text-gray-700">{author.description || "Pas encore de présentation."}</p>
+                                <Link href={`/authors/${author.slug}`} className={buttonVariants({ className: "mt-2 self-center md:self-start" })}>Voir le profil</Link>
+                            </div>
+                        </article>
+                    ))}
+                </div>
+            </section>
+        )}
+    </Container>
 }

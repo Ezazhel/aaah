@@ -2,7 +2,10 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* No dark mode for now: only the light theme below is defined. */
+/* No dark mode for now: only the light theme below is defined.
+   `dark:` utilities (from shadcn components) only apply under a `.dark` class we never set,
+   so they don't follow the OS preference. */
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --font-sans: var(--font-geist-sans);
@@ -88,21 +91,25 @@
   --ring: oklch(69% 0.19 41);
 }
 
+/* Brand gradients */
+@utility bg-hero {
+  background-image: linear-gradient(to bottom right, var(--color-brand-dark), var(--color-brand-secondary));
+}
+@utility bg-page {
+  background-image: linear-gradient(to bottom right, oklch(96% 0.01 250), oklch(94% 0.04 250));
+}
+@utility bg-placeholder {
+  background-image: linear-gradient(to bottom right, var(--color-brand-light), var(--color-brand-secondary));
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-background text-foreground;
-  }
-  input,
-  textarea {
-    border-radius: 8px;
-    border: 1px solid var(--input);
-    min-height: 2rem;
-    padding: 0.5rem;
-  }
-  label + input {
-    margin-left: 0.5rem;
   }
 }

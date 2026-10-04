@@ -5,11 +5,11 @@ import { cn } from "@/lib/utils"
 const typographyVariants = cva("", {
   variants: {
     variant: {
-      h1: "text-3xl font-bold tracking-tight",
-      h2: "text-2xl font-semibold tracking-tight",
-      h3: "text-xl font-semibold",
-      p: "leading-7",
-      lead: "text-lg text-muted-foreground",
+      h1: "text-3xl md:text-5xl font-extrabold tracking-tight text-brand-dark",
+      h2: "text-2xl font-bold text-brand-dark",
+      h3: "text-xl font-bold text-brand-dark",
+      p: "leading-7 text-gray-800",
+      lead: "text-lg md:text-xl text-gray-600",
       muted: "text-sm text-muted-foreground",
       small: "text-sm font-medium",
     },
@@ -48,6 +48,7 @@ export const H1 = (props: HeadingProps) => <Typography variant="h1" {...props} /
 export const H2 = (props: HeadingProps) => <Typography variant="h2" {...props} />
 export const H3 = (props: HeadingProps) => <Typography variant="h3" {...props} />
 export const P = (props: HeadingProps) => <Typography variant="p" {...props} />
+export const Lead = (props: HeadingProps) => <Typography variant="lead" {...props} />
 export const Muted = (props: HeadingProps) => <Typography variant="muted" {...props} />
 
 export { typographyVariants }
