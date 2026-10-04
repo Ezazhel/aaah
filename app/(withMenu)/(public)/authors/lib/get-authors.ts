@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { activeMembershipFilter } from "@/app/model/author";
 
 export async function GetAuthors() {
     const supabase = await createClient();
@@ -10,6 +11,8 @@ export async function GetAuthors() {
         .neq('first_name','')
         .neq('slug',null)
         .neq('slug', '')
+        // Authors whose membership expired are hidden.
+        .or(activeMembershipFilter())
         .order('last_name');
 
         return data ?? [];

@@ -3,7 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/page-header";
-import { GetGame, IsGameAuthor } from "@/app/(withMenu)/(public)/games/lib/get-game";
+import { Alert } from "@/components/alert";
+import { GetGame, GetLastReview, IsGameAuthor } from "@/app/(withMenu)/(public)/games/lib/get-game";
 import { GameForm } from "../../components/gameForm";
 import { updateGame } from "../../lib/action";
 
@@ -22,6 +23,8 @@ export default async function EditGame({params}: PageProps<"/games/edit/[slug]">
         redirect(`/games/${game.slug}`);
     }
 
+    const lastReview = game.status === 'rejected' ? await GetLastReview(game.id) : null;
+
     const { name, description, age_threshold, min_players, max_players, min_time_minutes, max_time_minutes } = game;
 
     return (<>
@@ -30,7 +33,14 @@ export default async function EditGame({params}: PageProps<"/games/edit/[slug]">
             title={`Modifier ${game.name}`}
             subtitle="Mettez à jour les informations de votre jeu."
         />
-        <Container className="max-w-6xl py-10">
+        <Container className="flex max-w-6xl flex-col gap-6 py-10">
+            {game.status === 'rejected' && (
+                <Alert>
+                    <p className="font-semibold">Ce jeu a été refusé.</p>
+                    {lastReview?.reason && <p className="mt-1 whitespace-pre-line">Raison : {lastReview.reason}</p>}
+                    <p className="mt-1">En enregistrant vos corrections, il repassera automatiquement en attente de validation.</p>
+                </Alert>
+            )}
             <GameForm
                 action={updateGame.bind(null, game.id)}
                 defaultValues={{ name, description, age_threshold, min_players, max_players, min_time_minutes, max_time_minutes }}

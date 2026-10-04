@@ -1,13 +1,14 @@
 import Image from "next/image"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
+import { isAdmin } from "@/lib/route_requires"
 import { Container } from "./container"
 import { NavLinks } from "./nav-links"
 import { UserMenu } from "./user-menu"
 
 export async function SiteHeader() {
   const supabase = await createClient()
-  const { data } = await supabase.auth.getUser()
+  const [{ data }, admin] = await Promise.all([supabase.auth.getUser(), isAdmin()])
 
   return (
     <header className="sticky top-0 z-30 bg-brand-dark text-white shadow">
@@ -18,7 +19,7 @@ export async function SiteHeader() {
         </Link>
         <nav className="flex items-center gap-4">
           <NavLinks />
-          <UserMenu user={data.user} />
+          <UserMenu user={data.user} isAdmin={admin} />
         </nav>
       </Container>
     </header>

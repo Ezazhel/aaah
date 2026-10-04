@@ -5,7 +5,7 @@ export const GetGame = async (slug:string) => {
 
     const {data, error} = await supabase
         .from('games')
-        .select('*, authors:game_authors(author:authors(id, first_name, last_name, slug, description, avatar_url))')
+        .select('*, authors:game_authors(author:authors(id, first_name, last_name, slug, description, avatar_url, member_ship_expired_at))')
         .eq('slug', slug)
         .maybeSingle();
 
@@ -29,4 +29,21 @@ export const IsGameAuthor = async (game: Game) => {
         return false;
     }
     return game.authors.some(({author}) => author.id === userId);
+}
+
+/**
+ * Latest admin decision on the game (null if none, or if the user cannot read it:
+ * reviews are only visible to admins and to the authors of the game).
+ */
+export const GetLastReview = async (gameId: string) => {
+    const supabase = await createClient();
+    const {data} = await supabase
+        .from('game_reviews')
+        .select('decision, reason, created_at')
+        .eq('game_id', gameId)
+        .order('created_at', {ascending: false})
+        .limit(1)
+        .maybeSingle();
+
+    return data;
 }

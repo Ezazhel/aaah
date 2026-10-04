@@ -25,6 +25,12 @@ export async function GET(request: Request) {
   });
 
     if (!error) {
+      // Membership expired: no session for this user.
+      const { data: isActiveMember } = await supabase.rpc('is_active_member');
+      if (isActiveMember !== true) {
+        await supabase.auth.signOut();
+        return NextResponse.redirect(`${origin}/auth/login?error=membership`);
+      }
       return NextResponse.redirect(`${origin}`);
     }
     console.error(error);

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { type User } from "@supabase/supabase-js"
-import { LogOut, Plus, UserRound } from "lucide-react"
+import { LogOut, Plus, ShieldCheck, UserRound } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +15,7 @@ import {
 /**
  * Connection status: login link, or an avatar opening the account menu.
  */
-export function UserMenu({ user }: { user: User | null }) {
+export function UserMenu({ user, isAdmin = false }: { user: User | null; isAdmin?: boolean }) {
   if (!user) {
     return (
       <Link href="/auth/login" className="rounded-lg border border-white px-4 py-1.5 text-sm font-semibold hover:bg-white hover:text-brand-dark">
@@ -40,6 +40,11 @@ export function UserMenu({ user }: { user: User | null }) {
         <DropdownMenuItem asChild>
           <Link href="/games/new"><Plus /> Nouveau jeu</Link>
         </DropdownMenuItem>
+        {isAdmin && (
+          <DropdownMenuItem asChild>
+            <Link href="/admin"><ShieldCheck /> Administration</Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild variant="destructive">
           <a href="/auth/sign-out"><LogOut /> Déconnexion</a>

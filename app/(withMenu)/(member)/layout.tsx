@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/route_requires";
+import { requireActiveMember, requireUser } from "@/lib/route_requires";
 import { redirect } from "next/navigation";
 
 export default async function Layout({children}:LayoutProps<"/">) {
@@ -6,5 +6,6 @@ export default async function Layout({children}:LayoutProps<"/">) {
     if(!isConnected){
         redirect('/auth/login')
     }
+    await requireActiveMember();
     return children;
 }

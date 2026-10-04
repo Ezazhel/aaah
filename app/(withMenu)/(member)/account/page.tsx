@@ -28,7 +28,8 @@ export default async function Account(){
             .select('first_name, last_name, description, avatar_url, slug')
             .eq('id', claimsData.claims.sub)
             .maybeSingle(),
-        GetAuthorGames(claimsData.claims.sub),
+        // Own profile: every status, so rejected games can be fixed and resubmitted.
+        GetAuthorGames(claimsData.claims.sub, {allStatuses: true}),
     ]);
 
     return <>

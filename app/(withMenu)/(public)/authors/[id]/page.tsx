@@ -33,9 +33,7 @@ export default async function AuthorDetailPage({params}: PageProps<"/authors/[id
             <AuthorAvatar size="xl" firstName={author.first_name} lastName={author.last_name} avatarUrl={author.avatar_url}/>
             <div className="flex flex-col gap-4 text-center md:text-left">
                 <h1 className="text-3xl font-extrabold text-brand-dark md:text-4xl">{name}</h1>
-                <p className="whitespace-pre-line text-gray-700">
-                    {author.description || "Pas encore de présentation."}
-                </p>
+                {author.description && <p className="whitespace-pre-line text-gray-700">{author.description}</p>}
             </div>
         </section>
 

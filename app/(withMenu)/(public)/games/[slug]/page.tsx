@@ -8,7 +8,9 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { Container } from "@/components/layout/container";
 import { SectionCard } from "@/components/section-card";
 import { GameMeta } from "../components/game-meta";
-import { GetGame, IsGameAuthor } from "../lib/get-game"
+import { Alert } from "@/components/alert";
+import { isMembershipActive } from "@/app/model/author";
+import { GetGame, GetLastReview, IsGameAuthor } from "../lib/get-game"
 
 export async function generateMetadata({params}: PageProps<"/games/[slug]">): Promise<Metadata> {
     const { slug } = await params;
@@ -25,10 +27,23 @@ export default async function Game({params}: PageProps<"/games/[slug]">){
     }
 
     const canEdit = await IsGameAuthor(game);
+    // Only authors and admins can read a game that is not approved.
+    const lastReview = game.status === 'rejected' ? await GetLastReview(game.id) : null;
     const authors = game.authors.map(({author}) => author);
 
     return <Container className="flex max-w-6xl flex-col gap-8 py-8">
         <Breadcrumb items={[{label: "Jeux", href: "/games"}, {label: game.name}]}/>
+
+        {game.status === 'pending' && (
+            <Alert variant="warning">Ce jeu est en attente de validation : il n&apos;est pas encore visible sur le site.</Alert>
+        )}
+        {game.status === 'rejected' && (
+            <Alert>
+                <p className="font-semibold">Ce jeu a été refusé et n&apos;est pas visible sur le site.</p>
+                {lastReview?.reason && <p className="mt-1 whitespace-pre-line">Raison : {lastReview.reason}</p>}
+                {canEdit && <p className="mt-1">Modifiez-le pour le soumettre à nouveau.</p>}
+            </Alert>
+        )}
 
         <section className="flex flex-col gap-8 md:flex-row">
             <div className="flex h-64 items-center justify-center rounded-xl bg-placeholder shadow-lg md:h-80 md:w-1/2" aria-hidden>
@@ -42,7 +57,9 @@ export default async function Game({params}: PageProps<"/games/[slug]">){
                         {authors.map((author, index) => (
                             <span key={author.id}>
                                 {index > 0 && ', '}
-                                <Link href={`/authors/${author.slug}`} className="font-semibold text-primary hover:underline">{author.first_name} {author.last_name}</Link>
+                                {isMembershipActive(author.member_ship_expired_at)
+                                    ? <Link href={`/authors/${author.slug}`} className="font-semibold text-primary hover:underline">{author.first_name} {author.last_name}</Link>
+                                    : <span className="font-semibold">{author.first_name} {author.last_name}</span>}
                             </span>
                         ))}
                     </p>
@@ -69,10 +86,14 @@ export default async function Game({params}: PageProps<"/games/[slug]">){
                             <AuthorAvatar firstName={author.first_name} lastName={author.last_name} avatarUrl={author.avatar_url} className="shadow"/>
                             <div className="flex flex-col gap-2">
                                 <h3 className="text-xl font-bold">
-                                    <Link href={`/authors/${author.slug}`} className="text-primary hover:underline">{author.first_name} {author.last_name}</Link>
+                                    {isMembershipActive(author.member_ship_expired_at)
+                                        ? <Link href={`/authors/${author.slug}`} className="text-primary hover:underline">{author.first_name} {author.last_name}</Link>
+                                        : <>{author.first_name} {author.last_name}</>}
                                 </h3>
-                                <p className="line-clamp-4 whitespace-pre-line text-gray-700">{author.description || "Pas encore de présentation."}</p>
-                                <Link href={`/authors/${author.slug}`} className={buttonVariants({ className: "mt-2 self-center md:self-start" })}>Voir le profil</Link>
+                                {author.description && <p className="line-clamp-4 whitespace-pre-line text-gray-700">{author.description}</p>}
+                                {isMembershipActive(author.member_ship_expired_at) && (
+                                    <Link href={`/authors/${author.slug}`} className={buttonVariants({ className: "mt-2 self-center md:self-start" })}>Voir le profil</Link>
+                                )}
                             </div>
                         </article>
                     ))}

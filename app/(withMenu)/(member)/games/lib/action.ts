@@ -53,6 +53,7 @@ export const updateGame = async (id: string, payload: GameInput): Promise<GameAc
 
     // RLS only lets the authors of the game update it: no row returned means not allowed.
     // The slug is rebuilt by a trigger if the name changed.
+    // A rejected game goes back to pending (trigger protect_game_status): it is resubmitted.
     const {data: game, error} = await supabase.from("games").update(parsed.data).eq('id', id).select('slug').maybeSingle();
 
     if(error || !game) {
@@ -62,5 +63,8 @@ export const updateGame = async (id: string, payload: GameInput): Promise<GameAc
     }
 
     revalidatePath('/games', 'layout');
+    // Status may have changed: profile list and admin validation badge.
+    revalidatePath('/account');
+    revalidatePath('/admin', 'layout');
     redirect(`/games/${game.slug}`)
 }

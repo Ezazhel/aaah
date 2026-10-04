@@ -1,6 +1,13 @@
 import Link from "next/link"
+import { cn } from "@/lib/utils"
 import { GameMeta } from "./game-meta"
 import { type GameSummary } from "../lib/get-games"
+
+// Only shown to the authors (and admins): public lists only contain approved games.
+const statusBadges = {
+    pending: { label: "En attente de validation", className: "bg-orange-100 text-orange-800" },
+    rejected: { label: "Refusé · à corriger", className: "bg-red-100 text-red-700" },
+}
 
 /**
  * Clickable game card used in the games grid, on the home page and on author pages.
@@ -17,6 +24,11 @@ export const GameCard = ({game}: {game: GameSummary}) => {
                 <span className="text-5xl opacity-60 transition-transform group-hover:scale-110">🎲</span>
             </div>
             <div className="flex flex-1 flex-col gap-2 p-4">
+                {game.status !== 'approved' && (
+                    <span className={cn("self-start rounded-full px-2.5 py-0.5 text-xs font-semibold", statusBadges[game.status].className)}>
+                        {statusBadges[game.status].label}
+                    </span>
+                )}
                 <h2 className="truncate text-lg font-bold text-brand-dark md:text-xl">{game.name}</h2>
                 {authors && <p className="truncate text-sm text-primary">par {authors}</p>}
                 <p className="line-clamp-2 text-sm text-gray-700">{game.description}</p>

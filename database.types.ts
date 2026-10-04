@@ -103,9 +103,45 @@ export type Database = {
           },
         ]
       }
+      game_reviews: {
+        Row: {
+          created_at: string
+          decision: Database["public"]["Enums"]["game_status"]
+          game_id: string
+          id: string
+          reason: string | null
+          reviewer_id: string
+        }
+        Insert: {
+          created_at?: string
+          decision: Database["public"]["Enums"]["game_status"]
+          game_id: string
+          id?: string
+          reason?: string | null
+          reviewer_id?: string
+        }
+        Update: {
+          created_at?: string
+          decision?: Database["public"]["Enums"]["game_status"]
+          game_id?: string
+          id?: string
+          reason?: string | null
+          reviewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_reviews_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       games: {
         Row: {
           age_threshold: number
+          created_at: string
           created_by: string
           description: string
           id: string
@@ -115,9 +151,11 @@ export type Database = {
           min_time_minutes: number
           name: string
           slug: string
+          status: Database["public"]["Enums"]["game_status"]
         }
         Insert: {
           age_threshold: number
+          created_at?: string
           created_by?: string
           description: string
           id?: string
@@ -127,9 +165,11 @@ export type Database = {
           min_time_minutes: number
           name: string
           slug?: string
+          status?: Database["public"]["Enums"]["game_status"]
         }
         Update: {
           age_threshold?: number
+          created_at?: string
           created_by?: string
           description?: string
           id?: string
@@ -139,6 +179,7 @@ export type Database = {
           min_time_minutes?: number
           name?: string
           slug?: string
+          status?: Database["public"]["Enums"]["game_status"]
         }
         Relationships: [
           {
@@ -150,15 +191,82 @@ export type Database = {
           },
         ]
       }
+      membership_settings: {
+        Row: {
+          id: boolean
+          start_day: number
+          start_month: number
+          updated_at: string
+        }
+        Insert: {
+          id?: boolean
+          start_day?: number
+          start_month?: number
+          updated_at?: string
+        }
+        Update: {
+          id?: boolean
+          start_day?: number
+          start_month?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      admin_list_authors: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          is_admin: boolean
+          last_name: string
+          last_sign_in_at: string
+          member_ship_expired_at: string
+          slug: string
+        }[]
+      }
+      admin_set_membership: {
+        Args: { active: boolean; target: string }
+        Returns: string
+      }
+      current_membership_period: {
+        Args: never
+        Returns: {
+          ends_on: string
+          starts_on: string
+        }[]
+      }
+      is_active_member: { Args: { member_id?: string }; Returns: boolean }
+      is_admin: { Args: never; Returns: boolean }
       slugify: { Args: { value: string }; Returns: string }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin"
+      game_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -288,7 +396,10 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin"],
+      game_status: ["pending", "approved", "rejected"],
+    },
   },
 } as const
 
