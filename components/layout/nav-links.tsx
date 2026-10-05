@@ -10,6 +10,7 @@ const links = [
   { href: "/", label: "Accueil" },
   { href: "/authors", label: "Auteur·ices" },
   { href: "/games", label: "Jeux" },
+  { href: "/contact", label: "Contact" },
 ]
 
 const isActive = (pathname: string, href: string) =>

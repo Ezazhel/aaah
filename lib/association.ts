@@ -14,6 +14,10 @@ export const HELLOASSO_URL = "https://www.helloasso.com/associations/association
 // Discord invitation. Also hard-coded in supabase/templates/invite.html: update both.
 export const DISCORD_URL = "https://discord.gg/A-REMPLACER";
 
+// Social networks (contact page).
+export const INSTAGRAM_URL = "https://www.instagram.com/asso_aaah/";
+export const FACEBOOK_URL = "https://www.facebook.com/groups/825598305749631/";
+
 // Places of the recurring events (Google Maps links).
 export const PLACES = {
   baraka: { name: "Baraka Jeux", url: "https://maps.app.goo.gl/4uGxrnA3tru8WY8g8" },

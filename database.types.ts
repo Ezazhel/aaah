@@ -97,6 +97,39 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          first_name: string
+          id: number
+          ip_hash: string
+          last_name: string
+          message: string
+          subject: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          first_name: string
+          id?: never
+          ip_hash: string
+          last_name: string
+          message: string
+          subject: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: never
+          ip_hash?: string
+          last_name?: string
+          message?: string
+          subject?: string
+        }
+        Relationships: []
+      }
       game_authors: {
         Row: {
           author_id: string

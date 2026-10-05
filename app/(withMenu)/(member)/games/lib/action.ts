@@ -5,6 +5,15 @@ import { gameSchema, mechanicNameSchema, type GameInput } from "./schema"
 import { isActiveMember } from "@/lib/route_requires";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { notifyAdmins } from "@/lib/email/notify-admins";
+
+type Supabase = Awaited<ReturnType<typeof createClient>>;
+
+// "Prénom Nom" of the logged-in author, for the admin notifications.
+const authorName = async (supabase: Supabase, userId: string) => {
+    const {data} = await supabase.from('authors').select('first_name, last_name').eq('id', userId).maybeSingle();
+    return [data?.first_name, data?.last_name].filter(Boolean).join(' ') || "Un·e membre";
+}
 
 export type GameActionResult = { error: string} | undefined;
 
@@ -40,6 +49,13 @@ export const createGame = async (payload: GameInput): Promise<GameActionResult> 
         return { error: "Le jeu a été créé mais ses mécaniques n'ont pas pu être enregistrées. Modifiez-le pour réessayer." };
     }
 
+    notifyAdmins({
+        subject: `Nouveau jeu à valider : ${fields.name}`,
+        title: "Nouveau jeu à valider",
+        paragraphs: [`${await authorName(supabase, auth.claims.sub)} a ajouté le jeu « ${fields.name} ». Il attend une validation avant d'être publié.`],
+        path: '/admin/validation',
+    });
+
     revalidatePath('/games');
     redirect(`/games/${game.slug}`)
 }
@@ -64,6 +80,8 @@ export const updateGame = async (id: string, payload: GameInput): Promise<GameAc
     // The slug is rebuilt by a trigger if the name changed.
     // A rejected game goes back to pending (trigger protect_game_status): it is resubmitted.
     const { mechanic_ids, ...fields } = parsed.data;
+    // Read before the update: the trigger turns a rejected game into a pending one.
+    const {data: before} = await supabase.from("games").select('status').eq('id', id).maybeSingle();
     const {data: game, error} = await supabase.from("games").update(fields).eq('id', id).select('slug').maybeSingle();
 
     if(error || !game) {
@@ -76,6 +94,15 @@ export const updateGame = async (id: string, payload: GameInput): Promise<GameAc
     if(mechanicsError){
         console.log(mechanicsError);
         return { error: "Les mécaniques n'ont pas pu être enregistrées. Réessayez." };
+    }
+
+    if(before?.status === 'rejected'){
+        notifyAdmins({
+            subject: `Jeu corrigé à revalider : ${fields.name}`,
+            title: "Jeu corrigé à revalider",
+            paragraphs: [`${await authorName(supabase, auth.claims.sub)} a modifié le jeu refusé « ${fields.name} ». Il attend une nouvelle validation.`],
+            path: '/admin/validation',
+        });
     }
 
     revalidatePath('/games', 'layout');
@@ -110,6 +137,16 @@ export const suggestMechanic = async (name: string): Promise<SuggestMechanicResu
     if(error || !data){
         console.log(error);
         return { error: "La mécanique n'a pas pu être proposée. Réessayez." };
+    }
+
+    if(data.status === 'pending'){
+        const {data: auth} = await supabase.auth.getClaims();
+        notifyAdmins({
+            subject: `Mécanique proposée : ${data.name}`,
+            title: "Mécanique à valider",
+            paragraphs: [`${auth?.claims ? await authorName(supabase, auth.claims.sub) : "Un·e membre"} propose la mécanique « ${data.name} ».`],
+            path: '/admin/tags',
+        });
     }
 
     revalidatePath('/admin', 'layout');
