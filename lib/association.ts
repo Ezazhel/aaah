@@ -11,6 +11,9 @@ export const associationSeason = () => new Date().getFullYear() - FOUNDING_YEAR 
 // Membership campaign: the URL contains the year, update it every year.
 export const HELLOASSO_URL = "https://www.helloasso.com/associations/association-des-auteur-rice-s-autour-et-en-herault/adhesions/adhesion-et-cotisation-annuelle-2026";
 
+// Discord invitation. Also hard-coded in supabase/templates/invite.html: update both.
+export const DISCORD_URL = "https://discord.gg/A-REMPLACER";
+
 // Places of the recurring events (Google Maps links).
 export const PLACES = {
   baraka: { name: "Baraka Jeux", url: "https://maps.app.goo.gl/4uGxrnA3tru8WY8g8" },

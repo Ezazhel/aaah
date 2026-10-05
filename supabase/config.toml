@@ -244,11 +244,11 @@ otp_expiry = 3600
 
 # Uncomment to customize email template
 [auth.email.template.invite]
-subject = "You have been invited"
+subject = "Bienvenue à l'AAAH! Active ton compte"
 content_path = "./supabase/templates/invite.html"
 
 [auth.email.template.magic_link]
-subject = "Your sign-in link"
+subject = "Ton lien de connexion AAAH!"
 content_path = "./supabase/templates/magic_link.html"
 
 # Uncomment to customize notification email template
