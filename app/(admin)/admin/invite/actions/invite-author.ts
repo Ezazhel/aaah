@@ -1,8 +1,8 @@
 'use server'
 
-import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { isAdmin } from "@/lib/route_requires";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export type InviteState = { error: string } | { success: string } | undefined;
 
@@ -20,10 +20,7 @@ export async function inviteAuthor(_prevState: InviteState, formData: FormData):
     }
 
     // The secret key is required to send invitations: only used on the server.
-    const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SECRET_KEY!,
-    );
+    const supabase = createAdminClient();
 
     const { error } = await supabase.auth.admin.inviteUserByEmail(parsed.data, {
         redirectTo: `${process.env.NEXT_PUBLIC_URL}/auth/confirm`

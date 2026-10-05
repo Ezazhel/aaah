@@ -255,6 +255,24 @@ export type Database = {
           },
         ]
       }
+      helloasso_orders: {
+        Row: {
+          created_at: string
+          email: string
+          order_id: number
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          order_id: number
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          order_id?: number
+        }
+        Relationships: []
+      }
       mechanics: {
         Row: {
           bgg_id: number | null
@@ -358,6 +376,10 @@ export type Database = {
           ends_on: string
           starts_on: string
         }[]
+      }
+      helloasso_grant_membership: {
+        Args: { p_email: string; p_first_name: string; p_last_name: string }
+        Returns: string
       }
       is_active_member: { Args: { member_id?: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
