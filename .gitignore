@@ -43,3 +43,6 @@ next-env.d.ts
 
 # claude code
 .claude/launch.json
+
+# local production checklist
+TODO-PROD.md
