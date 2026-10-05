@@ -10,6 +10,9 @@ import { SectionCard } from "@/components/section-card";
 import { GameMeta } from "../components/game-meta";
 import { Alert } from "@/components/alert";
 import { isMembershipActive } from "@/app/model/author";
+import { visibleMechanics } from "@/app/model/category";
+import { CategoryBadge } from "@/components/category-badge";
+import { MechanicBadge } from "@/components/mechanic-badge";
 import { GetGame, GetLastReview, IsGameAuthor } from "../lib/get-game"
 
 export async function generateMetadata({params}: PageProps<"/games/[slug]">): Promise<Metadata> {
@@ -30,6 +33,7 @@ export default async function Game({params}: PageProps<"/games/[slug]">){
     // Only authors and admins can read a game that is not approved.
     const lastReview = game.status === 'rejected' ? await GetLastReview(game.id) : null;
     const authors = game.authors.map(({author}) => author);
+    const mechanics = visibleMechanics(game.mechanics);
 
     return <Container className="flex max-w-6xl flex-col gap-8 py-8">
         <Breadcrumb items={[{label: "Jeux", href: "/games"}, {label: game.name}]}/>
@@ -64,7 +68,24 @@ export default async function Game({params}: PageProps<"/games/[slug]">){
                         ))}
                     </p>
                 )}
+                {game.category && <CategoryBadge name={game.category.name} color={game.category.color} className="self-start text-sm"/>}
                 <GameMeta game={game} className="flex flex-wrap gap-2 [&>span]:text-sm"/>
+                {mechanics.length > 0 && (
+                    <div className="flex flex-col gap-2">
+                        <h2 className="text-sm font-semibold text-gray-700">Mécaniques</h2>
+                        <ul className="flex flex-wrap gap-2">
+                            {mechanics.map(({id, name, status}) => (
+                                <li key={id}>
+                                    <MechanicBadge className="text-sm">
+                                        {name}
+                                        {/* Only the suggester and admins see a pending mechanic. */}
+                                        {status === 'pending' && <span className="ml-1 text-xs text-orange-700">(en attente de validation)</span>}
+                                    </MechanicBadge>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
                 {canEdit && (
                     <Link href={`/games/edit/${game.slug}`} className={buttonVariants({ variant: "outline", className: "mt-auto self-start" })}>
                         <Pencil/> Éditer

@@ -33,6 +33,7 @@ Site vitrine d'une association de créateur·ices de jeux de société.
 | Gestion des auteur·ices (admins, adhésions, période d'adhésion) | `/admin/authors` | connecté·e **et** admin |
 | Inviter un·e auteur·ice | `/admin/invite` | connecté·e **et** admin |
 | Validation des jeux | `/admin/validation` | connecté·e **et** admin |
+| Catégories et mécaniques (valider les propositions, gérer les listes) | `/admin/tags` | connecté·e **et** admin |
 
 Un·e utilisateur·ice connecté·e doit renseigner son prénom et son nom (`/account`) avant d'apparaître dans la liste des auteur·ices.
 
@@ -55,12 +56,16 @@ Migrations dans [`supabase/migrations`](supabase/migrations).
 - **`membership_settings`** : une seule ligne, début de la période d'adhésion (`start_month`, `start_day`).
 - Fonctions SQL : `is_active_member()`, `current_membership_period()`, `admin_set_membership()` et `admin_list_authors()` (admins uniquement, lit l'email dans `auth.users`).
 - **`user_roles`** (enum `app_role` : `admin`) : rôles des utilisateur·ices. Table séparée de `authors` pour qu'un·e auteur·ice ne puisse pas se donner un rôle. La fonction `public.is_admin()` est utilisée par les policies et par l'app (`rpc('is_admin')`).
+- **`categories`** : catégorie de public (Enfants, Familial, Initié, Expert), avec une couleur hexadécimale (badges, bordure gauche des cartes) et un ordre d'affichage. Gérées par les admins. **`games.category_id`** : une catégorie par jeu, obligatoire dans le formulaire.
+- **`mechanics`** : mécaniques (deck-building, pose d'ouvriers, plis…), seedées depuis la liste de [BoardGameGeek](https://boardgamegeek.com/browse/boardgamemechanic) traduite en français (`bgg_id`). Un·e auteur·ice peut en **proposer** une depuis le formulaire (`pending`) : elle est liée à son jeu tout de suite mais n'est visible publiquement qu'une fois **validée** par un admin, qui peut corriger son libellé. Refuser = supprimer (retirée des jeux).
+- **`game_mechanics`** : liaison N–N jeux / mécaniques (au moins une par jeu dans le formulaire), mise à jour par `set_game_mechanics()`.
 - **`game_authors`** : table de liaison **N–N** — un·e auteur·ice peut avoir plusieurs jeux, un jeu peut avoir plusieurs auteur·ices. Le créateur ou la créatrice d'un jeu est ajouté·e automatiquement comme premier·e auteur·ice (trigger).
 
 Règles RLS principales :
 
 - lecture des auteur·ices et des jeux **validés** : tout le monde ; jeux non validés : leurs auteur·ices et les admins ;
 - décisions (`game_reviews`) : création par les admins, lecture par les admins et les auteur·ices du jeu ;
+- catégories : lecture pour tous, écriture par les admins ; mécaniques : lecture des validées pour tous (+ ses propositions, tout pour les admins), proposition par les membres actifs, validation / renommage / suppression par les admins ; liaison jeu–mécanique par les auteur·ices du jeu ;
 - rôles : les admins peuvent **donner** le rôle admin ; le **retirer** se fait uniquement en SQL ;
 - création d'un jeu : utilisateur·ice connecté·e **à l'adhésion active**, en son nom ;
 - modification d'un jeu : auteur·ice du jeu à l'adhésion active ; suppression : n'importe quel·le auteur·ice du jeu ;
@@ -163,6 +168,8 @@ L'accès à `/admin/*` est vérifié dans le proxy (connecté·e **et** admin), 
 
 - [x] Auteur·ices : liste, détail, profil
 - [x] Jeux : liste, détail, création, édition par les auteur·ices
+- [x] Catégories et mécaniques des jeux
+- [ ] Filtre des jeux par catégorie / mécanique
 - [ ] Gestion des co-auteur·ices d'un jeu
 - [ ] Images des jeux
 - [x] Rôle admin, invitation d'auteur·ices, validation des jeux

@@ -5,6 +5,8 @@ import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/page-header";
 import { Alert } from "@/components/alert";
 import { GetGame, GetLastReview, IsGameAuthor } from "@/app/(withMenu)/(public)/games/lib/get-game";
+import { GetTags } from "@/app/(withMenu)/(public)/games/lib/get-tags";
+import { visibleMechanics } from "@/app/model/category";
 import { GameForm } from "../../components/gameForm";
 import { updateGame } from "../../lib/action";
 
@@ -23,7 +25,10 @@ export default async function EditGame({params}: PageProps<"/games/edit/[slug]">
         redirect(`/games/${game.slug}`);
     }
 
-    const lastReview = game.status === 'rejected' ? await GetLastReview(game.id) : null;
+    const [lastReview, tags] = await Promise.all([
+        game.status === 'rejected' ? GetLastReview(game.id) : null,
+        GetTags(),
+    ]);
 
     const { name, description, age_threshold, min_players, max_players, min_time_minutes, max_time_minutes } = game;
 
@@ -43,7 +48,12 @@ export default async function EditGame({params}: PageProps<"/games/edit/[slug]">
             )}
             <GameForm
                 action={updateGame.bind(null, game.id)}
-                defaultValues={{ name, description, age_threshold, min_players, max_players, min_time_minutes, max_time_minutes }}
+                defaultValues={{
+                    name, description, age_threshold, min_players, max_players, min_time_minutes, max_time_minutes,
+                    category_id: game.category_id ?? undefined,
+                    mechanic_ids: visibleMechanics(game.mechanics).map(({id}) => id),
+                }}
+                tags={tags}
                 submitLabel="Enregistrer"
                 cancelHref={`/games/${game.slug}`}
             />

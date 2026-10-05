@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ClipboardCheck, Mail, Users } from "lucide-react";
+import { ClipboardCheck, Mail, Tags, Users } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/page-header";
 import { requireAdmin } from "@/lib/route_requires";
 import { GetPendingCount } from "./lib/get-pending-count";
+import { GetPendingMechanicsCount } from "./tags/lib/get-tags";
 
 export const metadata: Metadata = { title: "Administration" };
 
 export default async function AdminPage() {
     await requireAdmin();
-    const pendingCount = await GetPendingCount();
+    const [pendingCount, pendingMechanicsCount] = await Promise.all([GetPendingCount(), GetPendingMechanicsCount()]);
 
     const cards = [
         { href: "/admin/authors", icon: Users, title: "Gérer les auteur·ices", text: "Nommer des admins, désactiver ou réactiver les adhésions." },
@@ -21,11 +22,17 @@ export default async function AdminPage() {
             title: "Valider les jeux",
             text: pendingCount > 0 ? `${pendingCount} jeu${pendingCount > 1 ? 'x' : ''} en attente de validation.` : "Aucun jeu en attente.",
         },
+        {
+            href: "/admin/tags",
+            icon: Tags,
+            title: "Catégories et mécaniques",
+            text: pendingMechanicsCount > 0 ? `${pendingMechanicsCount} mécanique${pendingMechanicsCount > 1 ? 's' : ''} proposée${pendingMechanicsCount > 1 ? 's' : ''} à valider.` : "Gérer les catégories et les mécaniques.",
+        },
     ];
 
     return (<>
         <PageHeader title="Administration" subtitle="Invitez des auteur·ices et validez les jeux proposés."/>
-        <Container className="grid max-w-6xl gap-6 py-10 md:grid-cols-3">
+        <Container className="grid max-w-6xl gap-6 py-10 md:grid-cols-2">
             {cards.map(({href, icon: Icon, title, text}) => (
                 <Link key={href} href={href} className="flex items-start gap-4 rounded-xl bg-white/90 p-6 shadow transition hover:-translate-y-2 hover:shadow-2xl">
                     <Icon className="size-8 shrink-0 text-primary" aria-hidden/>

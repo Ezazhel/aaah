@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 
-const GAME_CARD_SELECT = '*, authors:game_authors(author:authors(id, first_name, last_name, slug))';
+const GAME_CARD_SELECT = '*, authors:game_authors(author:authors(id, first_name, last_name, slug)), category:categories(id, name, color), mechanics:game_mechanics(mechanic:mechanics(id, name))';
 
 export const GetGames = async (limit?: number) => {
     const supabase = await createClient();

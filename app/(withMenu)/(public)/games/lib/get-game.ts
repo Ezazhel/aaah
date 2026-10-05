@@ -5,7 +5,7 @@ export const GetGame = async (slug:string) => {
 
     const {data, error} = await supabase
         .from('games')
-        .select('*, authors:game_authors(author:authors(id, first_name, last_name, slug, description, avatar_url, member_ship_expired_at))')
+        .select('*, authors:game_authors(author:authors(id, first_name, last_name, slug, description, avatar_url, member_ship_expired_at)), category:categories(id, name, color), mechanics:game_mechanics(mechanic:mechanics(id, name, status))')
         .eq('slug', slug)
         .maybeSingle();
 

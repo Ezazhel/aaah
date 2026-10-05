@@ -4,10 +4,13 @@ import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/page-header";
 import { GameForm } from "../components/gameForm";
 import { createGame } from "../lib/action";
+import { GetTags } from "@/app/(withMenu)/(public)/games/lib/get-tags";
 
 export const metadata: Metadata = { title: "Nouveau jeu" };
 
-export default function NewGame() {
+export default async function NewGame() {
+    const tags = await GetTags();
+
     return (<>
         <PageHeader
             top={<Breadcrumb tone="light" items={[{label: "Jeux", href: "/games"}, {label: "Nouveau jeu"}]}/>}
@@ -15,7 +18,7 @@ export default function NewGame() {
             subtitle="Présentez votre création aux visiteur·ices du site."
         />
         <Container className="max-w-6xl py-10">
-            <GameForm action={createGame} submitLabel="Créer" cancelHref="/games"/>
+            <GameForm action={createGame} tags={tags} submitLabel="Créer" cancelHref="/games"/>
         </Container>
         </>
     )

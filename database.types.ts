@@ -73,6 +73,30 @@ export type Database = {
         }
         Relationships: []
       }
+      categories: {
+        Row: {
+          color: string
+          created_at: string
+          id: number
+          name: string
+          position: number
+        }
+        Insert: {
+          color: string
+          created_at?: string
+          id?: never
+          name: string
+          position?: number
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: never
+          name?: string
+          position?: number
+        }
+        Relationships: []
+      }
       game_authors: {
         Row: {
           author_id: string
@@ -99,6 +123,36 @@ export type Database = {
             columns: ["game_id"]
             isOneToOne: false
             referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      game_mechanics: {
+        Row: {
+          game_id: string
+          mechanic_id: number
+        }
+        Insert: {
+          game_id: string
+          mechanic_id: number
+        }
+        Update: {
+          game_id?: string
+          mechanic_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_mechanics_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_mechanics_mechanic_id_fkey"
+            columns: ["mechanic_id"]
+            isOneToOne: false
+            referencedRelation: "mechanics"
             referencedColumns: ["id"]
           },
         ]
@@ -141,6 +195,7 @@ export type Database = {
       games: {
         Row: {
           age_threshold: number
+          category_id: number | null
           created_at: string
           created_by: string
           description: string
@@ -155,6 +210,7 @@ export type Database = {
         }
         Insert: {
           age_threshold: number
+          category_id?: number | null
           created_at?: string
           created_by?: string
           description: string
@@ -169,6 +225,7 @@ export type Database = {
         }
         Update: {
           age_threshold?: number
+          category_id?: number | null
           created_at?: string
           created_by?: string
           description?: string
@@ -183,8 +240,50 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "games_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "games_created_by_fkey"
             columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mechanics: {
+        Row: {
+          bgg_id: number | null
+          created_at: string
+          id: number
+          name: string
+          status: Database["public"]["Enums"]["mechanic_status"]
+          suggested_by: string | null
+        }
+        Insert: {
+          bgg_id?: number | null
+          created_at?: string
+          id?: never
+          name: string
+          status?: Database["public"]["Enums"]["mechanic_status"]
+          suggested_by?: string | null
+        }
+        Update: {
+          bgg_id?: number | null
+          created_at?: string
+          id?: never
+          name?: string
+          status?: Database["public"]["Enums"]["mechanic_status"]
+          suggested_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mechanics_suggested_by_fkey"
+            columns: ["suggested_by"]
             isOneToOne: false
             referencedRelation: "authors"
             referencedColumns: ["id"]
@@ -262,11 +361,16 @@ export type Database = {
       }
       is_active_member: { Args: { member_id?: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
+      set_game_mechanics: {
+        Args: { game: string; mechanic_ids: number[] }
+        Returns: undefined
+      }
       slugify: { Args: { value: string }; Returns: string }
     }
     Enums: {
       app_role: "admin"
       game_status: "pending" | "approved" | "rejected"
+      mechanic_status: "pending" | "approved"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -399,6 +503,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin"],
       game_status: ["pending", "approved", "rejected"],
+      mechanic_status: ["pending", "approved"],
     },
   },
 } as const

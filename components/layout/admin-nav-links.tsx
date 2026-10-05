@@ -9,13 +9,14 @@ const isActive = (pathname: string, href: string) => pathname === href || pathna
 /**
  * Admin navigation: invite and validation links, with the number of games to validate.
  */
-export function AdminNavLinks({ pendingCount }: { pendingCount: number }) {
+export function AdminNavLinks({ pendingCount, pendingMechanicsCount }: { pendingCount: number; pendingMechanicsCount: number }) {
   const pathname = usePathname()
 
   const links = [
     { href: "/admin/authors", label: "Auteur·ices", badge: 0 },
     { href: "/admin/invite", label: "Inviter auteur", badge: 0 },
     { href: "/admin/validation", label: "Validation", badge: pendingCount },
+    { href: "/admin/tags", label: "Tags", badge: pendingMechanicsCount },
   ]
 
   return (

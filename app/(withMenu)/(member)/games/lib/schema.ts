@@ -31,6 +31,12 @@ export const gameSchema = z
       .number({ message: "Indique une durée en minutes." })
       .int({ message: "La durée doit être un nombre entier de minutes." })
       .positive({ message: "La durée doit être supérieure à 0." }),
+    category_id: z
+      .number({ message: "Choisissez une catégorie." })
+      .int({ message: "Choisissez une catégorie." }),
+    mechanic_ids: z
+      .array(z.number().int())
+      .min(1, { message: "Choisissez au moins une mécanique." }),
   })
   // Same rules as the check constraints in the migration.
   .refine((game) => game.max_players >= game.min_players, {
@@ -43,3 +49,9 @@ export const gameSchema = z
   });
 
 export type GameInput = z.infer<typeof gameSchema>;
+
+export const mechanicNameSchema = z
+  .string()
+  .trim()
+  .min(2, { message: "Le nom de la mécanique est trop court." })
+  .max(80, { message: "Le nom de la mécanique ne peut pas dépasser 80 caractères." });

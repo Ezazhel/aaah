@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link";
-import { useForm} from "react-hook-form";
+import { Controller, useForm} from "react-hook-form";
 import { zodResolver} from "@hookform/resolvers/zod";
 import { ImageIcon } from "lucide-react";
 import { GameInput, gameSchema } from "../lib/schema"
@@ -14,22 +14,29 @@ import { Label } from "@/components/ui/label";
 import { Alert } from "@/components/alert";
 import { FormField, errorId } from "@/components/form-field";
 import { SectionCard } from "@/components/section-card";
+import { CategoryBadge } from "@/components/category-badge";
+import type { Tags } from "@/app/(withMenu)/(public)/games/lib/get-tags";
+import { MechanicsPicker } from "./mechanics-picker";
 
 type GameFormProps = {
     // Server action called with the validated values (createGame or updateGame bound to an id).
     action: (values: GameInput) => Promise<GameActionResult>;
-    defaultValues?: GameInput;
+    defaultValues?: Partial<GameInput>;
+    // Categories and mechanics the user can pick.
+    tags: Tags;
     submitLabel: string;
     // Where the "Annuler" link goes.
     cancelHref: string;
 }
 
-export const GameForm = ({action, defaultValues, submitLabel, cancelHref}: GameFormProps) => {
+export const GameForm = ({action, defaultValues, tags, submitLabel, cancelHref}: GameFormProps) => {
     const [serverError,setServerError] = useState<string|null>(null);
-    const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm<GameInput>({
+    const {register, control, watch, handleSubmit, formState: {errors, isSubmitting}} = useForm<GameInput>({
         resolver: zodResolver(gameSchema),
-        defaultValues,
+        defaultValues: { mechanic_ids: [], ...defaultValues },
     })
+
+    const category = tags.categories.find(({id}) => id === watch('category_id'));
 
     const onSubmit = async (values: GameInput) => {
         setServerError(null);
@@ -79,6 +86,47 @@ export const GameForm = ({action, defaultValues, submitLabel, cancelHref}: GameF
                 </fieldset>
             </div>
         </div>
+
+        <SectionCard title="Catégorie et mécaniques">
+            <div className="flex flex-col gap-6">
+                <FormField id="category_id" label="Catégorie (public visé)" error={errors.category_id?.message}>
+                    <div className="flex flex-wrap items-center gap-3">
+                        <select
+                            id="category_id"
+                            className="h-9 rounded-md border border-input bg-white px-3 text-sm shadow-xs focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none aria-invalid:border-destructive"
+                            {...describe('category_id')}
+                            {...register('category_id', {setValueAs: (value) => value === '' ? undefined : Number(value)})}
+                        >
+                            <option value="">Choisir une catégorie</option>
+                            {tags.categories.map(({id, name}) => <option key={id} value={id}>{name}</option>)}
+                        </select>
+                        {category && <CategoryBadge name={category.name} color={category.color}/>}
+                    </div>
+                </FormField>
+
+                <FormField
+                    id="mechanic_ids"
+                    label="Mécaniques"
+                    error={errors.mechanic_ids?.message}
+                    hint="Une mécanique manque ? Tapez son nom puis « Proposer » : elle sera visible sur le site une fois validée par un administrateur."
+                >
+                    <Controller
+                        control={control}
+                        name="mechanic_ids"
+                        render={({field}) => (
+                            <MechanicsPicker
+                                id="mechanic_ids"
+                                options={tags.mechanics}
+                                value={field.value ?? []}
+                                onChange={field.onChange}
+                                invalid={Boolean(errors.mechanic_ids)}
+                                describedBy={errors.mechanic_ids ? errorId('mechanic_ids') : undefined}
+                            />
+                        )}
+                    />
+                </FormField>
+            </div>
+        </SectionCard>
 
         <SectionCard title={<Label htmlFor="description" className="text-2xl font-bold text-brand-dark">Description</Label>}>
             <Textarea id="description" rows={8} className="min-h-48" placeholder="Présentez votre jeu : thème, but du jeu, déroulement d'une partie…" {...describe('description')} {...register('description')}/>
