@@ -151,12 +151,12 @@ export default async function Home() {
               </p>
             </div>
             <Image
-              src="/castor_logo.jpg"
-              alt="Logo du bar à jeux Les Castors"
+              src="/caaahstor.png"
+              alt="Logo de la soirée bar à jeux Les Castors"
               width={954}
               height={960}
               sizes="(min-width: 768px) 224px, 50vw"
-              className="w-48 shrink-0 rounded-full shadow-2xl md:w-56"
+              className="w-full max-w-xs shrink-0 rounded-xl shadow-2xl"
             />
           </article>
         </Container>
