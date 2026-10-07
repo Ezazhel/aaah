@@ -104,7 +104,7 @@ export default async function Game({params}: PageProps<"/games/[slug]">){
                 <div className={authors.length > 1 ? "grid gap-6 md:grid-cols-2" : "grid gap-6"}>
                     {authors.map(author => (
                         <article key={author.id} className="flex flex-col items-center gap-6 rounded-xl bg-white/90 p-6 text-center shadow md:flex-row md:items-start md:text-left">
-                            <AuthorAvatar firstName={author.first_name} lastName={author.last_name} avatarUrl={author.avatar_url} className="shadow"/>
+                            <AuthorAvatar authorId={author.id} firstName={author.first_name} lastName={author.last_name} avatarUpdatedAt={author.avatar_updated_at} className="shadow"/>
                             <div className="flex flex-col gap-2">
                                 <h3 className="text-xl font-bold">
                                     {isMembershipActive(author.member_ship_expired_at)

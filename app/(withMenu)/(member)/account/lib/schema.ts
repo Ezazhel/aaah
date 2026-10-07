@@ -7,3 +7,8 @@ export const profileSchema = z.object({
 });
 
 export type ProfileInput = z.infer<typeof profileSchema>;
+
+// The files are uploaded by the browser: the action only records the change.
+export const avatarChangeSchema = z.enum(['updated', 'removed', 'unchanged']);
+
+export type AvatarChange = z.infer<typeof avatarChangeSchema>;

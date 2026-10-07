@@ -4,7 +4,7 @@ import { activeMembershipFilter } from "@/app/model/author";
 export async function GetAuthors() {
     const supabase = await createClient();
     try {
-        const { data } = await supabase.from('authors').select('id, last_name, first_name, slug, description, avatar_url')
+        const { data } = await supabase.from('authors').select('id, last_name, first_name, slug, description, avatar_updated_at')
         .neq('last_name',null)
         .neq('first_name',null)
         .neq('last_name','')

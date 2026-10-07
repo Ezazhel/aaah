@@ -25,7 +25,7 @@ export default async function Account(){
     const [{data: author}, games] = await Promise.all([
         supabase
             .from('authors')
-            .select('first_name, last_name, description, avatar_url, slug')
+            .select('first_name, last_name, description, avatar_updated_at, slug')
             .eq('id', claimsData.claims.sub)
             .maybeSingle(),
         // Own profile: every status, so rejected games can be fixed and resubmitted.
@@ -42,7 +42,8 @@ export default async function Account(){
                         last_name: author?.last_name ?? '',
                         description: author?.description ?? '',
                     }}
-                    avatarUrl={author?.avatar_url ?? null}
+                    authorId={claimsData.claims.sub}
+                    avatarUpdatedAt={author?.avatar_updated_at ?? null}
                     slug={author?.slug ?? null}
                 />
             </div>

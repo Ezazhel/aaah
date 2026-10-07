@@ -30,7 +30,7 @@ export default async function AuthorDetailPage({params}: PageProps<"/authors/[id
         <Breadcrumb items={[{label: "Auteur·ices", href: "/authors"}, {label: name}]}/>
 
         <section className="flex flex-col items-center gap-8 rounded-xl bg-surface-light p-6 shadow md:flex-row md:items-start md:gap-12 md:p-10">
-            <AuthorAvatar size="xl" firstName={author.first_name} lastName={author.last_name} avatarUrl={author.avatar_url}/>
+            <AuthorAvatar size="xl" authorId={author.id} firstName={author.first_name} lastName={author.last_name} avatarUpdatedAt={author.avatar_updated_at}/>
             <div className="flex flex-col gap-4 text-center md:text-left">
                 <h1 className="text-3xl font-extrabold text-brand-dark md:text-4xl">{name}</h1>
                 {author.description && <p className="whitespace-pre-line text-gray-700">{author.description}</p>}
