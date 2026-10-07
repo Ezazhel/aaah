@@ -1,7 +1,8 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
-import { gameSchema, mechanicNameSchema, type GameInput } from "./schema"
+import { coverChangeSchema, gameSchema, mechanicNameSchema, type GameInput } from "./schema"
+import { GAME_COVER_BUCKET, GAME_COVER_SIZES, gameCoverPath, type GameCoverSize } from "@/lib/game-cover"
 import { isActiveMember } from "@/lib/route_requires";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -15,7 +16,8 @@ const authorName = async (supabase: Supabase, userId: string) => {
     return [data?.first_name, data?.last_name].filter(Boolean).join(' ') || "Un·e membre";
 }
 
-export type GameActionResult = { error: string} | undefined;
+// On success the form uploads the cover (it needs the id), then opens the game page.
+export type GameActionResult = { error: string } | { id: string; slug: string };
 
 export const createGame = async (payload: GameInput): Promise<GameActionResult> => {
 
@@ -57,7 +59,7 @@ export const createGame = async (payload: GameInput): Promise<GameActionResult> 
     });
 
     revalidatePath('/games');
-    redirect(`/games/${game.slug}`)
+    return { id: game.id, slug: game.slug };
 }
 
 export const updateGame = async (id: string, payload: GameInput): Promise<GameActionResult> => {
@@ -109,7 +111,44 @@ export const updateGame = async (id: string, payload: GameInput): Promise<GameAc
     // Status may have changed: profile list and admin validation badge.
     revalidatePath('/account');
     revalidatePath('/admin', 'layout');
-    redirect(`/games/${game.slug}`)
+    return { id, slug: game.slug };
+}
+
+/**
+ * Records a new or removed cover, after the browser uploaded the files (Storage policies
+ * check the author). The date is also the cache-busting version of the cover URLs.
+ */
+export const setGameCover = async (gameId: string, change: 'updated' | 'removed'): Promise<{ error: string } | undefined> => {
+    const parsed = coverChangeSchema.safeParse({ gameId, change });
+    if(!parsed.success){
+        return { error: "Vérifiez les informations saisies" };
+    }
+
+    const supabase = await createClient();
+    // RLS only lets the active authors of the game update it: no row returned means not allowed.
+    const {data: game, error} = await supabase
+        .from('games')
+        .update({ cover_updated_at: change === 'updated' ? new Date().toISOString() : null })
+        .eq('id', gameId)
+        .select('id')
+        .maybeSingle();
+
+    if(error || !game){
+        console.log(error);
+        return { error: "L'image n'a pas pu être enregistrée. Modifiez le jeu pour réessayer." };
+    }
+
+    if(change === 'removed'){
+        const sizes = Object.keys(GAME_COVER_SIZES) as GameCoverSize[];
+        // The game no longer points to the files: a failure here only leaves orphans behind.
+        const {error: removeError} = await supabase.storage.from(GAME_COVER_BUCKET).remove(sizes.map(size => gameCoverPath(gameId, size)));
+        if(removeError){
+            console.log(removeError);
+        }
+    }
+
+    revalidatePath('/games', 'layout');
+    revalidatePath('/account');
 }
 
 export type SuggestMechanicResult = { error: string } | { mechanic: { id: number; name: string; status: 'pending' | 'approved' } };

@@ -229,6 +229,7 @@ export type Database = {
         Row: {
           age_threshold: number
           category_id: number | null
+          cover_updated_at: string | null
           created_at: string
           created_by: string
           description: string
@@ -244,6 +245,7 @@ export type Database = {
         Insert: {
           age_threshold: number
           category_id?: number | null
+          cover_updated_at?: string | null
           created_at?: string
           created_by?: string
           description: string
@@ -259,6 +261,7 @@ export type Database = {
         Update: {
           age_threshold?: number
           category_id?: number | null
+          cover_updated_at?: string | null
           created_at?: string
           created_by?: string
           description?: string

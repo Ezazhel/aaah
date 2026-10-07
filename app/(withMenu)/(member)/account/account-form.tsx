@@ -1,8 +1,7 @@
 'use client'
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { ImagePlus, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -11,9 +10,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert } from "@/components/alert";
 import { AuthorAvatar } from "@/components/author-avatar";
 import { FormField, errorId } from "@/components/form-field";
-import { createClient } from "@/lib/supabase/client";
-import { AVATAR_BUCKET, AVATAR_SIZES, avatarPath, resizeToSquare, type AvatarSize } from "@/lib/avatar";
-import { profileSchema, type AvatarChange, type ProfileInput } from "./lib/schema";
+import { ImagePickerControls } from "@/components/image-picker-controls";
+import { AVATAR_BUCKET, AVATAR_SIZES, avatarPath } from "@/lib/avatar";
+import { uploadResizedImage, useImagePicker } from "@/lib/upload-image";
+import { profileSchema, type ProfileInput } from "./lib/schema";
 import { updateProfile } from "./lib/action";
 
 type AccountFormProps = {
@@ -24,107 +24,40 @@ type AccountFormProps = {
     slug: string | null;
 }
 
-// Checked before resizing: the uploaded files are only a few dozen KB.
-const MAX_SOURCE_BYTES = 15 * 1024 * 1024;
-
 export default function AccountForm({defaultValues, authorId, avatarUpdatedAt, slug}: AccountFormProps) {
     const [result, setResult] = useState<{error: string} | {success: true} | null>(null);
-    const fileInput = useRef<HTMLInputElement>(null);
     // New picture chosen but not saved yet, shown as a preview.
-    const [avatarFile, setAvatarFile] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const [removeAvatar, setRemoveAvatar] = useState(false);
-    const [avatarError, setAvatarError] = useState<string | null>(null);
+    const avatar = useImagePicker();
     const {register, handleSubmit, watch, formState: {errors, isSubmitting}} = useForm<ProfileInput>({
         resolver: zodResolver(profileSchema),
         defaultValues,
     });
 
-    useEffect(() => {
-        if(!avatarFile){
-            setPreviewUrl(null);
-            return;
-        }
-        const url = URL.createObjectURL(avatarFile);
-        setPreviewUrl(url);
-        return () => URL.revokeObjectURL(url);
-    }, [avatarFile]);
-
-    const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        // Lets the same file be picked again after removing it.
-        event.target.value = '';
-        if(!file){
-            return;
-        }
-        if(!file.type.startsWith('image/')){
-            setAvatarError("Choisissez une image (JPEG, PNG, WebP…).");
-            return;
-        }
-        if(file.size > MAX_SOURCE_BYTES){
-            setAvatarError("L'image ne doit pas dépasser 15 Mo.");
-            return;
-        }
-        setAvatarError(null);
-        setRemoveAvatar(false);
-        setAvatarFile(file);
-    }
-
-    const onRemoveAvatar = () => {
-        setAvatarError(null);
-        setAvatarFile(null);
-        setRemoveAvatar(true);
-    }
-
-    // Resizes the picture and uploads every size, straight from the browser.
-    const uploadAvatar = async (file: File): Promise<string | null> => {
-        const sizes = Object.keys(AVATAR_SIZES) as AvatarSize[];
-        let blobs: Blob[];
-        try {
-            blobs = await Promise.all(sizes.map(size => resizeToSquare(file, AVATAR_SIZES[size])));
-        } catch {
-            return "Format d'image non pris en charge, essayez JPEG ou PNG.";
-        }
-
-        const supabase = createClient();
-        const uploads = await Promise.all(sizes.map((size, index) =>
-            supabase.storage.from(AVATAR_BUCKET).upload(avatarPath(authorId, size), blobs[index], {
-                upsert: true,
-                contentType: blobs[index].type,
-                // The URL changes with each new picture (?v=), so it can be cached for a year.
-                cacheControl: '31536000',
-            })
-        ));
-        const failed = uploads.find(upload => upload.error);
-        if(failed){
-            console.log(failed.error);
-            return "La photo n'a pas pu être envoyée. Réessayez ou contactez un administrateur";
-        }
-        return null;
-    }
-
     const onSubmit = async (values: ProfileInput) => {
         setResult(null);
 
-        if(avatarFile){
-            const error = await uploadAvatar(avatarFile);
+        if(avatar.file){
+            const error = await uploadResizedImage(avatar.file, {
+                bucket: AVATAR_BUCKET,
+                sizes: AVATAR_SIZES,
+                path: size => avatarPath(authorId, size),
+                square: true,
+            });
             if(error){
                 setResult({error});
                 return;
             }
         }
 
-        const avatarChange: AvatarChange = avatarFile ? 'updated' : removeAvatar ? 'removed' : 'unchanged';
-        const saved = await updateProfile(values, avatarChange);
+        const saved = await updateProfile(values, avatar.change);
         setResult(saved);
         if('success' in saved){
             // The page is revalidated: the stored picture now matches the preview.
-            setAvatarFile(null);
-            setRemoveAvatar(false);
+            avatar.reset();
         }
     }
 
-    const hasAvatar = Boolean(avatarFile) || (Boolean(avatarUpdatedAt) && !removeAvatar);
+    const hasAvatar = Boolean(avatar.file) || (Boolean(avatarUpdatedAt) && !avatar.removed);
 
     const describe = (name: keyof ProfileInput) => ({
         'aria-invalid': Boolean(errors[name]),
@@ -139,21 +72,12 @@ export default function AccountForm({defaultValues, authorId, avatarUpdatedAt, s
                     authorId={authorId}
                     firstName={watch('first_name')}
                     lastName={watch('last_name')}
-                    avatarUpdatedAt={removeAvatar ? null : avatarUpdatedAt}
-                    previewUrl={previewUrl}
+                    avatarUpdatedAt={avatar.removed ? null : avatarUpdatedAt}
+                    previewUrl={avatar.previewUrl}
                 />
-                <input ref={fileInput} id="avatar" type="file" accept="image/*" className="sr-only" tabIndex={-1} aria-hidden onChange={onFileChange}/>
-                <div className="flex flex-col items-center gap-1">
-                    <Button type="button" variant="outline" size="sm" onClick={() => fileInput.current?.click()}>
-                        <ImagePlus/> {hasAvatar ? "Changer la photo" : "Ajouter une photo"}
-                    </Button>
-                    {hasAvatar && (
-                        <Button type="button" variant="ghost" size="sm" onClick={onRemoveAvatar}>
-                            <Trash2/> Retirer la photo
-                        </Button>
-                    )}
+                <div className="max-w-48">
+                    <ImagePickerControls picker={avatar} hasImage={hasAvatar} noun="la photo" addLabel="Ajouter une photo"/>
                 </div>
-                {avatarError && <p role="alert" className="max-w-40 text-center text-sm text-destructive">{avatarError}</p>}
             </div>
             <div className="grid w-full gap-4 sm:grid-cols-2">
                 <FormField id="first_name" label="Prénom" error={errors.first_name?.message}>

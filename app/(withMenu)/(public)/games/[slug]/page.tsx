@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Pencil } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { AuthorAvatar } from "@/components/author-avatar";
+import { GameCover } from "@/components/game-cover";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Container } from "@/components/layout/container";
 import { SectionCard } from "@/components/section-card";
@@ -50,9 +51,14 @@ export default async function Game({params}: PageProps<"/games/[slug]">){
         )}
 
         <section className="flex flex-col gap-8 md:flex-row">
-            <div className="flex h-64 items-center justify-center rounded-xl bg-placeholder shadow-lg md:h-80 md:w-1/2" aria-hidden>
-                <span className="text-7xl opacity-60">🎲</span>
-            </div>
+            <GameCover
+                gameId={game.id}
+                coverUpdatedAt={game.cover_updated_at}
+                size="lg"
+                fit="contain"
+                className="h-64 rounded-xl shadow-lg md:h-80 md:w-1/2"
+                diceClassName="text-7xl"
+            />
             <div className="flex flex-col gap-4 rounded-xl bg-white/80 p-6 shadow-lg md:w-1/2">
                 <h1 className="text-3xl font-extrabold break-words text-brand-dark md:text-4xl">{game.name}</h1>
                 {authors.length > 0 && (

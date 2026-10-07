@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
 import { H2 } from "@/components/typography";
 import { buttonVariants } from "@/components/ui/button";
-import { GameCard } from "@/app/(withMenu)/(public)/games/components/game-card";
+import { GameGrid } from "@/app/(withMenu)/(public)/games/components/game-card";
 import { GetAuthorGames } from "@/app/(withMenu)/(public)/games/lib/get-games";
 import AccountForm from "./account-form";
 
@@ -54,9 +54,7 @@ export default async function Account(){
                     <Link href="/games/new" className={buttonVariants()}><Plus/> Nouveau jeu</Link>
                 </div>
                 {games.length ? (
-                    <ul className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                        {games.map(game => <li key={game.id} className="flex"><GameCard game={game}/></li>)}
-                    </ul>
+                    <GameGrid games={games}/>
                 ) : (
                     <SectionCard className="text-gray-600">Vous n&apos;avez pas encore de jeu.</SectionCard>
                 )}

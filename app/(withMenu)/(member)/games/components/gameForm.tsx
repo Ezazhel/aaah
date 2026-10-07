@@ -1,11 +1,11 @@
 'use client'
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Controller, useForm} from "react-hook-form";
 import { zodResolver} from "@hookform/resolvers/zod";
-import { ImageIcon } from "lucide-react";
 import { GameInput, gameSchema } from "../lib/schema"
-import { type GameActionResult } from "../lib/action";
+import { setGameCover, type GameActionResult } from "../lib/action";
 import { useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,10 @@ import { Label } from "@/components/ui/label";
 import { Alert } from "@/components/alert";
 import { FormField, errorId } from "@/components/form-field";
 import { SectionCard } from "@/components/section-card";
+import { GameCover } from "@/components/game-cover";
+import { ImagePickerControls } from "@/components/image-picker-controls";
+import { GAME_COVER_BUCKET, GAME_COVER_SIZES, gameCoverPath } from "@/lib/game-cover";
+import { uploadResizedImage, useImagePicker } from "@/lib/upload-image";
 import { CategoryBadge } from "@/components/category-badge";
 import type { Tags } from "@/app/(withMenu)/(public)/games/lib/get-tags";
 import { MechanicsPicker } from "./mechanics-picker";
@@ -22,6 +26,9 @@ type GameFormProps = {
     // Server action called with the validated values (createGame or updateGame bound to an id).
     action: (values: GameInput) => Promise<GameActionResult>;
     defaultValues?: Partial<GameInput>;
+    // Edition only: the current cover.
+    gameId?: string;
+    coverUpdatedAt?: string | null;
     // Categories and mechanics the user can pick.
     tags: Tags;
     submitLabel: string;
@@ -29,8 +36,11 @@ type GameFormProps = {
     cancelHref: string;
 }
 
-export const GameForm = ({action, defaultValues, tags, submitLabel, cancelHref}: GameFormProps) => {
+export const GameForm = ({action, defaultValues, gameId, coverUpdatedAt = null, tags, submitLabel, cancelHref}: GameFormProps) => {
+    const router = useRouter();
     const [serverError,setServerError] = useState<string|null>(null);
+    // New cover chosen but not saved yet, shown as a preview.
+    const cover = useImagePicker();
     const {register, control, watch, handleSubmit, formState: {errors, isSubmitting}} = useForm<GameInput>({
         resolver: zodResolver(gameSchema),
         defaultValues: { mechanic_ids: [], ...defaultValues },
@@ -38,14 +48,40 @@ export const GameForm = ({action, defaultValues, tags, submitLabel, cancelHref}:
 
     const category = tags.categories.find(({id}) => id === watch('category_id'));
 
+    // The game is saved first: a new game has no id (needed by the cover path) before.
     const onSubmit = async (values: GameInput) => {
         setServerError(null);
         const result = await action(values);
-        if(result?.error){
+        if('error' in result){
             setServerError(result.error);
+            return;
         }
 
+        const failed = (message: string) => setServerError(gameId ? message : `Le jeu a été créé mais ${message.charAt(0).toLowerCase()}${message.slice(1)}`);
+
+        if(cover.file){
+            const uploadError = await uploadResizedImage(cover.file, {
+                bucket: GAME_COVER_BUCKET,
+                sizes: GAME_COVER_SIZES,
+                path: size => gameCoverPath(result.id, size),
+            });
+            if(uploadError){
+                failed(uploadError);
+                return;
+            }
+        }
+        if(cover.change !== 'unchanged'){
+            const saved = await setGameCover(result.id, cover.change);
+            if(saved?.error){
+                failed(saved.error);
+                return;
+            }
+        }
+
+        router.push(`/games/${result.slug}`);
     }
+
+    const hasCover = Boolean(cover.file) || (Boolean(coverUpdatedAt) && !cover.removed);
 
     // Accessibility attributes linking a field to its error message.
     const describe = (name: keyof GameInput) => ({
@@ -55,9 +91,17 @@ export const GameForm = ({action, defaultValues, tags, submitLabel, cancelHref}:
 
  return (<form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-8">
         <div className="flex flex-col gap-8 md:flex-row">
-            <div className="flex min-h-36 flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center text-gray-500 md:min-h-64 md:w-1/2" aria-hidden>
-                <ImageIcon className="size-10"/>
-                <p className="font-medium">Images bientôt disponibles</p>
+            <div className="flex flex-col gap-3 md:w-1/2">
+                <GameCover
+                    gameId={gameId}
+                    coverUpdatedAt={cover.removed ? null : coverUpdatedAt}
+                    previewUrl={cover.previewUrl}
+                    size="lg"
+                    fit="contain"
+                    className="h-64 rounded-xl shadow-lg md:h-80"
+                    diceClassName="text-7xl"
+                />
+                <ImagePickerControls picker={cover} hasImage={hasCover} noun="l'image" addLabel="Ajouter une image"/>
             </div>
 
             <div className="flex flex-col gap-6 rounded-xl bg-white/80 p-6 shadow-lg md:w-1/2">

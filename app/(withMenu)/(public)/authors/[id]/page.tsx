@@ -5,7 +5,7 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { Container } from "@/components/layout/container";
 import { SectionCard } from "@/components/section-card";
 import { H2 } from "@/components/typography";
-import { GameCard } from "../../games/components/game-card";
+import { GameGrid } from "../../games/components/game-card";
 import { GetAuthorGames } from "../../games/lib/get-games";
 import { GetAuthor } from "../lib/get-author";
 
@@ -40,9 +40,7 @@ export default async function AuthorDetailPage({params}: PageProps<"/authors/[id
         <section className="flex flex-col gap-6">
             <H2>{games.length > 1 ? "Ses jeux" : "Son jeu"}</H2>
             {games.length ? (
-                <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                    {games.map(game => <GameCard key={game.id} game={game}/>)}
-                </div>
+                <GameGrid games={games}/>
             ) : (
                 <SectionCard className="text-gray-600">Aucun jeu pour le moment.</SectionCard>
             )}

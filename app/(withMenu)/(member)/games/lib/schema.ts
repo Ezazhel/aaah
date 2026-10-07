@@ -50,6 +50,12 @@ export const gameSchema = z
 
 export type GameInput = z.infer<typeof gameSchema>;
 
+// The files are uploaded by the browser: the action only records the change.
+export const coverChangeSchema = z.object({
+  gameId: z.uuid(),
+  change: z.enum(["updated", "removed"]),
+});
+
 export const mechanicNameSchema = z
   .string()
   .trim()

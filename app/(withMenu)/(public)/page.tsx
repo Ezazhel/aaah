@@ -5,7 +5,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Container } from "@/components/layout/container";
 import { ASSOCIATION_NAME, ASSOCIATION_SHORT_NAME, FOUNDING_YEAR, HELLOASSO_URL, PLACES, SAJ_URL, associationSeason } from "@/lib/association";
 import { H2, Lead, P } from "@/components/typography";
-import { GameCard } from "./games/components/game-card";
+import { GameGrid } from "./games/components/game-card";
 import { GetGames } from "./games/lib/get-games";
 
 const missions = [
@@ -42,7 +42,7 @@ const PlaceLink = ({ place }: { place: { name: string; url: string } }) => (
 )
 
 export default async function Home() {
-  const games = await GetGames(3);
+  const games = await GetGames(6);
 
   return (
     <>
@@ -197,9 +197,7 @@ export default async function Home() {
               <H2 className="text-3xl md:text-4xl">Quelques jeux</H2>
               <Link href="/games" className={buttonVariants({ variant: "outline" })}>Voir tous les jeux</Link>
             </div>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {games.map(game => <GameCard key={game.id} game={game}/>)}
-            </div>
+            <GameGrid games={games}/>
           </section>
         )}
       </Container>

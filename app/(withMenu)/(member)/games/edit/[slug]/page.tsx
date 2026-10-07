@@ -48,6 +48,8 @@ export default async function EditGame({params}: PageProps<"/games/edit/[slug]">
             )}
             <GameForm
                 action={updateGame.bind(null, game.id)}
+                gameId={game.id}
+                coverUpdatedAt={game.cover_updated_at}
                 defaultValues={{
                     name, description, age_threshold, min_players, max_players, min_time_minutes, max_time_minutes,
                     category_id: game.category_id ?? undefined,
