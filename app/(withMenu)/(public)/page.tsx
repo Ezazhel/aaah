@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Check, ExternalLink, Handshake, Lightbulb, MapPin, Package, Sparkles, Tent, Users } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { Container } from "@/components/layout/container";
-import { ASSOCIATION_NAME, ASSOCIATION_SHORT_NAME, FOUNDING_YEAR, HELLOASSO_URL, PLACES, SAJ_URL, associationSeason } from "@/lib/association";
+import { ASSOCIATION_NAME, ASSOCIATION_SHORT_NAME, FOUNDING_YEAR, HELLOASSO_URL, MEMBERSHIP_PRICE, PLACES, SAJ_URL, associationSeason } from "@/lib/association";
 import { H2, Lead, P } from "@/components/typography";
 import { GameGrid } from "./games/components/game-card";
 import { GetGames } from "./games/lib/get-games";
@@ -178,9 +178,15 @@ export default async function Home() {
             </div>
             <aside className="flex flex-col gap-3 self-start rounded-xl bg-page p-6 md:w-2/5">
               <h3 className="text-xl font-bold text-brand-dark">À quoi sert votre adhésion ?</h3>
+              <p className="text-3xl font-bold text-primary">
+                {MEMBERSHIP_PRICE}&nbsp;€ <span className="text-base font-normal text-gray-700">par an</span>
+              </p>
               <P>
                 Les cotisations permettent d&apos;acheter du matériel réutilisable, partagé entre les membres pour fabriquer et
                 tester les prototypes : dés, cartes, boîtes…
+              </P>
+              <P>
+                Elles financent aussi l&apos;hébergement et le fonctionnement de ce site, qui présente les auteur·ices et leurs jeux.
               </P>
             </aside>
           </div>

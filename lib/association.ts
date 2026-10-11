@@ -11,6 +11,9 @@ export const associationSeason = () => new Date().getFullYear() - FOUNDING_YEAR 
 // Membership campaign: the URL contains the year, update it every year.
 export const HELLOASSO_URL = "https://www.helloasso.com/associations/association-des-auteur-rice-s-autour-et-en-herault/adhesions/adhesion-et-cotisation-annuelle-2026";
 
+// Annual membership fee, in euros. Keep in sync with the HelloAsso campaign.
+export const MEMBERSHIP_PRICE = 10;
+
 // Discord invitation. Also hard-coded in supabase/templates/invite.html: update both.
 export const DISCORD_URL = "https://discord.gg/A-REMPLACER";
 
