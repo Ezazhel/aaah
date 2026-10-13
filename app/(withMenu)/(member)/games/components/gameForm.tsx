@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Controller, useForm} from "react-hook-form";
 import { zodResolver} from "@hookform/resolvers/zod";
 import { GameInput, gameSchema } from "../lib/schema"
-import { setGameCover, type GameActionResult } from "../lib/action";
+import { setGameCover, setGameRules, type GameActionResult } from "../lib/action";
 import { useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,9 @@ import { GAME_COVER_BUCKET, GAME_COVER_SIZES, gameCoverPath } from "@/lib/game-c
 import { uploadResizedImage, useImagePicker } from "@/lib/upload-image";
 import { CategoryBadge } from "@/components/category-badge";
 import type { Tags } from "@/app/(withMenu)/(public)/games/lib/get-tags";
+import { uploadGameRules, usePdfPicker } from "@/lib/upload-file";
 import { MechanicsPicker } from "./mechanics-picker";
+import { RulesPdfField } from "./rules-pdf-field";
 
 type GameFormProps = {
     // Server action called with the validated values (createGame or updateGame bound to an id).
@@ -29,6 +31,8 @@ type GameFormProps = {
     // Edition only: the current cover.
     gameId?: string;
     coverUpdatedAt?: string | null;
+    // Edition only: the version of the current rules PDF.
+    rulesUpdatedAt?: string | null;
     // Categories and mechanics the user can pick.
     tags: Tags;
     submitLabel: string;
@@ -36,14 +40,15 @@ type GameFormProps = {
     cancelHref: string;
 }
 
-export const GameForm = ({action, defaultValues, gameId, coverUpdatedAt = null, tags, submitLabel, cancelHref}: GameFormProps) => {
+export const GameForm = ({action, defaultValues, gameId, coverUpdatedAt = null, rulesUpdatedAt = null, tags, submitLabel, cancelHref}: GameFormProps) => {
     const router = useRouter();
     const [serverError,setServerError] = useState<string|null>(null);
     // New cover chosen but not saved yet, shown as a preview.
     const cover = useImagePicker();
+    const rules = usePdfPicker();
     const {register, control, watch, handleSubmit, formState: {errors, isSubmitting}} = useForm<GameInput>({
         resolver: zodResolver(gameSchema),
-        defaultValues: { mechanic_ids: [], ...defaultValues },
+        defaultValues: { mechanic_ids: [], rules_video_url: '', ...defaultValues },
     })
 
     const category = tags.categories.find(({id}) => id === watch('category_id'));
@@ -72,6 +77,21 @@ export const GameForm = ({action, defaultValues, gameId, coverUpdatedAt = null, 
         }
         if(cover.change !== 'unchanged'){
             const saved = await setGameCover(result.id, cover.change);
+            if(saved?.error){
+                failed(saved.error);
+                return;
+            }
+        }
+
+        if(rules.file){
+            const uploadError = await uploadGameRules(rules.file, result.id);
+            if(uploadError){
+                failed(uploadError);
+                return;
+            }
+        }
+        if(rules.change !== 'unchanged'){
+            const saved = await setGameRules(result.id, rules.change);
             if(saved?.error){
                 failed(saved.error);
                 return;
@@ -175,6 +195,20 @@ export const GameForm = ({action, defaultValues, gameId, coverUpdatedAt = null, 
         <SectionCard title={<Label htmlFor="description" className="text-2xl font-bold text-brand-dark">Description</Label>}>
             <Textarea id="description" rows={8} className="min-h-48" placeholder="Présentez votre jeu : thème, but du jeu, déroulement d'une partie…" {...describe('description')} {...register('description')}/>
             {errors.description && <p id={errorId('description')} role="alert" className="mt-2 text-sm text-destructive">{errors.description.message}</p>}
+        </SectionCard>
+
+        <SectionCard title="Règles du jeu">
+            <div className="flex flex-col gap-6">
+                <FormField
+                    id="rules_video_url"
+                    label="Vidéo des règles"
+                    error={errors.rules_video_url?.message}
+                    hint="Lien YouTube ou Vimeo : la vidéo se lira sur la page du jeu si son intégration est autorisée (paramètres de la vidéo)."
+                >
+                    <Input type="url" id="rules_video_url" placeholder="https://www.youtube.com/watch?v=…" {...describe('rules_video_url')} {...register('rules_video_url')}/>
+                </FormField>
+                <RulesPdfField picker={rules} gameId={gameId} rulesUpdatedAt={rulesUpdatedAt}/>
+            </div>
         </SectionCard>
 
         {serverError && <Alert>{serverError}</Alert>}

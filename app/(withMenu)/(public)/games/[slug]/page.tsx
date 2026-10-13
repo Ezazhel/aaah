@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Pencil } from "lucide-react";
+import { Download, ExternalLink, FileText, Pencil } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { AuthorAvatar } from "@/components/author-avatar";
 import { GameCover } from "@/components/game-cover";
@@ -14,6 +14,9 @@ import { isMembershipActive } from "@/app/model/author";
 import { visibleMechanics } from "@/app/model/category";
 import { CategoryBadge } from "@/components/category-badge";
 import { MechanicBadge } from "@/components/mechanic-badge";
+import { RulesVideo } from "@/components/rules-video";
+import { formatRulesDate, gameRulesDownloadUrl, gameRulesUrl } from "@/lib/game-rules";
+import { parseRulesVideo, RULES_VIDEO_PROVIDER_NAMES, rulesVideoPageUrl } from "@/lib/rules-video";
 import { GetGame, GetLastReview, IsGameAuthor } from "../lib/get-game"
 
 export async function generateMetadata({params}: PageProps<"/games/[slug]">): Promise<Metadata> {
@@ -35,6 +38,8 @@ export default async function Game({params}: PageProps<"/games/[slug]">){
     const lastReview = game.status === 'rejected' ? await GetLastReview(game.id) : null;
     const authors = game.authors.map(({author}) => author);
     const mechanics = visibleMechanics(game.mechanics);
+    const rulesVideo = game.rules_video_url ? parseRulesVideo(game.rules_video_url) : null;
+    const rulesUrl = gameRulesUrl(game.id, game.rules_updated_at);
 
     return <Container className="flex max-w-6xl flex-col gap-8 py-8">
         <Breadcrumb items={[{label: "Jeux", href: "/games"}, {label: game.name}]}/>
@@ -103,6 +108,34 @@ export default async function Game({params}: PageProps<"/games/[slug]">){
         <SectionCard title="Description">
             <p className="whitespace-pre-line leading-7 text-gray-800">{game.description}</p>
         </SectionCard>
+
+        {(rulesVideo || rulesUrl) && (
+            <SectionCard title="Règles">
+                <div className="flex flex-col gap-6">
+                    {rulesVideo && (
+                        <div className="flex flex-col gap-2">
+                            <RulesVideo video={rulesVideo} title={game.name} className="w-full max-w-3xl"/>
+                            <a href={rulesVideoPageUrl(rulesVideo)} target="_blank" rel="noopener" className="inline-flex items-center gap-1 self-start text-sm text-gray-600 hover:text-primary hover:underline">
+                                Voir sur {RULES_VIDEO_PROVIDER_NAMES[rulesVideo.provider]} <ExternalLink className="size-3.5" aria-hidden/>
+                            </a>
+                        </div>
+                    )}
+                    {rulesUrl && game.rules_updated_at && (
+                        <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-2 sm:flex-row">
+                                <a href={rulesUrl} target="_blank" rel="noopener" className={buttonVariants({ size: "lg" })}>
+                                    <FileText/> Lire les règles (PDF)
+                                </a>
+                                <a href={gameRulesDownloadUrl(rulesUrl, game.slug)} className={buttonVariants({ variant: "outline", size: "lg" })}>
+                                    <Download/> Télécharger
+                                </a>
+                            </div>
+                            <p className="text-sm text-gray-500">Mis à jour le {formatRulesDate(game.rules_updated_at)}</p>
+                        </div>
+                    )}
+                </div>
+            </SectionCard>
+        )}
 
         {authors.length > 0 && (
             <section className="flex flex-col gap-6">
