@@ -163,6 +163,8 @@ L'accès à `/admin/*` est vérifié dans le proxy (connecté·e **et** admin), 
 | `pnpm supa-run` / `pnpm supa-stop` | démarre / arrête Supabase en local |
 | `pnpm supa-reset` | recrée la base locale en rejouant toutes les migrations (**efface les données locales**) |
 | `pnpm supa-gen` | régénère `database.types.ts` depuis la base locale (à lancer après chaque migration) |
+| `pnpm test` | tests unitaires Vitest en mode watch (`*.test.ts(x)` à côté du code) |
+| `pnpm test:integration` | tests d'intégration (`tests/integration/`) contre le Supabase local : nécessite `pnpm supa-run` |
 
 ## Roadmap
 
