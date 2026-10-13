@@ -29,6 +29,7 @@ Site vitrine d'une association de créateur·ices de jeux de société.
 | Édition d'un jeu | `/games/edit/[slug]` | connecté·e **et** auteur·ice du jeu |
 | Mon profil (prénom, nom, présentation) | `/account` | connecté·e |
 | Connexion | `/auth/login` | public |
+| Confirmation d'un lien reçu par e-mail (invitation, connexion) | `/auth/confirm` | public |
 | Administration | `/admin` | connecté·e **et** admin |
 | Gestion des auteur·ices (admins, adhésions, période d'adhésion) | `/admin/authors` | connecté·e **et** admin |
 | Inviter un·e auteur·ice | `/admin/invite` | connecté·e **et** admin |
@@ -36,6 +37,20 @@ Site vitrine d'une association de créateur·ices de jeux de société.
 | Catégories et mécaniques (valider les propositions, gérer les listes) | `/admin/tags` | connecté·e **et** admin |
 
 Un·e utilisateur·ice connecté·e doit renseigner son prénom et son nom (`/account`) avant d'apparaître dans la liste des auteur·ices.
+
+### Connexion par e-mail
+
+Pas de mot de passe : invitation (par un·e admin ou après un paiement HelloAsso) puis lien magique.
+
+1. L'e-mail (templates `supabase/templates/invite.html` et `magic_link.html`) pointe vers `/auth/confirm?token_hash=…&type=…`.
+2. Ouvrir ce lien affiche seulement une page avec un bouton (**Activer mon compte** / **Me connecter**) : le token n'est pas encore utilisé. Les antivirus de messagerie (Outlook Safe Links…) ouvrent les liens avant la personne et consommeraient sinon ce token à usage unique.
+3. Le clic envoie le formulaire à la Server Action `confirmLink` (`auth/confirm/actions/confirm.ts`), qui vérifie le token (`verifyOtp`) puis :
+   - adhésion active → session ouverte, redirection vers `/` ;
+   - adhésion expirée → déconnexion, `/auth/login?error=membership` ;
+   - lien expiré ou déjà utilisé (`otp_expired`) → `/auth/login?error=expired`, qui invite à redemander un lien. Ça marche aussi pour une personne invitée qui n'a jamais activé son compte : il existe dès l'invitation ;
+   - autre erreur → `/error`.
+
+Les liens sont valables 24 h, le maximum autorisé par Supabase (`otp_expiry` dans `supabase/config.toml` ; en production : Authentication → Providers → Email → Email OTP Expiration).
 
 ### Adhésion
 
