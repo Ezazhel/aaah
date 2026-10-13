@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Alert } from "@/components/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-export function LoginForm({ membershipExpired }: { membershipExpired: boolean }) {
+export function LoginForm({ membershipExpired, linkExpired }: { membershipExpired: boolean, linkExpired: boolean }) {
  const [state, formAction, pending] = useActionState(signInWithMagicLink, {success: false, error: null});
   return (
     <div className="flex flex-1 items-center justify-center bg-page p-4">
@@ -23,6 +23,9 @@ export function LoginForm({ membershipExpired }: { membershipExpired: boolean })
           <form id="form" action={formAction} className="flex flex-col gap-4">
             {membershipExpired && !state.success && (
               <Alert>Votre adhésion a expiré. Contactez l&apos;association pour la renouveler.</Alert>
+            )}
+            {linkExpired && !state.success && (
+              <Alert>Ce lien a expiré ou a déjà été utilisé. Saisissez votre e-mail pour en recevoir un nouveau.</Alert>
             )}
             <div className="flex flex-col gap-2">
               <Label htmlFor="email">Email</Label>

@@ -34,6 +34,11 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${origin}`);
     }
     console.error(error);
+    // Expired or already used link (invitation or magic link): the account exists,
+    // so the user can request a new link from the login page.
+    if (error.code === 'otp_expired') {
+      return NextResponse.redirect(`${origin}/auth/login?error=expired`);
+    }
   }
   return NextResponse.redirect(`${origin}/error`);
 }
