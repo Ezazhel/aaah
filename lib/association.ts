@@ -26,3 +26,11 @@ export const PLACES = {
   baraka: { name: "Baraka Jeux", url: "https://maps.app.goo.gl/4uGxrnA3tru8WY8g8" },
   castors: { name: "Les Castors", url: "https://maps.app.goo.gl/bPvJifJEFo7Jvkwm9" },
 };
+
+// Legal notice (/legal). TODO: fill in before going to production.
+export const LEGAL = {
+  address: "À COMPLÉTER (adresse du siège social)",
+  rna: "À COMPLÉTER (W…)",
+  publicationDirector: "À COMPLÉTER (président·e de l'association)",
+  email: "aaah.contact@gmail.com",
+};
