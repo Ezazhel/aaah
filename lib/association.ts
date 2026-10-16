@@ -15,9 +15,9 @@ export const HELLOASSO_URL = "https://www.helloasso.com/associations/association
 export const MEMBERSHIP_PRICE = 10;
 
 // Discord invitation. Also hard-coded in supabase/templates/invite.html: update both.
-export const DISCORD_URL = "https://discord.gg/A-REMPLACER";
+export const DISCORD_URL = "https://discord.gg/U4DUbbxcwW";
 
-// Social networks (contact page).
+// Social networks (contact page). Also hard-coded in supabase/templates/invite.html: update both.
 export const INSTAGRAM_URL = "https://www.instagram.com/asso_aaah/";
 export const FACEBOOK_URL = "https://www.facebook.com/groups/825598305749631/";
 
