@@ -50,10 +50,12 @@ export default async function EditGame({params}: PageProps<"/games/edit/[slug]">
                 action={updateGame.bind(null, game.id)}
                 gameId={game.id}
                 coverUpdatedAt={game.cover_updated_at}
+                rulesUpdatedAt={game.rules_updated_at}
                 defaultValues={{
                     name, description, age_threshold, min_players, max_players, min_time_minutes, max_time_minutes,
                     category_id: game.category_id ?? undefined,
                     mechanic_ids: visibleMechanics(game.mechanics).map(({id}) => id),
+                    rules_video_url: game.rules_video_url ?? '',
                 }}
                 tags={tags}
                 submitLabel="Enregistrer"

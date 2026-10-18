@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { parseRulesVideo } from "@/lib/rules-video";
 
 export const gameSchema = z
   .object({
@@ -37,6 +38,14 @@ export const gameSchema = z
     mechanic_ids: z
       .array(z.number().int())
       .min(1, { message: "Choisissez au moins une mécanique." }),
+    // Optional: an empty field (stored as null) removes the video.
+    rules_video_url: z
+      .string()
+      .trim()
+      .max(300, { message: "Le lien est trop long." })
+      .refine((url) => url === "" || parseRulesVideo(url) !== null, {
+        message: "Collez un lien YouTube ou Vimeo.",
+      }),
   })
   // Same rules as the check constraints in the migration.
   .refine((game) => game.max_players >= game.min_players, {
@@ -50,8 +59,8 @@ export const gameSchema = z
 
 export type GameInput = z.infer<typeof gameSchema>;
 
-// The files are uploaded by the browser: the action only records the change.
-export const coverChangeSchema = z.object({
+// The files (cover, rules PDF) are uploaded by the browser: the action only records the change.
+export const fileChangeSchema = z.object({
   gameId: z.uuid(),
   change: z.enum(["updated", "removed"]),
 });

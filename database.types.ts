@@ -47,6 +47,7 @@ export type Database = {
           slug: string | null
           updated_at: string | null
         }
+        ComputedFields: never
         Insert: {
           avatar_updated_at?: string | null
           created_at?: string | null
@@ -81,6 +82,7 @@ export type Database = {
           name: string
           position: number
         }
+        ComputedFields: never
         Insert: {
           color: string
           created_at?: string
@@ -108,6 +110,7 @@ export type Database = {
           message: string
           subject: string
         }
+        ComputedFields: never
         Insert: {
           created_at?: string
           email: string
@@ -135,6 +138,7 @@ export type Database = {
           author_id: string
           game_id: string
         }
+        ComputedFields: never
         Insert: {
           author_id: string
           game_id: string
@@ -165,6 +169,7 @@ export type Database = {
           game_id: string
           mechanic_id: number
         }
+        ComputedFields: never
         Insert: {
           game_id: string
           mechanic_id: number
@@ -199,6 +204,7 @@ export type Database = {
           reason: string | null
           reviewer_id: string
         }
+        ComputedFields: never
         Insert: {
           created_at?: string
           decision: Database["public"]["Enums"]["game_status"]
@@ -239,9 +245,12 @@ export type Database = {
           min_players: number
           min_time_minutes: number
           name: string
+          rules_updated_at: string | null
+          rules_video_url: string | null
           slug: string
           status: Database["public"]["Enums"]["game_status"]
         }
+        ComputedFields: never
         Insert: {
           age_threshold: number
           category_id?: number | null
@@ -255,6 +264,8 @@ export type Database = {
           min_players: number
           min_time_minutes: number
           name: string
+          rules_updated_at?: string | null
+          rules_video_url?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["game_status"]
         }
@@ -271,6 +282,8 @@ export type Database = {
           min_players?: number
           min_time_minutes?: number
           name?: string
+          rules_updated_at?: string | null
+          rules_video_url?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["game_status"]
         }
@@ -297,6 +310,7 @@ export type Database = {
           email: string
           order_id: number
         }
+        ComputedFields: never
         Insert: {
           created_at?: string
           email: string
@@ -318,6 +332,7 @@ export type Database = {
           status: Database["public"]["Enums"]["mechanic_status"]
           suggested_by: string | null
         }
+        ComputedFields: never
         Insert: {
           bgg_id?: number | null
           created_at?: string
@@ -351,6 +366,7 @@ export type Database = {
           start_month: number
           updated_at: string
         }
+        ComputedFields: never
         Insert: {
           id?: boolean
           start_day?: number
@@ -371,6 +387,7 @@ export type Database = {
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           created_at?: string
           role: Database["public"]["Enums"]["app_role"]
@@ -389,7 +406,7 @@ export type Database = {
     }
     Functions: {
       admin_list_authors: {
-        Args: never
+        Args: Record<PropertyKey, never>
         Returns: {
           created_at: string
           email: string
@@ -406,8 +423,9 @@ export type Database = {
         Args: { active: boolean; target: string }
         Returns: string
       }
+      can_edit_game_files: { Args: { object_name: string }; Returns: boolean }
       current_membership_period: {
-        Args: never
+        Args: Record<PropertyKey, never>
         Returns: {
           ends_on: string
           starts_on: string
@@ -418,7 +436,7 @@ export type Database = {
         Returns: string
       }
       is_active_member: { Args: { member_id?: string }; Returns: boolean }
-      is_admin: { Args: never; Returns: boolean }
+      is_admin: { Args: Record<PropertyKey, never>; Returns: boolean }
       set_game_mechanics: {
         Args: { game: string; mechanic_ids: number[] }
         Returns: undefined
@@ -471,8 +489,7 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -496,8 +513,7 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -521,8 +537,7 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
   EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -565,4 +580,3 @@ export const Constants = {
     },
   },
 } as const
-

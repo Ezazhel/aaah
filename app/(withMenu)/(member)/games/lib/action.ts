@@ -1,8 +1,9 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
-import { coverChangeSchema, gameSchema, mechanicNameSchema, type GameInput } from "./schema"
+import { fileChangeSchema, gameSchema, mechanicNameSchema, type GameInput } from "./schema"
 import { GAME_COVER_BUCKET, GAME_COVER_SIZES, gameCoverPath, type GameCoverSize } from "@/lib/game-cover"
+import { GAME_RULES_BUCKET, gameRulesPath } from "@/lib/game-rules"
 import { isActiveMember } from "@/lib/route_requires";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -35,7 +36,8 @@ export const createGame = async (payload: GameInput): Promise<GameActionResult> 
         redirect('/auth/login');
     }
 
-    const { mechanic_ids, ...fields } = parsed.data;
+    const { mechanic_ids, rules_video_url, ...rest } = parsed.data;
+    const fields = { ...rest, rules_video_url: rules_video_url || null };
     const {data: game, error} = await supabase.from("games").insert(fields).select('id, slug').single();
 
     if(error) {
@@ -81,7 +83,8 @@ export const updateGame = async (id: string, payload: GameInput): Promise<GameAc
     // RLS only lets the authors of the game update it: no row returned means not allowed.
     // The slug is rebuilt by a trigger if the name changed.
     // A rejected game goes back to pending (trigger protect_game_status): it is resubmitted.
-    const { mechanic_ids, ...fields } = parsed.data;
+    const { mechanic_ids, rules_video_url, ...rest } = parsed.data;
+    const fields = { ...rest, rules_video_url: rules_video_url || null };
     // Read before the update: the trigger turns a rejected game into a pending one.
     const {data: before} = await supabase.from("games").select('status').eq('id', id).maybeSingle();
     const {data: game, error} = await supabase.from("games").update(fields).eq('id', id).select('slug').maybeSingle();
@@ -119,7 +122,7 @@ export const updateGame = async (id: string, payload: GameInput): Promise<GameAc
  * check the author). The date is also the cache-busting version of the cover URLs.
  */
 export const setGameCover = async (gameId: string, change: 'updated' | 'removed'): Promise<{ error: string } | undefined> => {
-    const parsed = coverChangeSchema.safeParse({ gameId, change });
+    const parsed = fileChangeSchema.safeParse({ gameId, change });
     if(!parsed.success){
         return { error: "Vérifiez les informations saisies" };
     }
@@ -149,6 +152,41 @@ export const setGameCover = async (gameId: string, change: 'updated' | 'removed'
 
     revalidatePath('/games', 'layout');
     revalidatePath('/account');
+}
+
+/**
+ * Records a new or removed rules PDF, after the browser uploaded it (Storage policies
+ * check the author). The date is also the cache-busting version of the PDF URL.
+ */
+export const setGameRules = async (gameId: string, change: 'updated' | 'removed'): Promise<{ error: string } | undefined> => {
+    const parsed = fileChangeSchema.safeParse({ gameId, change });
+    if(!parsed.success){
+        return { error: "Vérifiez les informations saisies" };
+    }
+
+    const supabase = await createClient();
+    // RLS only lets the active authors of the game update it: no row returned means not allowed.
+    const {data: game, error} = await supabase
+        .from('games')
+        .update({ rules_updated_at: change === 'updated' ? new Date().toISOString() : null })
+        .eq('id', gameId)
+        .select('id')
+        .maybeSingle();
+
+    if(error || !game){
+        console.log(error);
+        return { error: "Le PDF des règles n'a pas pu être enregistré. Modifiez le jeu pour réessayer." };
+    }
+
+    if(change === 'removed'){
+        // The game no longer points to the file: a failure here only leaves an orphan behind.
+        const {error: removeError} = await supabase.storage.from(GAME_RULES_BUCKET).remove([gameRulesPath(gameId)]);
+        if(removeError){
+            console.log(removeError);
+        }
+    }
+
+    revalidatePath('/games', 'layout');
 }
 
 export type SuggestMechanicResult = { error: string } | { mechanic: { id: number; name: string; status: 'pending' | 'approved' } };
