@@ -42,7 +42,7 @@ const PlaceLink = ({ place }: { place: { name: string; url: string } }) => (
 )
 
 export default async function Home() {
-  const games = await GetGames(6);
+  const games = await GetGames({ limit: 6 });
 
   return (
     <>
