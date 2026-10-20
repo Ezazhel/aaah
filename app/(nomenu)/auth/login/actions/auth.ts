@@ -2,6 +2,7 @@
 
 import { type AuthError } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export type LoginState = { success: boolean, error: string | null };
 
@@ -29,6 +30,26 @@ function loginErrorMessage(code: AuthError["code"]): string {
     }
 }
 
+/**
+ * With sign-ups disabled, Supabase refuses a magic link for an invited user who
+ * never clicked their invitation (the account is not confirmed yet).
+ * Sends the invitation again instead. Returns false if no pending invitation exists.
+ */
+async function resendInvite(email: string): Promise<boolean> {
+    const admin = createAdminClient();
+
+    // Never invite an unknown address: that would create an account.
+    const { data: isPending, error: lookupError } = await admin.rpc('is_pending_invite', { p_email: email });
+    if(lookupError) throw lookupError;
+    if(isPending !== true) return false;
+
+    const { error } = await admin.auth.admin.inviteUserByEmail(email, {
+        redirectTo: `${process.env.NEXT_PUBLIC_URL}/auth/confirm`
+    });
+    if(error) throw error;
+    return true;
+}
+
 export async function signInWithMagicLink(initialState: LoginState, formData: FormData): Promise<LoginState> {
     const email = formData.get('email');
     if(typeof email !== 'string' || !email.trim()){
@@ -37,15 +58,19 @@ export async function signInWithMagicLink(initialState: LoginState, formData: Fo
 
     try {
         const supabase = await createClient();
+        const trimmedEmail = email.trim();
 
         const { error } = await supabase.auth.signInWithOtp({
-            email: email.trim(),
+            email: trimmedEmail,
             options: {
                 shouldCreateUser: false,
                 emailRedirectTo: `${process.env.NEXT_PUBLIC_URL}/auth/confirm`
             }
         });
 
+        if(error?.code === 'signup_disabled' && await resendInvite(trimmedEmail)){
+            return { success: true, error: null };
+        }
         if(error){
             console.error(error);
             return { success: false, error: loginErrorMessage(error.code) };

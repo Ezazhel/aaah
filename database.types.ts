@@ -437,6 +437,7 @@ export type Database = {
       }
       is_active_member: { Args: { member_id?: string }; Returns: boolean }
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean }
+      is_pending_invite: { Args: { p_email: string }; Returns: boolean }
       set_game_mechanics: {
         Args: { game: string; mechanic_ids: number[] }
         Returns: undefined

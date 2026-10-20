@@ -71,12 +71,22 @@ describe("invited user who never clicked the link", () => {
     if (pendingId) await admin.auth.admin.deleteUser(pendingId);
   });
 
-  it("can request a new link from the login page", async () => {
+  it("is refused a magic link while sign-ups are disabled", async () => {
     // Same call as signInWithMagicLink (app/(nomenu)/auth/login/actions/auth.ts).
+    // Supabase treats an unconfirmed user as a new sign-up (supabase/config.toml: enable_signup = false).
     const { error } = await anon().auth.signInWithOtp({
       email: pendingEmail,
       options: { shouldCreateUser: false },
     });
+    expect(error?.code).toBe("signup_disabled");
+  });
+
+  it("gets a new invitation instead, which signs them in", async () => {
+    // Fallback of signInWithMagicLink: resendInvite.
+    const { data: isPending } = await admin.rpc("is_pending_invite", { p_email: pendingEmail.toUpperCase() });
+    expect(isPending).toBe(true);
+
+    const { error } = await admin.auth.admin.inviteUserByEmail(pendingEmail);
     expect(error).toBeNull();
 
     const mail = await lastMailTo(pendingEmail);
@@ -84,8 +94,13 @@ describe("invited user who never clicked the link", () => {
     expect(tokenHash).not.toBeNull();
     const [hash, type] = tokenHash![1] ? [tokenHash![1], tokenHash![2]] : [tokenHash![3], tokenHash![4]];
 
-    const { data, error: verifyError } = await anon().auth.verifyOtp({ token_hash: hash, type: type as "magiclink" });
+    const { data, error: verifyError } = await anon().auth.verifyOtp({ token_hash: hash, type: type as "invite" });
     expect(verifyError).toBeNull();
     expect(data.user?.id).toBe(pendingId);
+  });
+
+  it("never gets an invitation for an unknown address", async () => {
+    const { data: isPending } = await admin.rpc("is_pending_invite", { p_email: `unknown-${Date.now()}@test.local` });
+    expect(isPending).toBe(false);
   });
 });
