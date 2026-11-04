@@ -4,7 +4,9 @@ import { activeMembershipFilter } from "@/app/model/author";
 export async function GetAuthors() {
     const supabase = await createClient();
     try {
-        const { data } = await supabase.from('authors').select('id, last_name, first_name, slug, description, avatar_updated_at')
+        const { data } = await supabase.from('members').select('id, last_name, first_name, slug, description, avatar_updated_at, user_roles!inner(role)')
+        // Only members with the author role (not stock managers, admins only...).
+        .eq('user_roles.role', 'author')
         .neq('last_name',null)
         .neq('first_name',null)
         .neq('last_name','')

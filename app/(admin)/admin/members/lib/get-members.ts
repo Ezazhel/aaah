@@ -1,11 +1,11 @@
 import { createClient } from "@/lib/supabase/server"
 
 /**
- * Every user with their email, role and membership (admin only, checked by the SQL function).
+ * Every user with their email, roles and membership (admin only, checked by the SQL function).
  */
-export const GetAdminAuthors = async () => {
+export const GetAdminMembers = async () => {
     const supabase = await createClient();
-    const {data, error} = await supabase.rpc('admin_list_authors');
+    const {data, error} = await supabase.rpc('admin_list_members');
 
     if(error){
         throw new Error(error.message);
@@ -13,7 +13,7 @@ export const GetAdminAuthors = async () => {
     return data;
 }
 
-export type AdminAuthor = Awaited<ReturnType<typeof GetAdminAuthors>>[number];
+export type AdminMember = Awaited<ReturnType<typeof GetAdminMembers>>[number];
 
 /**
  * Start of the membership period (settings) and the current period.

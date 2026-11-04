@@ -60,10 +60,11 @@ describe("confirmLink", () => {
     expect(await confirm({ token_hash: "abc", type: "email" })).toBe("/error");
   });
 
-  it("signs in an active member", async () => {
+  it("signs in a user allowed to sign in (active member or stock manager)", async () => {
     supabase.auth.verifyOtp.mockResolvedValue({ data: { user: { id: "u1" }, session: {} }, error: null });
     supabase.rpc.mockResolvedValue({ data: true });
     expect(await confirm({ token_hash: "abc", type: "invite" })).toBe("/");
+    expect(supabase.rpc).toHaveBeenCalledWith("can_sign_in");
     expect(supabase.auth.verifyOtp).toHaveBeenCalledWith({ token_hash: "abc", type: "invite" });
     expect(supabase.auth.signOut).not.toHaveBeenCalled();
   });

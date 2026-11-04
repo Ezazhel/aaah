@@ -1,6 +1,4 @@
-import { after } from "next/server";
-import { renderEmail } from "./layout";
-import { sendEmail } from "./send";
+import { notify } from "./notify";
 
 type AdminNotification = {
   subject: string;
@@ -15,18 +13,7 @@ type AdminNotification = {
  * Sent after the response: a mail failure never blocks or breaks the user's action.
  */
 export function notifyAdmins({ subject, title, paragraphs, path }: AdminNotification) {
-  after(async () => {
-    const to = process.env.CONTACT_EMAIL;
-    if (!to) return console.warn("[email] CONTACT_EMAIL absent : notification admin non envoyée", subject);
-    try {
-      const { html, text } = renderEmail({
-        title,
-        paragraphs,
-        cta: { label: "Ouvrir l'administration", url: `${process.env.NEXT_PUBLIC_URL}${path}` },
-      });
-      await sendEmail({ to, subject: `[Admin] ${subject}`, html, text });
-    } catch (err) {
-      console.error("[email] échec de la notification admin", subject, err);
-    }
-  });
+  const to = process.env.CONTACT_EMAIL;
+  if (!to) return console.warn("[email] CONTACT_EMAIL absent : notification admin non envoyée", subject);
+  notify({ to: [to], subject: `[Admin] ${subject}`, title, paragraphs, path, ctaLabel: "Ouvrir l'administration" });
 }

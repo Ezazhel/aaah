@@ -9,7 +9,7 @@ export const GetAdminTags = async () => {
         supabase.from('categories').select('id, name, color, position, games(count)').order('position').order('name'),
         supabase
             .from('mechanics')
-            .select('id, name, status, bgg_id, created_at, suggester:authors(first_name, last_name), games:game_mechanics(game:games(name, slug))')
+            .select('id, name, status, bgg_id, created_at, suggester:members(first_name, last_name), games:game_mechanics(game:games(name, slug))')
             .order('name'),
     ]);
 

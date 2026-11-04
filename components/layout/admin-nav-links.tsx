@@ -13,10 +13,11 @@ export function AdminNavLinks({ pendingCount, pendingMechanicsCount }: { pending
   const pathname = usePathname()
 
   const links = [
-    { href: "/admin/authors", label: "Auteur·ices", badge: 0 },
-    { href: "/admin/invite", label: "Inviter auteur", badge: 0 },
+    { href: "/admin/members", label: "Membres", badge: 0 },
+    { href: "/admin/invite", label: "Inviter", badge: 0 },
     { href: "/admin/validation", label: "Validation", badge: pendingCount },
     { href: "/admin/tags", label: "Tags", badge: pendingMechanicsCount },
+    { href: "/admin/inventory", label: "Inventaire", badge: 0 },
   ]
 
   return (

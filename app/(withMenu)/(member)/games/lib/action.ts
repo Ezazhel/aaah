@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server"
 import { fileChangeSchema, gameSchema, mechanicNameSchema, type GameInput } from "./schema"
 import { GAME_COVER_BUCKET, GAME_COVER_SIZES, gameCoverPath, type GameCoverSize } from "@/lib/game-cover"
 import { GAME_RULES_BUCKET, gameRulesPath } from "@/lib/game-rules"
-import { isActiveMember } from "@/lib/route_requires";
+import { isActiveAuthor } from "@/lib/route_requires";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { notifyAdmins } from "@/lib/email/notify-admins";
@@ -13,7 +13,7 @@ type Supabase = Awaited<ReturnType<typeof createClient>>;
 
 // "Prénom Nom" of the logged-in author, for the admin notifications.
 const authorName = async (supabase: Supabase, userId: string) => {
-    const {data} = await supabase.from('authors').select('first_name, last_name').eq('id', userId).maybeSingle();
+    const {data} = await supabase.from('members').select('first_name, last_name').eq('id', userId).maybeSingle();
     return [data?.first_name, data?.last_name].filter(Boolean).join(' ') || "Un·e membre";
 }
 
@@ -200,7 +200,7 @@ export const suggestMechanic = async (name: string): Promise<SuggestMechanicResu
     if(!parsed.success){
         return { error: parsed.error.issues[0].message };
     }
-    if(!(await isActiveMember())){
+    if(!(await isActiveAuthor())){
         return { error: "Votre adhésion doit être active pour proposer une mécanique." };
     }
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { type User } from "@supabase/supabase-js"
-import { LogOut, Plus, ShieldCheck, UserRound } from "lucide-react"
+import { Boxes, LogOut, Package, Plus, ShieldCheck, UserRound } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,10 +12,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+type Role = "admin" | "author" | "location_manager"
+
 /**
- * Connection status: login link, or an avatar opening the account menu.
+ * Connection status: login link, or an avatar opening the account menu (links depend on the roles).
  */
-export function UserMenu({ user, isAdmin = false }: { user: User | null; isAdmin?: boolean }) {
+export function UserMenu({ user, roles = [] }: { user: User | null; roles?: Role[] }) {
   if (!user) {
     return (
       <Link href="/auth/login" className="rounded-lg border border-white px-4 py-1.5 text-sm font-semibold hover:bg-white hover:text-brand-dark">
@@ -37,10 +39,20 @@ export function UserMenu({ user, isAdmin = false }: { user: User | null; isAdmin
         <DropdownMenuItem asChild>
           <Link href="/account"><UserRound /> Mon profil</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/games/new"><Plus /> Nouveau jeu</Link>
-        </DropdownMenuItem>
-        {isAdmin && (
+        {roles.includes("author") && (<>
+          <DropdownMenuItem asChild>
+            <Link href="/games/new"><Plus /> Nouveau jeu</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/inventory"><Boxes /> Emprunter du matériel</Link>
+          </DropdownMenuItem>
+        </>)}
+        {roles.includes("location_manager") && (
+          <DropdownMenuItem asChild>
+            <Link href="/stock"><Package /> Mon stock</Link>
+          </DropdownMenuItem>
+        )}
+        {roles.includes("admin") && (
           <DropdownMenuItem asChild>
             <Link href="/admin"><ShieldCheck /> Administration</Link>
           </DropdownMenuItem>

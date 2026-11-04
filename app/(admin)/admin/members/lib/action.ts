@@ -6,9 +6,9 @@ import { createClient } from "@/lib/supabase/server"
 import { isAdmin } from "@/lib/route_requires";
 import { membershipStartSchema, type MembershipStartInput } from "./schema";
 
-export type AuthorActionResult = { error: string } | undefined;
+export type MemberActionResult = { error: string } | undefined;
 
-const NOT_ADMIN = { error: "Vous devez être administrateur·ice pour gérer les auteur·ices." };
+const NOT_ADMIN = { error: "Vous devez être administrateur·ice pour gérer les membres." };
 const userIdSchema = z.uuid();
 
 const revalidate = () => {
@@ -20,7 +20,7 @@ const revalidate = () => {
 /**
  * Gives the admin role. It can only be removed in the database.
  */
-export const promoteToAdmin = async (userId: string): Promise<AuthorActionResult> => {
+export const promoteToAdmin = async (userId: string): Promise<MemberActionResult> => {
     // A server action is a public endpoint: check the role here too (the RLS policy also does).
     if(!(await isAdmin())){
         return NOT_ADMIN;
@@ -42,11 +42,41 @@ export const promoteToAdmin = async (userId: string): Promise<AuthorActionResult
     revalidate();
 }
 
+/** Roles an admin can give and remove from the UI. The admin role is removed in the database only. */
+const toggleableRoleSchema = z.enum(['author', 'location_manager']);
+
 /**
- * Enables (end of the current period) or disables (end of the previous period) an author.
+ * Gives or removes the author / stock manager role.
+ */
+export const setRole = async (userId: string, role: 'author' | 'location_manager', enabled: boolean): Promise<MemberActionResult> => {
+    if(!(await isAdmin())){
+        return NOT_ADMIN;
+    }
+    const parsedUser = userIdSchema.safeParse(userId);
+    const parsedRole = toggleableRoleSchema.safeParse(role);
+    if(!parsedUser.success || !parsedRole.success){
+        return { error: "Utilisateur·ice ou rôle inconnu" };
+    }
+
+    const supabase = await createClient();
+    const { error } = enabled
+        ? await supabase.from('user_roles').insert({ user_id: parsedUser.data, role: parsedRole.data })
+        : await supabase.from('user_roles').delete().eq('user_id', parsedUser.data).eq('role', parsedRole.data);
+
+    // 23505: the member already has this role.
+    if(error && error.code !== '23505'){
+        console.log(error);
+        return { error: "Le rôle n'a pas pu être modifié. Réessayez." };
+    }
+
+    revalidate();
+}
+
+/**
+ * Enables (end of the current period) or disables (end of the previous period) a membership.
  * The dates are computed by admin_set_membership() from the membership settings.
  */
-export const setMembership = async (userId: string, active: boolean): Promise<AuthorActionResult> => {
+export const setMembership = async (userId: string, active: boolean): Promise<MemberActionResult> => {
     if(!(await isAdmin())){
         return NOT_ADMIN;
     }
@@ -75,7 +105,7 @@ export const setMembership = async (userId: string, active: boolean): Promise<Au
 /**
  * Changes the start date of the membership period (day and month).
  */
-export const updateMembershipStart = async (payload: MembershipStartInput): Promise<AuthorActionResult> => {
+export const updateMembershipStart = async (payload: MembershipStartInput): Promise<MemberActionResult> => {
     if(!(await isAdmin())){
         return NOT_ADMIN;
     }

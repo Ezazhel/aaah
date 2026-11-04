@@ -5,7 +5,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
-import { requireUser } from "@/lib/route_requires";
+import { isActiveAuthor } from "@/lib/route_requires";
 import { GameGrid } from "./components/game-card";
 import { GamesFilterSheet } from "./components/games-filter-sheet";
 import { countActiveFilters, parseGameFilters } from "./lib/filters";
@@ -16,7 +16,7 @@ export const metadata: Metadata = { title: "Jeux" };
 
 export default async function Games({ searchParams }: PageProps<'/games'>) {
   const filters = parseGameFilters(await searchParams);
-  const [games, tags, isLoggedIn] = await Promise.all([GetGames({ filters }), GetTags(), requireUser()]);
+  const [games, tags, canCreate] = await Promise.all([GetGames({ filters }), GetTags(), isActiveAuthor()]);
   const isFiltered = countActiveFilters(filters) > 0;
 
   return (
@@ -24,7 +24,7 @@ export default async function Games({ searchParams }: PageProps<'/games'>) {
       <PageHeader
         title="Les jeux"
         subtitle="Les créations et prototypes des auteur·ices de l'association."
-        actions={isLoggedIn && <Link href="/games/new" className={buttonVariants({ size: "lg" })}><Plus/> Nouveau jeu</Link>}
+        actions={canCreate && <Link href="/games/new" className={buttonVariants({ size: "lg" })}><Plus/> Nouveau jeu</Link>}
       />
       <Container className="py-12">
         <div className="mb-6 flex items-center justify-between gap-4">

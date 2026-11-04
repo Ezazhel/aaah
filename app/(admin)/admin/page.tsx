@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ClipboardCheck, Mail, Tags, Users } from "lucide-react";
+import { Boxes, ClipboardCheck, Mail, Tags, Users } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/page-header";
 import { requireAdmin } from "@/lib/route_requires";
@@ -14,8 +14,8 @@ export default async function AdminPage() {
     const [pendingCount, pendingMechanicsCount] = await Promise.all([GetPendingCount(), GetPendingMechanicsCount()]);
 
     const cards = [
-        { href: "/admin/authors", icon: Users, title: "Gérer les auteur·ices", text: "Nommer des admins, désactiver ou réactiver les adhésions." },
-        { href: "/admin/invite", icon: Mail, title: "Inviter un·e auteur·ice", text: "Envoyer un lien d'inscription par e-mail." },
+        { href: "/admin/members", icon: Users, title: "Gérer les membres", text: "Rôles (auteur·ice, gestion de stock, admin) et adhésions." },
+        { href: "/admin/invite", icon: Mail, title: "Inviter un·e membre", text: "Envoyer un lien d'inscription par e-mail, avec ses rôles." },
         {
             href: "/admin/validation",
             icon: ClipboardCheck,
@@ -28,6 +28,7 @@ export default async function AdminPage() {
             title: "Catégories et mécaniques",
             text: pendingMechanicsCount > 0 ? `${pendingMechanicsCount} mécanique${pendingMechanicsCount > 1 ? 's' : ''} proposée${pendingMechanicsCount > 1 ? 's' : ''} à valider.` : "Gérer les catégories et les mécaniques.",
         },
+        { href: "/admin/inventory", icon: Boxes, title: "Inventaire", text: "Prêts de matériel en cours et mouvements de stock." },
     ];
 
     return (<>

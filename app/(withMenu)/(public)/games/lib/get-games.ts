@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import type { GameFilters } from "./filters"
 
-const GAME_CARD_SELECT = '*, authors:game_authors(author:authors(id, first_name, last_name, slug)), category:categories(id, name, color), mechanics:game_mechanics(mechanic:mechanics(id, name))';
+const GAME_CARD_SELECT = '*, authors:game_authors(author:members(id, first_name, last_name, slug)), category:categories(id, name, color), mechanics:game_mechanics(mechanic:mechanics(id, name))';
 
 export const GetGames = async ({limit, filters}: {limit?: number; filters?: GameFilters} = {}) => {
     const supabase = await createClient();

@@ -9,10 +9,12 @@ import { GetTags } from "@/app/(withMenu)/(public)/games/lib/get-tags";
 import { visibleMechanics } from "@/app/model/category";
 import { GameForm } from "../../components/gameForm";
 import { updateGame } from "../../lib/action";
+import { requireAuthor } from "@/lib/route_requires";
 
 export const metadata: Metadata = { title: "Modifier un jeu" };
 
 export default async function EditGame({params}: PageProps<"/games/edit/[slug]">) {
+    await requireAuthor();
     const { slug } = await params;
     const game = await GetGame(slug);
 

@@ -7,13 +7,14 @@ import { GetPendingMechanicsCount } from "@/app/(admin)/admin/tags/lib/get-tags"
 import { Container } from "./container"
 import { AdminNavLinks } from "./admin-nav-links"
 import { UserMenu } from "./user-menu"
+import { getRoles } from "@/lib/route_requires"
 
 /**
  * Header of the admin pages: admin navigation instead of the site menu.
  */
 export async function AdminHeader() {
   const supabase = await createClient()
-  const [{ data }, pendingCount, pendingMechanicsCount] = await Promise.all([supabase.auth.getUser(), GetPendingCount(), GetPendingMechanicsCount()])
+  const [{ data }, pendingCount, pendingMechanicsCount, roles] = await Promise.all([supabase.auth.getUser(), GetPendingCount(), GetPendingMechanicsCount(), getRoles()])
 
   return (
     <header className="sticky top-0 z-30 bg-brand-dark text-white shadow">
@@ -27,7 +28,7 @@ export async function AdminHeader() {
           <Link href="/" className="hidden items-center gap-1 text-sm text-white/80 hover:text-white md:inline-flex">
             <ArrowLeft className="size-4" aria-hidden /> Retour au site
           </Link>
-          <UserMenu user={data.user} isAdmin />
+          <UserMenu user={data.user} roles={roles} />
         </nav>
       </Container>
     </header>

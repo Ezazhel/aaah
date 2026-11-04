@@ -4,7 +4,8 @@ Site vitrine d'une association de créateur·ices de jeux de société.
 
 - Tout le monde (sans connexion) peut consulter les **auteur·ices** de l'association et leurs **jeux**.
 - Les auteur·ices peuvent **se connecter**, **proposer des jeux** et **éditer** les jeux dont ils et elles sont auteur·ices.
-- Les **administrateur·ices** invitent de nouveaux auteur·ices, nomment d'autres admins, désactivent / réactivent les adhésions et **valident** (ou refusent, avec une raison) les jeux proposés : un jeu n'est public qu'une fois validé.
+- Les **gestionnaires de stock** (membres ou partenaires, ex. un bar à jeux) gèrent leurs lieux de stockage et prêtent du matériel (boîtes, dés…) aux auteur·ices.
+- Les **administrateur·ices** invitent de nouveaux membres en choisissant leurs rôles, nomment d'autres admins, désactivent / réactivent les adhésions et **valident** (ou refusent, avec une raison) les jeux proposés : un jeu n'est public qu'une fois validé.
 
 > Projet au stade **MVP** : on se concentre sur les fonctionnalités et les données. Le design reprend celui de l'ancien site (old_aaah) via un petit design system (voir [UI](#ui)).
 
@@ -28,11 +29,14 @@ Site vitrine d'une association de créateur·ices de jeux de société.
 | Nouveau jeu | `/games/new` | connecté·e |
 | Édition d'un jeu | `/games/edit/[slug]` | connecté·e **et** auteur·ice du jeu |
 | Mon profil (prénom, nom, présentation) | `/account` | connecté·e |
+| Emprunter du matériel (catalogue, mes prêts) | `/inventory` | auteur·ice à l'adhésion active |
+| Mon stock (lieux, quantités, demandes) | `/stock` | rôle `location_manager` |
 | Connexion | `/auth/login` | public |
 | Confirmation d'un lien reçu par e-mail (invitation, connexion) | `/auth/confirm` | public |
 | Administration | `/admin` | connecté·e **et** admin |
-| Gestion des auteur·ices (admins, adhésions, période d'adhésion) | `/admin/authors` | connecté·e **et** admin |
-| Inviter un·e auteur·ice | `/admin/invite` | connecté·e **et** admin |
+| Gestion des membres (rôles, adhésions, période d'adhésion) | `/admin/members` | connecté·e **et** admin |
+| Inventaire (prêts en cours, mouvements) | `/admin/inventory` | connecté·e **et** admin |
+| Inviter un·e membre (avec ses rôles) | `/admin/invite` | connecté·e **et** admin |
 | Validation des jeux | `/admin/validation` | connecté·e **et** admin |
 | Catégories et mécaniques (valider les propositions, gérer les listes) | `/admin/tags` | connecté·e **et** admin |
 
@@ -55,7 +59,7 @@ Les liens sont valables 24 h, le maximum autorisé par Supabase (`otp_expiry` da
 ### Adhésion
 
 - Un·e auteur·ice est **actif·ve** si `authors.member_ship_expired_at` est vide (sans échéance) ou dans le futur. Les **admins sont toujours actif·ves**.
-- La **période d'adhésion** va toujours d'une date de début à la même date l'année suivante moins un jour (ex. 01/09/2026 → 31/08/2027). La date de début (jour + mois) est dans `membership_settings`, modifiable dans `/admin/authors`.
+- La **période d'adhésion** va toujours d'une date de début à la même date l'année suivante moins un jour (ex. 01/09/2026 → 31/08/2027). La date de début (jour + mois) est dans `membership_settings`, modifiable dans `/admin/members`.
 - **Désactiver** : l'adhésion expire à la fin de la période précédente. **Réactiver** : elle est valable jusqu'à la fin de la période en cours (puis expire automatiquement sans renouvellement).
 - Adhésion expirée : connexion refusée (déconnexion après le lien magique), pages membres inaccessibles, création / édition de jeux refusée (RLS), profil masqué de `/authors`. Ses jeux restent visibles, son nom y est affiché sans lien.
 - Une session déjà ouverte est coupée à la prochaine visite d'une page membre.
@@ -64,13 +68,21 @@ Les liens sont valables 24 h, le maximum autorisé par Supabase (`otp_expiry` da
 
 Migrations dans [`supabase/migrations`](supabase/migrations).
 
-- **`authors`** : profil lié à `auth.users` (prénom, nom, `slug` généré automatiquement).
+- **`members`** (anciennement `authors`) : profil de chaque compte, lié à `auth.users` (prénom, nom, `slug` généré automatiquement, date d'adhésion). Ce que le compte peut faire dépend de ses **rôles**.
 - **`games`** : nom, description, âge minimum, nombre de joueurs (min/max), durée en minutes (min/max), `slug` généré par trigger à partir du nom (suffixe `-2`, `-3`… en cas de doublon), `created_by`.
 - **`games.status`** (enum `game_status` : `pending` | `approved` | `rejected`) : un jeu créé est `pending`. Seule une décision d'admin change le statut ; toute modification d'un jeu `rejected` (même par un·e admin) le repasse en `pending` (nouvelle soumission), un jeu `approved` le reste (trigger `protect_game_status`).
 - **`game_reviews`** : historique des décisions des admins (`decision`, `reason` obligatoire en cas de refus, `reviewer_id`). Insérer une review met à jour `games.status` (trigger).
 - **`membership_settings`** : une seule ligne, début de la période d'adhésion (`start_month`, `start_day`).
 - Fonctions SQL : `is_active_member()`, `current_membership_period()`, `admin_set_membership()` et `admin_list_authors()` (admins uniquement, lit l'email dans `auth.users`).
-- **`user_roles`** (enum `app_role` : `admin`) : rôles des utilisateur·ices. Table séparée de `authors` pour qu'un·e auteur·ice ne puisse pas se donner un rôle. La fonction `public.is_admin()` est utilisée par les policies et par l'app (`rpc('is_admin')`).
+- **`user_roles`** (enum `app_role` : `author` | `admin` | `location_manager`, cumulables) : rôles des membres. Table séparée de `members` pour qu'un·e membre ne puisse pas se donner un rôle. Fonctions : `is_admin()`, `has_role(role)`, `is_active_author()` (rôle `author` + adhésion active : créer / modifier des jeux, emprunter), `can_sign_in()` (adhésion active **ou** gestionnaire de stock : un bar à jeux se connecte sans adhésion). Les rôles `author` et `location_manager` sont lisibles publiquement (filtre de `/authors`). Un paiement HelloAsso donne le rôle `author`.
+- **Inventaire** :
+  - `inventory_locations` : lieux, créés par les gestionnaires sans validation. **Un seul compte gère un lieu** (`manager_id`, un compte peut gérer plusieurs lieux) ; seul·e un·e admin peut le confier à un autre compte ;
+  - `inventory_items` : catalogue commun (créé par les gestionnaires et les admins) ;
+  - `inventory_stock` : quantité par lieu et article, `reserved` (prêts acceptés pas encore retirés), `available` (colonne générée) ;
+  - `inventory_loans` : prêts **sans date de retour**, statut `pending → approved → borrowed → returned` (ou `rejected` / `cancelled`), ou directement `borrowed` pour une prise déclarée ;
+  - `inventory_movements` : historique de chaque variation de stock (ajustement, prêt, retour).
+  - Stock, prêts et mouvements ne s'écrivent que par des fonctions `security definer` (`inventory_set_stock`, `inventory_request_loan`, `inventory_declare_borrow`, `inventory_decide_loan`, `inventory_mark_borrowed`, `inventory_mark_returned`, `inventory_cancel_loan`) qui vérifient les droits et verrouillent la ligne de stock.
+  - E-mails (`lib/email/inventory.ts`) : demande → gestionnaire du lieu ; prise directe → gestionnaire + `CONTACT_EMAIL` ; acceptation, refus, retour → emprunteur·se. Les adresses sont lues par `inventory_notify_targets()` (service role uniquement).
 - **`categories`** : catégorie de public (Enfants, Familial, Initié, Expert), avec une couleur hexadécimale (badges, bordure gauche des cartes) et un ordre d'affichage. Gérées par les admins. **`games.category_id`** : une catégorie par jeu, obligatoire dans le formulaire.
 - **`mechanics`** : mécaniques (deck-building, pose d'ouvriers, plis…), seedées depuis la liste de [BoardGameGeek](https://boardgamegeek.com/browse/boardgamemechanic) traduite en français (`bgg_id`). Un·e auteur·ice peut en **proposer** une depuis le formulaire (`pending`) : elle est liée à son jeu tout de suite mais n'est visible publiquement qu'une fois **validée** par un admin, qui peut corriger son libellé. Refuser = supprimer (retirée des jeux).
 - **`game_mechanics`** : liaison N–N jeux / mécaniques (au moins une par jeu dans le formulaire), mise à jour par `set_game_mechanics()`.
@@ -154,7 +166,7 @@ Le site est sur [http://localhost:3000](http://localhost:3000). Les mails (liens
 
 ### Nommer un·e administrateur·ice
 
-Un·e admin peut nommer d'autres admins depuis `/admin/authors`. Le **premier** admin se nomme en SQL (Studio : [http://127.0.0.1:54323](http://127.0.0.1:54323), SQL editor) :
+Un·e admin peut nommer d'autres admins depuis `/admin/members`. Le **premier** admin se nomme en SQL (Studio : [http://127.0.0.1:54323](http://127.0.0.1:54323), SQL editor) :
 
 ```sql
 insert into public.user_roles (user_id, role)
@@ -192,3 +204,5 @@ L'accès à `/admin/*` est vérifié dans le proxy (connecté·e **et** admin), 
 - [x] Rôle admin, invitation d'auteur·ices, validation des jeux
 - [x] Design system et pages principales (header, accueil, auteur·ices, jeux, formulaires)
 - [ ] Règles des jeux (PDF)
+- [x] Rôles cumulables (auteur·ice, admin, gestion de stock), invitation avec rôles
+- [x] Inventaire : lieux, stock, prêts de matériel aux auteur·ices

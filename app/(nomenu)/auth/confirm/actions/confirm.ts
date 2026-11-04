@@ -32,9 +32,9 @@ export async function confirmLink(formData: FormData) {
     redirect(error.code === "otp_expired" ? "/auth/login?error=expired" : "/error");
   }
 
-  // Membership expired: no session for this user.
-  const { data: isActiveMember } = await supabase.rpc("is_active_member");
-  if (isActiveMember !== true) {
+  // Membership expired (and not a stock manager): no session for this user.
+  const { data: canSignIn } = await supabase.rpc("can_sign_in");
+  if (canSignIn !== true) {
     await supabase.auth.signOut();
     redirect("/auth/login?error=membership");
   }

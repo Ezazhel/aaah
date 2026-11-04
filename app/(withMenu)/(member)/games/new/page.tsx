@@ -5,10 +5,12 @@ import { PageHeader } from "@/components/page-header";
 import { GameForm } from "../components/gameForm";
 import { createGame } from "../lib/action";
 import { GetTags } from "@/app/(withMenu)/(public)/games/lib/get-tags";
+import { requireAuthor } from "@/lib/route_requires";
 
 export const metadata: Metadata = { title: "Nouveau jeu" };
 
 export default async function NewGame() {
+    await requireAuthor();
     const tags = await GetTags();
 
     return (<>

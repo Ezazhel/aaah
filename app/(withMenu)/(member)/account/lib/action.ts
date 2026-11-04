@@ -31,7 +31,7 @@ export const updateProfile = async (payload: ProfileInput, avatarChange: AvatarC
 
     // The authors row is created by a trigger with the auth user: no row returned means it was refused.
     const {data: author, error} = await supabase
-        .from('authors')
+        .from('members')
         .update({...parsed.data, ...avatarUpdatedAt, description: parsed.data.description || null, updated_at: now})
         .eq('id', auth.claims.sub)
         .select('id')

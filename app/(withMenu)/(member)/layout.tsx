@@ -1,4 +1,4 @@
-import { requireActiveMember, requireUser } from "@/lib/route_requires";
+import { requireSignInAllowed, requireUser } from "@/lib/route_requires";
 import { redirect } from "next/navigation";
 
 export default async function Layout({children}:LayoutProps<"/">) {
@@ -6,6 +6,7 @@ export default async function Layout({children}:LayoutProps<"/">) {
     if(!isConnected){
         redirect('/auth/login')
     }
-    await requireActiveMember();
+    // Active membership, or stock manager (a game bar is not a member of the association).
+    await requireSignInAllowed();
     return children;
 }
