@@ -21,7 +21,7 @@ export const DISCORD_URL = "https://discord.gg/U4DUbbxcwW";
 export const INSTAGRAM_URL = "https://www.instagram.com/asso_aaah/";
 export const FACEBOOK_URL = "https://www.facebook.com/groups/825598305749631/";
 
-// Places of the recurring events (Google Maps links).
+// Places of the recurring events (Google Maps links). Also hard-coded in supabase/templates/invite.html: update both.
 export const PLACES = {
   baraka: { name: "Baraka Jeux", url: "https://maps.app.goo.gl/4uGxrnA3tru8WY8g8" },
   castors: { name: "Les Castors", url: "https://maps.app.goo.gl/bPvJifJEFo7Jvkwm9" },
