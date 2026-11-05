@@ -6,7 +6,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export type InviteState = { error: string } | { success: string } | undefined;
 
-export const INVITABLE_ROLES = ['author', 'location_manager', 'admin'] as const;
+// Not exported: a "use server" file can only export async functions.
+const INVITABLE_ROLES = ['author', 'location_manager', 'admin'] as const;
 
 const inviteSchema = z.object({
     email: z.email(),
